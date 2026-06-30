@@ -1,0 +1,6 @@
+# RQGM Loop — runtime state produced by the loop (keep your own if you want history)
+archive.jsonl
+*.archive.jsonl
+coevolution_log.md
+.rqgm/
+.DS_Store
