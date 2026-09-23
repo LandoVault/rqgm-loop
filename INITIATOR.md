@@ -51,7 +51,7 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 > bundled early for coordinated fixes, single late (attributable). One edit = one component +
 > a one-line falsifiable hypothesis; smallest reviewable diff; version each vₙ so any state is
 > revertable. Skip hypotheses the ledger rejected on single-edit iterations absent new evidence. If
-> **stalled** (no gain > δ for `w` iterations), spend ≥1 edit on a never-edited component.
+> **stalled** (no Progress for `w` iterations), spend ≥1 edit on a never-edited component.
 > **Never edit `{{DONE}}` or the rubric to pass. Never fabricate a substrate** (real data, people,
 > results, agreements) — mark gaps `[OPEN]`.
 >
@@ -78,11 +78,12 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 >   `ΔC ≤ 0` (or `ΔC ≤ β₀`, once per component, for a single edit on a never-edited one); else reject,
 >   restore the parent. Only on an accept with `ΔS > δ`: `S* = max(S*, mean(S(vₙ), fresh re-score))`.
 >
-> **5 · Record & repeat.** Append every record (schema below; bundles share the version's `dS`)
-> to `{{MEMORY}}`. **Prune** only text the loop added: if a component's accepted edits in the last `2w`
-> iterations all had `dS ≤ δ`, their text is deleted (a gated edit) unless the checker upholds keeping
-> it; `{{DONE}}` must-not-change items and `[OPEN]` markers are exempt. The
-> rung **saturates** when every rung criterion passes; no gain > δ for `2w` iterations →
+> **5 · Record & repeat.** Append every record (schema below; bundles share `dS`)
+> to `{{MEMORY}}`. **Progress** (step 1's "gain"): an accept with `dS > δ` or a newly passing
+> criterion (one fresh re-score confirms), none lost (adapted from arXiv:2509.20293). **Prune**
+> loop-added text only: a component whose last-`2w` accepted edits all lacked Progress loses it
+> (a gated edit) unless the checker upholds it; `{{DONE}}` constraints and `[OPEN]` markers exempt. The
+> rung **saturates** when every rung criterion passes; `2w` iterations without Progress →
 > **HALT(STALL)**.
 >
 > **6 · Boundary (evolve the utility).** A judge **dissents** if it scores any criterion < 7. Advance
