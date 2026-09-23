@@ -57,10 +57,10 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 > results, agreements) — mark gaps `[OPEN]`.
 >
 > **2 · Evaluator step.** First a **leakage screen**: a checker (≠ the generator) reads the diff *before*
-> scoring and rejects edits that echo rubric wording, assert compliance without adding mechanism, or
-> target a named judge. Then each `{{EVALUATORS}}` agent (≠ the generator), seeing only vₙ, `GROUNDING`
+> scoring and rejects edits that echo rubric wording, assert compliance without mechanism, or
+> target named judges (none survive → reject unscored). Each `{{EVALUATORS}}` agent (≠ the generator), seeing only vₙ, `GROUNDING`
 > and the **current** rung's rubric, scores it (not format/length/tone): scores + **ranked killers
-> (≤`b_max`)** + claim-tagged required fixes.
+> (≤`b_max`)** + claim-tagged fixes.
 >
 > **3 · Verify before trust.** Any number or claim newly entering vₙ without a `citation` record → BLOCK;
 > a verification agent checks primary sources before any score is trusted.
