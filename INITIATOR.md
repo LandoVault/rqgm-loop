@@ -1,7 +1,6 @@
 # RQGM Loop — Initiator (paste-and-go)
 
-Fill the six slots, then paste **THE LOOP** into any capable LLM/agent session. The block is
-self-contained — it runs without the rest of this file.
+Fill the six slots, then paste **THE LOOP** (self-contained) into any capable LLM/agent session.
 
 ## Fill first
 
@@ -9,20 +8,20 @@ self-contained — it runs without the rest of this file.
 |---|---|
 | `{{TARGET}}` | the artifact to optimize (file / doc / repo / design) |
 | `{{GROUNDING}}` | source-of-truth docs/links the agents may read |
-| `{{DONE}}` | **machine-verifiable** success spec: a list of pass/fail criteria (write as JSON, each `pass:false`), the constraints (what must NOT change), and the hard stop |
-| `{{EVALUATORS}}` | 2–5 adversarial judges, **each a separate agent from the generator** (archetypes below), plus **1 held-out judge** the generator never sees before Stop |
+| `{{DONE}}` | **machine-verifiable** success spec: JSON pass/fail criteria (each `pass:false`), must-NOT-change constraints, and the hard stop |
+| `{{EVALUATORS}}` | 2–5 adversarial judges, **each a separate agent from the generator** (archetypes below); write the **held-out judge** separately — never paste it |
 | `{{MEMORY}}` | path to the append-only `archive.jsonl` (state + resume) |
 | `{{BUDGET}}` | caps: MAX_ITERS (= N), token/cost ceiling, wall-clock; optional overrides of the defaults in **Units** |
 
-**Evaluator archetypes** (pick `{{EVALUATORS}}`): domain-expert (correct / feasible?) · rigor-&-methods
-skeptic (derived, reproducible, powered?) · strategy / defensibility critic (unique? moat? competitive
-threat?) · end-user (solves a real problem?) · red-team fact-checker (re-verify every number).
+**Evaluator archetypes:** domain-expert (correct? feasible?) · methods skeptic (derived, reproducible,
+powered?) · defensibility critic (unique? moat?) · end-user (real problem?) · red-team fact-checker
+(re-verify every number).
 
 ---
 
 ## ── THE LOOP ── (paste this block)
 
-**Replace every `{{SLOT}}` before pasting** — a paste still containing `{{…}}` will not run.
+**Replace every `{{SLOT}}` before pasting** — leftover `{{…}}` will not run.
 
 > **Role.** You orchestrate a Red Queen Gödel Machine loop (Iacob et al., arXiv:2606.26294): co-evolve a
 > *generator* against *separate, adversarial, evolving* evaluators to drive `{{TARGET}}` to `{{DONE}}`.
@@ -30,10 +29,11 @@ threat?) · end-user (solves a real problem?) · red-team fact-checker (re-verif
 > AI-generated work — so the checker must be a **different agent** from the writer and must get
 > **stricter** as the writer improves. Re-facing one panel also lets the writer overfit it, chase score
 > noise, and bloat the artifact, so the loop is **regularized** after RRSI (Xia et al., arXiv:2609.24972;
-> the panel/held-out mapping, per-rung δ, noise-band rule and all defaults are this loop's adaptations).
+> the panel/held-out mapping, checker ≠ generator, per-rung δ, noise-band rule, `bₙ` rounding and all
+> defaults are this loop's adaptations).
 >
-> **Units.** Judges score each criterion and `overall` on 0–10; `S(v)` = panel mean `overall`; a
-> criterion passes on a panel majority. `C(v)` = word count of `{{TARGET}}` (tokens for code). A
+> **Units.** Judges score each criterion and `overall` on 0–10; `S(v)` = panel mean `overall`; a judge
+> passes a criterion at ≥7, the panel on a strict majority (ties fail). `C(v)` = word count of `{{TARGET}}` (tokens for code). A
 > **component** is a top-level section or file, listed at setup. Epoch = one rung; iteration = one
 > generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β₁=5%`/point, `δ_min=0.3`.
 >
@@ -54,8 +54,8 @@ threat?) · end-user (solves a real problem?) · red-team fact-checker (re-verif
 > results, agreements) — mark gaps `[OPEN]`.
 >
 > **2 · Evaluator step.** First a **leakage screen**: a checker (≠ the generator) reads the diff *before*
-> scoring and rejects edits that assert compliance without adding mechanism, or that target a named
-> judge. Then each `{{EVALUATORS}}` agent (≠ the generator) scores vₙ under the **current** rung's rubric
+> scoring and rejects edits that echo rubric wording or assert compliance without adding mechanism, or
+> that target a named judge. Then each `{{EVALUATORS}}` agent (≠ the generator) scores vₙ under the **current** rung's rubric
 > (not formatting / length / tone), returning scores + **ranked killers** + required fixes tagged to
 > claims.
 >
@@ -73,8 +73,9 @@ threat?) · end-user (solves a real problem?) · red-team fact-checker (re-verif
 >   `[OPEN]`; a version with open substrates can never be "done".
 > - **G4 oscillation** — if vₙ ≈ vₙ₋₂ (thrash) → **HALT(OSCILLATION)**, surface both.
 > - **G5 budget** — if iterations / tokens / wall-clock exceed `{{BUDGET}}` → **HALT(BUDGET)**, emit best-so-far.
-> - **G6 gain pays for growth** — if `ΔS > δ`, require `ΔC ≤ β₀ + β₁·ΔS`; if `|ΔS| ≤ δ` (noise), accept
->   only if `ΔC ≤ 0`. On accept, `S* = max(S*, S(vₙ))`.
+> - **G6 gain pays for growth** — if `ΔS > δ`, require `ΔC ≤ β₀ + β₁·ΔS`; if `|ΔS| ≤ δ` (noise), require
+>   `ΔC ≤ 0`, or `ΔC ≤ β₀` for an edit on a never-edited component; else reject, restore the parent. On
+>   accept, `S* = max(S*, S(vₙ))`.
 >
 > **5 · Record & repeat.** Append version, scores, critiques, decisions and each edit (component,
 > hypothesis, `dS`, `dC`, accepted; bundled edits share the version's `dS`) to `{{MEMORY}}`. **Prune:** a
@@ -90,17 +91,18 @@ threat?) · end-user (solves a real problem?) · red-team fact-checker (re-verif
 > equal-stringency (reject polish; demand every number derived) → **E3** add a 2nd objective as a Pareto
 > axis (e.g. defensibility / moat) → **E4** red-team that re-verifies every cited number.
 >
-> **7 · Stop & output.** Before claiming done, the **held-out judge** scores the final candidate
-> **once**; a criterion it fails that the panel passed means the loop overfit the panel → reopen it and
-> do not claim done. STOP when `{{DONE}}` passes under the escalated utility, the held-out check passes,
-> **and** no `[OPEN]` substrates remain — or when any HALT fires. Output: the current version, the
+> **7 · Stop & output.** STOP only when `{{DONE}}` passes under the escalated utility, no `[OPEN]`
+> substrate remains, **and** the **held-out judge** — kept out of this paste and run in a fresh context,
+> scoring once on the final rung — passes every criterion; a fail means the loop overfit the panel →
+> record it sealed, reopen only that criterion ID (no critique text), and use a fresh held-out judge next time. Or STOP on
+> any HALT. Output: the current version, the
 > provenanced critiques, the updated archive + log, and **one** next action (or, on HALT, the reason +
 > what a human must supply).
 >
 > **Stance (hold throughout).** **Tight leash** — small, verifiable steps. Verification **fast and
 > visual**; a model grading itself is too generous, so the checker is a separate, *dissenting* agent.
-> Engineer the **context**, don't wordsmith. Ties go to the simpler version. Expect the **march of nines**: each reliability nine costs
-> as much as all the prior ones combined — don't mistake a 90%-good draft for a finished one.
+> Engineer the **context**, don't wordsmith. Ties go to the simpler version. Expect the **march of nines** — a 90%-good draft is not
+> finished.
 
 ---
 
@@ -118,4 +120,4 @@ Resume = last `version` + last `utility` (δ, `S*`) + edit ledger + open substra
 `rejected_by` ∈ `screen | G1 | G2 | G3 | G6`.
 
 ## Retarget
-Refill the six slots, reset the archive, start at **E1**; THE LOOP is domain-agnostic.
+Refill the slots, reset the archive, start at **E1**; THE LOOP is domain-agnostic.
