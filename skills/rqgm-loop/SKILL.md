@@ -33,7 +33,7 @@ The **rubric** = the `DONE` criteria plus the current rung's stance line. It is 
 at a human-confirmed escalation.
 
 **Bias probe (once):** judges compare *best* with an identical copy and with a meaning-preserving
-rewording. If any verdict is not a tie → **strict mode**: all 3 judges run every time and must agree.
+rewording. If any verdict is not a tie → **strict mode**: no early drop, all 3 judges run, keeping needs 3/3.
 
 ## Roles
 Separate agents or fresh contexts; the writer never judges. Judges come from a different model family
@@ -59,12 +59,12 @@ than the generator where available (log it when not).
    overall, a confidence (low/med/high), and at most 2 remaining flaws of the preferred version;
    cosmetic differences are a tie. Judge 1 compares in both orders (disagreement = tie); if it prefers
    *best* with high confidence or rates a protected item worse, drop the variant. Otherwise run judge 2,
-   and judge 3 if judges 1 and 2 differ.
+   and judge 3 unless judges 1 and 2 gave the same overall verdict.
 4. **Keep** a variant if ≥2 judges prefer it, none prefers *best*, and none rates a **protected** item
    worse (guardrails, must-not-change constraints, criteria *best* already passes). A shorter variant
    that no judge rates worse anywhere is also kept (pruning). Keep at most one per round (most support,
-   then shorter) and log every variant. If a kept change undoes an earlier kept change,
-   **HALT(OSCILLATION)**: show the human both versions.
+   then shorter) and log every variant. If a kept version (nearly) restores an earlier *best*,
+   **HALT(OSCILLATION)**: the human picks one, which becomes *best*, and the loop resumes.
 5. **Check** after 3 rounds with nothing kept (a **stall**), or when the generator claims `DONE`. Run
    the mechanical checks, then have 3 fresh judges mark each remaining criterion pass/fail on *best*,
    by majority. If all pass, go to the Boundary. If some fail and the loop is stalled,
@@ -79,15 +79,15 @@ rung, reset the stall count, and continue. Otherwise go to Stop.
 ## Stop
 If an `[OPEN]` remains → **HALT(OPEN)**: name each gap and who must close it. Otherwise the human's 3
 held-out judges run the same pass/fail check in fresh contexts (majority, criterion IDs only). Pass →
-output. Fail → rerun rounds on the failing IDs, Check, then the spare judges; a second fail is
-**HALT(OVERFIT)**. Over budget → **HALT(BUDGET)**, emit *best*. Output: *best*, what changed and why
-(from the ledger), and one next action.
+output. Fail → rerun rounds on the failing IDs and Check (unless that halts), then the spare judges; a
+second fail is **HALT(OVERFIT)**. Over budget → **HALT(BUDGET)**, emit *best*. Output: *best*, the rung reached vs `DONE`'s
+final rung, what changed and why (from the ledger), and one next action.
 
 ## Memory (`archive.jsonl`, append-only, single writer)
 `version{id,parent,change}` · `variant{round,id,section,hypothesis,screen,verdicts,kept}` ·
 `citation{claim,source,status}` · `probe{mode}` · `check{rung,pass}` · `rung{name}` ·
 `substrate{gap,owner,status}` · `heldout{attempt}` · `halt{reason: STALL|OPEN|OVERFIT|OSCILLATION|BUDGET}`. Resume = last kept version,
-ledger, probe mode, rung, open substrates.
+ledger (it also gives the stall count), probe mode, rung, open substrates.
 
 ## Stance
 Tight leash: small, verifiable changes. A separate, dissenting checker. Engineer the context, don't

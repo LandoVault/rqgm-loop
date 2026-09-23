@@ -42,7 +42,8 @@ fact-checker (re-verify every number).
 > **Setup.** Read `{{MEMORY}}`; if it holds state, resume from the last kept version (drop a torn last
 > record). Otherwise read `{{GROUNDING}}` first, draft **v0** = *best*, verify v0's numbers and claims,
 > record `{{DONE}}`, set rung **E1**. **Bias probe (once):** judges compare *best* with an identical copy
-> and with a meaning-preserving rewording; any non-tie → strict mode (all 3 judges run and must agree).
+> and with a meaning-preserving rewording; any non-tie → strict mode (no early drop, all 3 judges run,
+> keeping needs 3/3).
 >
 > **Each round.**
 > 1. **Propose** 2 variants, each **one change to one section** (smallest diff; deletions welcome), with
@@ -51,20 +52,20 @@ fact-checker (re-verify every number).
 >    least-recently-changed section. **Never edit `{{DONE}}` or the rubric. Never fabricate** data,
 >    results, people or agreements: write `[OPEN: what is needed]`.
 > 2. **Screen** each diff. Reject it if it echoes the rubric or claims compliance without adding a
->    mechanism, targets a judge, adds inert text, weakens a guardrail, or removes an `[OPEN]` without
->    evidence. Run the criteria's mechanical checks (tests, builds, caps); their results override judges.
+>    mechanism, targets a judge, adds inert text, weakens a guardrail, or removes an `[OPEN]` without an
+>    evidenced substrate close. Run the criteria's mechanical checks (tests, builds, caps); their results override judges.
 >    **Verify** every new number or claim against a primary source; if it fails, strip it or mark it
 >    `[OPEN]`. A round whose variants are all rejected counts as nothing kept.
 > 3. **Judge** each surviving variant against *best*, blind: an A/B/tie verdict per criterion and
 >    overall, a confidence (low/med/high), and at most 2 remaining flaws of the preferred version.
 >    Cosmetic differences are a tie. Judge 1 compares in both orders (verdicts that disagree = tie); if
 >    it prefers *best* with high confidence or rates a protected item worse, drop the variant. Otherwise
->    run judge 2, and judge 3 if judges 1 and 2 differ.
+>    run judge 2, and judge 3 unless judges 1 and 2 gave the same overall verdict.
 > 4. **Keep** a variant if ≥2 judges prefer it, none prefers *best*, and none rates a **protected** item
 >    worse (guardrails, must-not-change constraints, criteria *best* already passes). A shorter variant
 >    that no judge rates worse anywhere is also kept (pruning). Keep at most one per round (most support,
->    then shorter). If a kept change undoes an earlier kept change → **HALT(OSCILLATION)**: show the
->    human both versions. Append every variant and verdict to `{{MEMORY}}`.
+>    then shorter). If a kept version (nearly) restores an earlier *best* → **HALT(OSCILLATION)**: the
+>    human picks one, which becomes *best*, and the loop resumes. Append every variant and verdict to `{{MEMORY}}`.
 > 5. **Check** after 3 rounds with nothing kept (a **stall**), or when you believe `{{DONE}}` holds: run
 >    the mechanical checks, then 3 fresh judges mark each remaining criterion pass/fail on *best*, by
 >    majority. All pass → Boundary. Some fail while stalled → **HALT(STALL)** with the failing criteria
@@ -77,14 +78,15 @@ fact-checker (re-verify every number).
 >
 > **Stop.** If an `[OPEN]` remains → **HALT(OPEN)**, naming each gap and who must close it. Otherwise
 > ask the human to run the **held-out check** (3 unseen judges, same pass/fail check, majority per
-> criterion) and report criterion IDs only. Pass → output. Fail → rerun the rounds on those IDs, run the
-> Check, then the human's 3 spare judges; a second fail is **HALT(OVERFIT)**. If the budget (global
-> across rungs) is exceeded → **HALT(BUDGET)**, emit *best*. Output *best*, what changed and why, and
-> **one** next action.
+> criterion) and report criterion IDs only. Pass → output. Fail → rerun the rounds on those IDs and run the
+> Check (unless it halts), then the human's 3 spare judges; a second fail is **HALT(OVERFIT)**. If the budget (global
+> across rungs) is exceeded → **HALT(BUDGET)**, emit *best*. Output *best*, the rung reached vs the final
+> rung, what changed and why, and **one** next action.
 >
 > **Stance.** Tight leash: small, verifiable changes. A separate, dissenting checker. Engineer the
 > context, don't wordsmith. Ties go to the simpler version. **March of nines**: a 90%-good draft is not
-> finished.
+> finished. When CPU-bound, run one agent at a time (a stable order also makes resume deterministic); use
+> the strongest model for the generator and held-out judges.
 
 ---
 
