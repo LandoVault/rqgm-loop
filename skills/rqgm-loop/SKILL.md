@@ -54,7 +54,7 @@ iteration = generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β�
   `G4` HALT on oscillation (accepted vₙ's text ≈ accepted grandparent's, not scores) · `G5` HALT past `BUDGET`, emit best-so-far ·
   `G6` if `ΔS > δ` require `ΔC ≤ β₀ + β₁·ΔS`; if `|ΔS| ≤ δ` (noise) require `ΔC ≤ 0` (or `ΔC ≤ β₀`,
   once per component, for a single edit on a never-edited one); else reject, restore parent.
-  Only on an accept with `ΔS > δ`: `S* = max(S*, mean(S(vₙ), fresh re-score))`.
+  On an accept with `ΔS > δ` and `S(vₙ)>S*`: `S* = max(S*, mean(S(vₙ), fresh re-score))`.
 - **5 · Record & repeat.** Log each edit (bundles share `dS`). **Progress**: an accept with `dS > δ` or a
   newly passing criterion (step 4's re-score confirms; else re-score that criterion alone), none lost (adapted from arXiv:2509.20293, 2602.15481).
   **Prune** loop-added text only: a component whose last-`2w` accepted edits all lacked Progress loses
