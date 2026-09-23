@@ -1,10 +1,10 @@
 ---
 name: rqgm-loop
 description: >-
-  Co-evolve an artifact against separate, adversarial, evolving evaluators to drive it to a defined
-  bar — a guard-railed generator-vs-critics loop (Red Queen Gödel Machine). Use when the user wants to
-  "run the RQGM loop", red-team and iterate, or harden / pressure-test a proposal, paper, spec,
-  design, or codebase until it's fundable, defensible, correct, or publishable.
+  Co-evolve an artifact against separate, adversarial, evolving evaluators until it meets a defined
+  bar (guard-railed Red Queen Gödel Machine loop). Use to "run the RQGM loop", red-team and iterate,
+  or harden / pressure-test a proposal, paper, spec, design, or codebase until it's fundable,
+  defensible, correct, or publishable.
 ---
 
 # RQGM Loop
@@ -12,9 +12,8 @@ description: >-
 Run a Red Queen Gödel Machine loop (Iacob et al., arXiv:2606.26294): co-evolve a **generator** against
 **separate, adversarial, evolving** evaluators. Static reviewers — and a model grading its own output —
 over-accept polished work, so a *different* agent judges, *stricter every epoch*, surfacing real
-weaknesses and **the gaps only the human can close**. Re-facing one panel also invites
-overfitting it, noise-chasing and bloat, so the loop is **regularized** after RRSI (Xia et al.,
-arXiv:2609.24972).
+weaknesses and **the gaps only the human can close**. Re-facing one panel invites overfitting,
+noise-chasing and bloat, so the loop is **regularized** after RRSI (Xia et al., arXiv:2609.24972).
 
 ## When invoked
 
@@ -28,18 +27,18 @@ arXiv:2609.24972).
 
 **Units.** Scores are 0–10 per criterion plus `overall`; `S(v)` = panel mean `overall`; a judge
 passes a criterion at ≥7, the panel on a strict majority (ties fail). `C(v)` = word count of `TARGET`
-(tokens for code). A **component** = a top-level section or file, listed at setup. Epoch = rung;
-iteration = generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β₁=5%`/point, `δ_min=0.5` (≥ one score step).
+(tokens for code). A **component** = a top-level section or file, fixed at setup (checker-approved). Epoch = rung;
+iteration = generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β₁=5%`/point, `δ_min` = 1/panel size (one score
+step), `δ_max=1.5`.
 
 ## THE LOOP
 
 - **0 · Setup.** Read `MEMORY`; resume if state exists (drop a torn last record), else
   read `GROUNDING` first, draft **v0**, write `DONE` (each `pass:false`), list components, set rung
-  **E1**. **Calibrate:** the panel re-scores the unchanged version 3× in fresh contexts;
-  `δ = max(δ_min, 2·SD)`, `S*` = mean. Redo at every rung change.
+  **E1**. **Calibrate:** the panel scores the unchanged version 3× in fresh contexts;
+  `δ = clip(2·SD, δ_min, δ_max)`, `S*` = mean. Redo at every rung change.
 - **1 · Generate.** Revise **vₙ** (n = 1…N, not reset per rung) with at most
-  `bₙ = 1 + round_half_up((b_max−1)·½(1+cos(π·n/N)))` edits — bundled early, single late so gains are
-  attributable. One edit = one component + a one-line falsifiable hypothesis; smallest reviewable
+  `bₙ = 1 + round_half_up((b_max−1)·½(1+cos(π·n/N)))` edits — bundled early, single late (attributable). One edit = one component + a one-line falsifiable hypothesis; smallest reviewable
   diff; version it. Skip hypotheses the ledger rejected on single-edit iterations absent new
   evidence. **Stalled** (no gain > δ for `w` iterations) → ≥1 edit on a never-edited component.
   Never edit `DONE`/the rubric to pass; never fabricate a substrate (data, people, results,
@@ -47,32 +46,30 @@ iteration = generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β�
 - **2 · Evaluate.** A **leakage screen** (checker ≠ generator) reads the diff *before* scoring and
   rejects edits that echo rubric wording, assert compliance without adding mechanism, or target a
   named evaluator.
-  Then each evaluator scores vₙ on the current rung's rubric (not format/length/tone), returning
-  scores + ranked killers + required fixes tagged to claims.
-- **3 · Verify.** Any new number/claim lacking a citation event → BLOCK; verify against primary
-  sources before trusting the score.
+  Then each evaluator scores vₙ on the rung's rubric (not format/length/tone): scores + ranked
+  killers + required fixes tagged to claims.
+- **3 · Verify.** Any new number/claim lacking a `citation` record → BLOCK until verified against
+  primary sources.
 - **4 · Gates.** With `ΔS = S(vₙ) − S(parent)`, `ΔC` = relative change in `C`:
   `G1` reject, restore best, retry once if `S(vₙ) < S* − δ` (2nd fail → HALT REGRESSION) · `G2` discard
   purely-presentational wins · `G3` revert score gained on an unevidenced substrate → `[OPEN]` ·
   `G4` HALT on oscillation (vₙ≈vₙ₋₂) · `G5` HALT on `BUDGET` exceed, emit best-so-far ·
-  `G6` if `ΔS > δ` require `ΔC ≤ β₀ + β₁·ΔS`; if `|ΔS| ≤ δ` (noise) require `ΔC ≤ 0`, or `ΔC ≤ β₀`
-  for an edit on a never-edited component; else reject, restore parent.
-  On accept, `S* = max(S*, S(vₙ))`.
-- **5 · Record & repeat.** Log each edit (component, hypothesis, `dS`, `dC`, accepted; bundled edits
-  share the version's `dS`). **Prune** only text the loop added: if every edit to a component in the
-  last `2w` iterations had `dS ≤ 0`, its added text goes on a deletion list, removed by a normal gated
-  edit unless the checker upholds a keep-justification; original content and steps 0–7 are exempt.
-  The rung **saturates** when all rung criteria pass, or on no gain > δ for `2w` iterations.
+  `G6` if `ΔS > δ` require `ΔC ≤ β₀ + β₁·ΔS`; if `|ΔS| ≤ δ` (noise) require `ΔC ≤ 0` (or `ΔC ≤ β₀`,
+  once per component, for a single edit on a never-edited one); else reject, restore parent.
+  Only on an accept with `ΔS > δ`: `S*` = mean of `S(vₙ)` and one fresh re-score.
+- **5 · Record & repeat.** Log each edit (bundled edits share the version's `dS`). **Prune** only text the loop added: if a component's accepted edits in the
+  last `2w` iterations all had `dS ≤ δ`, their text is deleted next iteration by a gated edit unless the
+  checker upholds a keep-justification; `DONE` must-not-change items and `[OPEN]` markers are exempt.
+  The rung **saturates** when all rung criteria pass; no gain > δ for `2w` iterations → HALT(STALL).
 - **6 · Boundary.** Advance a rung only if the bar is met **and** ≥1 evaluator still dissents;
   **pause for human confirmation** (escalation redefines success). Rungs:
   E1 fair-critical → E2 adversarial/equal-stringency (reject polish, demand derivations) →
-  E3 add a 2nd objective (Pareto) → E4 red-team re-verifies every cited number.
+  E3 2nd objective (Pareto) → E4 red-team re-verifies every cited number.
 - **7 · Stop.** STOP only when `DONE` passes under the escalated utility, no `[OPEN]` substrate
   remains, and the **held-out judge** — run by the human or a subagent on a prompt the generator never
   reads, once, on the final rung — passes every criterion. A fail means the loop overfit the panel →
-  reopen only that criterion ID (no critique text) with a fresh held-out judge; a 2nd fail →
-  HALT(OVERFIT). Or STOP on any HALT.
-  Output: version, provenanced critiques, archive + log, one next action (on HALT: reason + what the
+  record it in a sealed file outside `MEMORY`, reopen only that criterion ID with a fresh held-out
+  judge; a 2nd fail → HALT(OVERFIT). Or STOP on any HALT. Output: version, provenanced critiques, archive + log, one next action (on HALT: reason + what the
   human must supply).
 
 ## Stance
@@ -80,15 +77,16 @@ Tight leash, small verifiable diffs; a separate, dissenting checker; engineer co
 the simpler version; a 90%-good draft is not done.
 
 ## Memory schema (`archive.jsonl`, append-only, single-writer)
-`version` · `utility{rung,delta,s_star,s_star_version}` · `eval{version,evaluator,scores,critiques}` ·
-`edit{version,component,hypothesis,dS,dC,accepted,rejected_by}` · `decision` ·
+`version` · `utility{rung,delta,s_star,s_star_version}` · `calib{runs,sd}` ·
+`eval{version,evaluator,scores,critiques}` · `edit{version,component,hypothesis,dS,dC,accepted,rejected_by}`
+· `screen{edit,verdict,reason}` · `citation{claim,source,status}` · `decision` · `halt{reason}` ·
 `substrate{gap,owner,status}`. Resume = last version, utility, ledger, open substrates, Pareto front.
 
 ## Notes
 - Highest-value moves: **evolve the evaluator** and the **substrate firewall** (surface, never fake).
-- From RRSI: steps 1, 2's screen, G1, G6, pruning. **Adapted** (not in RRSI): panel = evolve set,
-  held-out judge = OOD test; checker ≠ generator; per-rung δ; G6's noise band simplifies RRSI's
-  weighted low-gain test (ν → never-edited allowance); `C` is artifact size, not policy tokens;
-  `bₙ` rounding; prune window `2w`; all numeric defaults.
-- Also: maker–checker and structured `DONE` (Anthropic, *Effective harnesses for long-running
-  agents*); audit-before-trust (Cursor).
+- From RRSI: steps 1, 2's screen, G1, G6, pruning. **Adapted** (not in RRSI): panel = evolve set;
+  held-out judge ≈ OOD test (a judge shift, not a data shift); checker ≠ generator; per-rung δ;
+  G6's noise band (ν → never-edited allowance); `C` = artifact size; `bₙ` rounding; prune window;
+  `S*` re-score; numeric defaults.
+- Also: maker–checker, structured `DONE` (Anthropic, *Effective harnesses*); audit-before-trust
+  (Cursor).
