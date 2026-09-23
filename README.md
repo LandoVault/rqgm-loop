@@ -28,6 +28,11 @@ gaps only a human can close** rather than letting the generator paper over them.
 - **Substrate firewall.** The loop optimizes *features* (framing, scope, rigor) but must **surface,
   never fabricate, substrates** (real data, real results, real people). When only substrate is left,
   the loop's job is done — and it says so.
+- **Regularize the generator.** Facing the same panel every iteration, a generator can overfit it,
+  chase score noise, and bloat the artifact. Following RRSI (Xia et al., arXiv:2609.24972), the loop
+  anneals the edit budget, keeps an edit ledger, screens diffs for leakage *before* scoring, accepts only
+  against a noise-calibrated best-so-far, makes every gain pay for growth, prunes dead weight, and
+  checks the final result once against a held-out judge.
 
 ---
 
@@ -80,21 +85,23 @@ For the full resumable, guard-railed version (memory, budgets, gates), use **[`I
 | `{{TARGET}}` | the artifact to optimize (file / doc / repo / design) |
 | `{{GROUNDING}}` | source-of-truth docs/links the agents may read |
 | `{{DONE}}` | **machine-verifiable** success spec: pass/fail criteria (as JSON), constraints (what must NOT change), the hard stop |
-| `{{EVALUATORS}}` | 2–5 adversarial judges, **each a separate agent from the generator** |
+| `{{EVALUATORS}}` | 2–5 adversarial judges, **each a separate agent from the generator**, plus 1 held-out judge used only at Stop |
 | `{{MEMORY}}` | path to the append-only `archive.jsonl` (state + resume) |
-| `{{BUDGET}}` | caps: MAX_EPOCHS, token/cost ceiling, wall-clock |
+| `{{BUDGET}}` | caps: MAX_EPOCHS, token/cost ceiling, wall-clock (+ optional regularizer overrides) |
 
 ---
 
 ## How the loop works (30 seconds)
 
-Each iteration: **generate** the smallest diff that addresses the top open critique → a **separate
-evaluator panel** scores it → **verify** any new claim before trusting the score → run the **gates**
+Each iteration: **generate** at most `bₙ` hypothesis-tagged edits (the budget anneals to one) → a
+**leakage screen** checks the diff → a **separate evaluator panel** scores it → **verify** any new claim before trusting the score → run the **gates**
 → record → repeat. When the epoch's bar is met, **escalate the evaluator** (with a human checkpoint).
-Stop when the success spec passes under the hardest utility **and** no substrate gaps remain.
+Stop when the success spec passes under the hardest utility, a **held-out judge** agrees, **and** no
+substrate gaps remain.
 
-**Gates (every iteration):** `G1` monotonicity (no regressions) · `G2` no-polish-reward ·
-`G3` substrate firewall · `G4` oscillation halt · `G5` budget halt.
+**Gates (every iteration):** `G1` noise-aware monotonicity (vs. best-so-far − δ) · `G2`
+no-polish-reward · `G3` substrate firewall · `G4` oscillation halt · `G5` budget halt · `G6` gain pays
+for growth.
 
 **Utility ladder:** `E1` fair-but-critical → `E2` adversarial/equal-stringency → `E3` add a second
 objective (Pareto) → `E4` red-team that re-verifies every cited number.
@@ -109,6 +116,7 @@ objective (Pareto) → `E4` red-team that re-verifies every cited number.
 | Machine-verifiable `DONE` (structured criteria; don't edit the tests) | `{{DONE}}` | Anthropic (same) |
 | Anti-reward-hacking: audit before trusting a score | verify step, G2/G3 | Cursor reward-hacking study (87→73% once git history was sealed **and** network egress restricted) |
 | Bounded autonomy: budgets, rollback, human checkpoint at each escalation | G5, boundary | industry consensus |
+| Regularized self-improvement: annealed edit budget, edit ledger, leakage screen, noise-calibrated acceptance, complexity penalty, pruning | steps 1–5, G1, G6 | RRSI (Xia et al., arXiv:2609.24972) |
 
 ---
 
@@ -132,6 +140,8 @@ rqgm-loop/
 
 - RQGM — Iacob et al., *The Red Queen Gödel Machine: Co-Evolving Agents and Their Evaluators*,
   arXiv:2606.26294 (2026): https://arxiv.org/abs/2606.26294
+- RRSI — Xia et al., *RRSI: Regularized Recursive Self-Improvement of Agent Harnesses*,
+  arXiv:2609.24972 (2026): https://arxiv.org/abs/2609.24972
 - Karpathy — `autoresearch` loop: https://github.com/karpathy/autoresearch · "Software Is Changing
   (Again)" (YC, 2025): https://www.latent.space/p/s3 · context engineering:
   https://x.com/karpathy/status/1937902205765607626

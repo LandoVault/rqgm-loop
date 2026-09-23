@@ -1,0 +1,20 @@
+{
+  "target": ["skills/rqgm-loop/SKILL.md", "INITIATOR.md", "README.md"],
+  "criteria": [
+    {"id": "c1-noise-aware-acceptance", "test": "G1 compares against best-so-far S* with a noise tolerance delta that is calibrated (repeat-scoring an unchanged version), not a raw vN-1 comparison; recalibrated when the rung changes", "pass": false},
+    {"id": "c2-annealed-edit-budget", "test": "the generator's per-iteration edit budget is explicit, starts >1 and anneals to 1 on a stated schedule, and each edit carries a one-line falsifiable hypothesis", "pass": false},
+    {"id": "c3-edit-ledger", "test": "the archive schema records per-edit component, hypothesis, dS, dC, accepted; the generator is told not to retest a falsified hypothesis without new evidence", "pass": false},
+    {"id": "c4-stall-exploration", "test": "a stall rule (no gain > delta over w iterations) redirects part of the edit budget to never-edited components, without forbidding any component", "pass": false},
+    {"id": "c5-leakage-screen", "test": "a checker (not the generator) screens each diff BEFORE scoring and rejects evaluator-specific / rubric-echoing / inert edits", "pass": false},
+    {"id": "c6-complexity-and-pruning", "test": "a size/cost gain-must-pay rule with concrete defaults (dC <= b0 + b1*dS) plus a pruning list for components with <=0 measured gain", "pass": false},
+    {"id": "c7-held-out-check", "test": "a held-out evaluator, never shown to the generator, scores only the final candidate once; failing it blocks DONE", "pass": false},
+    {"id": "c8-consistency", "test": "SKILL.md, INITIATOR.md and README.md agree on gates, steps, parameters, schema", "pass": false},
+    {"id": "c9-faithful-citation", "test": "RRSI (Xia et al., arXiv:2609.24972) is cited; every idea/number attributed to it matches the paper; adaptations beyond the paper are labeled as adaptations", "pass": false},
+    {"id": "c10-no-weakening", "test": "maker-checker separation, substrate firewall, human checkpoint at escalation, and G1-G5 are preserved or strictly strengthened", "pass": false},
+    {"id": "c11-compact-generic", "test": "SKILL.md <= 1000 words, INITIATOR.md <= 1300 words, README.md <= 1150 words; no domain-specific content in SKILL/INITIATOR", "pass": false},
+    {"id": "c12-operable", "test": "every new rule has concrete defaults and a score scale, and is unambiguous for an agent host to execute; no internal contradictions", "pass": false}
+  ],
+  "must_not_change": ["the six slots", "step numbering 0-7", "MIT license", "domain-agnostic scope", "RQGM citation"],
+  "rungs_preagreed": {"E1": "fair-critical", "E2": "adversarial, reject polish, demand every rule be derivable/operable", "E3": "add Pareto axis: compactness (word count) vs rigor", "E4": "red-team re-verifies every cited claim against the primary papers"},
+  "stop": "all criteria pass under E4 per the panel majority AND the held-out evaluator passes AND no [OPEN] substrate, OR 20 iterations (HALT BUDGET)"
+}
