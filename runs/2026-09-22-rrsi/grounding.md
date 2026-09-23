@@ -16,8 +16,18 @@ Selector (Sec. 3.3):
 - Complexity-aware (ridge/L2) acceptance, Eq. 7: for dS > delta, require dC <= beta0 + beta1 * dS (dC = relative policy-token cost change).
 - Lasso/L1 structural pruning: components exercised with gain <= 0 over a pruning window -> deletion list handed to proposer.
 - No held-out split used during evolution; frozen final harness evaluated on ID held-out + OOD; hyperparameters chosen on evolve env only.
-Results: Table 2 ablation (agentic workspace): unregularized 92.8 evolve / 40.3 OOD / 3.80M tok; RRSI 90.5 / 43.6 / 2.42M; acceptance regularizers matter most. Abstract: up to +14.1 ID, +4.7 OOD, ~30% fewer tokens.
+Results: Table 2 ablation (agentic workspace): unregularized 92.8 evolve / 40.3 OOD / 3.80M tok; RRSI 90.5 / 43.6 / 2.42M; acceptance regularizers matter most. Abstract: up to +14.1 on the evolve split (NOT held-out), +4.7 OOD, ~30% fewer tokens.
 Limitations: frozen backbones; finite evolve set; hyperparameter sensitivity; broader validation needed.
 
 ## Mapping to RQGM loop (generator's hypotheses)
 evolve set <-> the fixed evaluator panel (the generator adaptively reuses the same judges every iteration, so it can overfit them); OOD <-> a held-out evaluator. This mapping is an ADAPTATION, not a claim of the RRSI paper.
+
+## Verification events (iteration 1, primary source re-fetched)
+- Eq. 6: dS = S(H') - S(H_t), dC = (C(H') - C(H_t))/C(H_t) -- relative to the CURRENT harness H_t, not best.
+- Low-gain branch (dS <= delta): accept iff w_s*dS - w_c*dC + w_n*nu > 0, nu = # structural component types never in an accepted edit.
+- delta calibrated ONCE before evolution by repeated evals of the unchanged base harness (repeat count not given in visible text).
+- Pruning: g_t(l) = MAX{dS_i : l_i = l, t - t_i <= n_prune}; flag if g_t(l) <= 0.
+- Table 5 values truncated in HTML: beta0/beta1/b_max/w/n_prune UNVERIFIED -> do not cite numeric RRSI defaults.
+- Proposer, analyst and leakage critic are all the same backbone model (Claude Opus 4.8) -- "critic != generator" is our adaptation.
+- t = 0..T-1; T = total rounds.
+- Held-out / OOD benchmarks never scored during evolution.

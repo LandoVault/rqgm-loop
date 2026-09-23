@@ -31,8 +31,9 @@ gaps only a human can close** rather than letting the generator paper over them.
 - **Regularize the generator.** Facing the same panel every iteration, a generator can overfit it,
   chase score noise, and bloat the artifact. Following RRSI (Xia et al., arXiv:2609.24972), the loop
   anneals the edit budget, keeps an edit ledger, screens diffs for leakage *before* scoring, accepts only
-  against a noise-calibrated best-so-far, makes every gain pay for growth, prunes dead weight, and
-  checks the final result once against a held-out judge.
+  against a noise-calibrated best-so-far, makes every gain pay for growth, and prunes dead weight. As
+  this loop's own adaptation of RRSI's out-of-distribution test, a held-out judge checks the final
+  result once.
 
 ---
 
@@ -87,7 +88,7 @@ For the full resumable, guard-railed version (memory, budgets, gates), use **[`I
 | `{{DONE}}` | **machine-verifiable** success spec: pass/fail criteria (as JSON), constraints (what must NOT change), the hard stop |
 | `{{EVALUATORS}}` | 2–5 adversarial judges, **each a separate agent from the generator**, plus 1 held-out judge used only at Stop |
 | `{{MEMORY}}` | path to the append-only `archive.jsonl` (state + resume) |
-| `{{BUDGET}}` | caps: MAX_EPOCHS, token/cost ceiling, wall-clock (+ optional regularizer overrides) |
+| `{{BUDGET}}` | caps: MAX_ITERS, token/cost ceiling, wall-clock (+ optional regularizer overrides) |
 
 ---
 
@@ -101,7 +102,7 @@ substrate gaps remain.
 
 **Gates (every iteration):** `G1` noise-aware monotonicity (vs. best-so-far − δ) · `G2`
 no-polish-reward · `G3` substrate firewall · `G4` oscillation halt · `G5` budget halt · `G6` gain pays
-for growth.
+for growth (size may grow only in proportion to a real gain; within noise it may not grow).
 
 **Utility ladder:** `E1` fair-but-critical → `E2` adversarial/equal-stringency → `E3` add a second
 objective (Pareto) → `E4` red-team that re-verifies every cited number.
@@ -116,7 +117,7 @@ objective (Pareto) → `E4` red-team that re-verifies every cited number.
 | Machine-verifiable `DONE` (structured criteria; don't edit the tests) | `{{DONE}}` | Anthropic (same) |
 | Anti-reward-hacking: audit before trusting a score | verify step, G2/G3 | Cursor reward-hacking study (87→73% once git history was sealed **and** network egress restricted) |
 | Bounded autonomy: budgets, rollback, human checkpoint at each escalation | G5, boundary | industry consensus |
-| Regularized self-improvement: annealed edit budget, edit ledger, leakage screen, noise-calibrated acceptance, complexity penalty, pruning | steps 1–5, G1, G6 | RRSI (Xia et al., arXiv:2609.24972) |
+| Regularized self-improvement: annealed edit budget, edit ledger, leakage screen, noise-calibrated acceptance, complexity penalty, pruning | steps 1–5, G1, G6 | RRSI (Xia et al., arXiv:2609.24972), adapted from harness evolution to evaluator panels |
 
 ---
 
