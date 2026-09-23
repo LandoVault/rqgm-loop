@@ -29,15 +29,14 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 > AI-generated work — so the checker must be a **different agent** from the writer and must get
 > **stricter** as the writer improves. Re-facing one panel also lets the writer overfit it, chase score
 > noise, and bloat the artifact, so the loop is **regularized** after RRSI (Xia et al., arXiv:2609.24972;
-> the panel/held-out mapping, checker ≠ generator, screen targets, criterion-pass gains, per-rung δ,
-> re-scoring, noise band, `bₙ` rounding, prune threshold/window and all defaults are adaptations).
+> the panel/held-out mapping, noise-aware held-out verdict, checker ≠ generator, screen targets,
+> per-rung δ, noise band, `bₙ` rounding, prune threshold/window, `S*` re-score and all defaults are
+> adaptations).
 >
 > **Units.** Judges score each criterion and `overall` on 0–10; `S(v)` = panel mean `overall`; a judge
 > passes a criterion at ≥7, the panel on a strict majority (ties fail). `C(v)` = word count of
 > `{{TARGET}}` (tokens for code). A **component** is a top-level section or file, fixed at setup
-> (checker-approved). Epoch = rung; iteration = generate→gate cycle. `dS = S(vₙ) − S(parent)`;
-> `ΔC` = relative change in `C` vs parent. Newly passing a criterion (panel majority, re-score-confirmed)
-> without newly failing one counts as `ΔS > δ`. Defaults: `b_max=3`, `w=3`,
+> (checker-approved). Epoch = rung; iteration = generate→gate cycle. Defaults: `b_max=3`, `w=3`,
 > `β₀=2%`, `β₁=5%`/point, `δ_min` = 1/panel size, `δ_max=1.5`.
 >
 > **0 · Setup (load or bootstrap).** Read `{{MEMORY}}`. If it holds prior state → resume (see schema);
@@ -65,7 +64,8 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 > **3 · Verify before trust.** Any number or claim newly entering vₙ without a `citation` record → BLOCK;
 > a verification agent checks primary sources before any score is trusted.
 >
-> **4 · Gates (every iteration — `assert … else <action>`),** with `ΔS = dS`:
+> **4 · Gates (every iteration — `assert … else <action>`),** with `ΔS = S(vₙ) − S(parent)` and `ΔC` =
+> relative change in `C`:
 > - **G1 noise-aware monotonicity** — on the *fixed* rung utility, if `S(vₙ) < S* − δ` → reject vₙ,
 >   restore the best version, retry once with the critique appended; on a 2nd failure →
 >   **HALT(REGRESSION)**.
@@ -86,19 +86,18 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 > **HALT(STALL)**.
 >
 > **6 · Boundary (evolve the utility).** A judge **dissents** if it scores any criterion < 7. Advance
-> one rung **only if** the current bar is met **and** ≥1 judge dissents (none → final rung).
-> Either way escalation *redefines success*, so **pause for a human checkpoint here**; then recalibrate
-> (scores across a boundary are not comparable). Rungs (cumulative): **E1** fair-but-critical → **E2**
-> adversarial / equal-stringency (reject polish; demand every number derived) → **E3** add a 2nd
-> objective as a Pareto axis (e.g. defensibility; reject versions the `S*` version dominates) → **E4**
-> red-team that re-verifies every cited number.
+> one rung **only if** the current bar is met **and** ≥1 judge dissents (none → the human may skip
+> rungs). Escalation *redefines success*, so **pause for a human checkpoint here**. Record the utility event; scores across a boundary are not comparable. Rungs (cumulative): **E1** fair-but-critical → **E2** adversarial /
+> equal-stringency (reject polish; demand every number derived) → **E3** add a 2nd objective as a Pareto
+> axis (e.g. defensibility / moat) → **E4** red-team that re-verifies every cited number.
 >
 > **7 · Stop & output.** STOP only when `{{DONE}}` passes under the escalated utility, no `[OPEN]`
-> substrate remains, **and** the **held-out judge** — kept out of this paste and run in a fresh context,
-> scoring once on the final rung — passes every criterion; a fail means the loop overfit the panel →
-> record it in a sealed file outside `{{MEMORY}}`, reopen only that criterion ID (no critique text) with
-> a fresh held-out judge; a 2nd fail → **HALT(OVERFIT)**. Or STOP on any HALT. Output: the current version, provenanced critiques,
-> archive/log, and **one** next action (on HALT: the reason + what a human must supply).
+> substrate remains, **and** the **held-out judge** — written by the human, kept out of this paste, run
+> once on the final rung in a fresh context — scores no criterion below `7 − δ`. A fail (panel overfit)
+> → the human seals its critique outside `{{MEMORY}}` (log only `heldout{attempt}`) and reopens only that
+> criterion ID with a fresh human-written judge; a 2nd fail → **HALT(OVERFIT)**. Or STOP on any HALT.
+> Output: the current version, provenanced critiques, archive/log, and **one** next action (on HALT: the
+> reason + what a human must supply).
 >
 > **Stance (hold throughout).** **Tight leash** — small, verifiable steps. Verification **fast and
 > visual**; a model grading itself is too generous, so the checker is a separate, *dissenting* agent.
@@ -118,6 +117,7 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 {"t":"screen","version":"vN","edit":"…","verdict":"pass|reject","reason":"…"}
 {"t":"citation","claim":"…","source":"…","status":"verified|failed"}
 {"t":"decision","critique":"…","action":"accept|reject","why":"…"}
+{"t":"heldout","attempt":1}
 {"t":"halt","reason":"REGRESSION|OSCILLATION|BUDGET|STALL|OVERFIT"}
 {"t":"substrate","gap":"…","owner":"human-role","status":"open|closed"}
 ```

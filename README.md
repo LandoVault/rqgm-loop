@@ -31,8 +31,8 @@ gaps only a human can close** rather than letting the generator paper over them.
 - **Regularize the generator.** A generator facing one panel can overfit it, chase score noise, and
   bloat the artifact. After RRSI (Xia et al., arXiv:2609.24972), the loop anneals the edit budget, keeps
   an edit ledger, screens diffs for leakage *before* scoring, accepts only against a noise-calibrated
-  best-so-far, makes gains pay for growth, and prunes dead weight; a held-out judge (this loop's
-  adaptation of RRSI's held-out evaluation) checks the final result once.
+  best-so-far, makes gains pay for growth, and prunes dead weight; a human-written held-out judge (this
+  loop's adaptation of RRSI's held-out evaluation) checks the final result once.
 
 ---
 
