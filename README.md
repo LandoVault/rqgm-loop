@@ -1,46 +1,43 @@
 # RQGM Loop
 
-**Co-evolve any artifact against separate, adversarial, evolving evaluators — until it actually holds up.**
+**Improve any artifact against separate, adversarial, evolving judges — until it actually holds up.**
 
-`rqgm-loop` is a drop-in **prompt** and **agent skill** that runs a *Red Queen Gödel Machine* loop: a
-**generator** (writer / builder / designer) is co-evolved against a panel of **separate, adversarial
-evaluators whose standards rise as the work improves**. It works on any artifact you can review — a
-grant proposal, a paper, a product spec, a system design, a codebase, a strategy memo.
+`rqgm-loop` is a drop-in **prompt** and **agent skill** that runs a *Red Queen Gödel Machine* loop. A
+**generator** proposes small changes, a **screen** and a **verifier** attack them, and **judges** keep a
+change only if it beats the current best. Their bar rises as the work improves. It works on anything
+you can review: a grant proposal, a paper, a product spec, a system design, a codebase, a strategy memo.
 
-Static reviewers — and LLMs grading their own output — **over-accept polished work** (the RQGM paper
-measures up to **1.91× the human rate** for AI-generated work). This loop fixes
-that: the evaluator is a *different* agent from the writer, and it gets *stricter at every epoch*, so
-the loop drives out real weaknesses instead of rubber-stamping fluent prose — and it **surfaces the
-gaps only a human can close** rather than letting the generator paper over them.
+Static reviewers, and LLMs grading their own output, **over-accept polished work**. The RQGM paper
+measures up to **1.91× the human rate** for AI-generated papers. This loop keeps the writer and the judges separate,
+makes the judges compare rather than score, raises the bar only with you, and **surfaces the gaps only a
+human can close** instead of papering over them.
 
-> Grounded in *The Red Queen Gödel Machine* (Iacob et al., arXiv:2606.26294, 2026), Karpathy's
-> agentic-loop principles (2025–26), and the Anthropic / Cursor *validated*-harness findings. See
-> [Sources](#sources).
+> Every mechanism answers one of ten problems that any judge-driven loop has, and each is backed by
+> evidence from papers or from this repo's own runs. See **[`DESIGN.md`](DESIGN.md)**.
 
 ---
 
 ## Why it works
 
-- **Maker ≠ checker.** A model grading its own output is too generous. The evaluator is a separate,
-  dissenting agent.
-- **Evolve the evaluator.** The utility is *fixed within an epoch* and *escalated at boundaries*
-  ("controlled utility evolution"), so polish can never win — the bar keeps rising.
-- **Substrate firewall.** The loop optimizes *features* (framing, scope, rigor) but must **surface,
-  never fabricate, substrates** (real data, real results, real people). When only substrate is left,
-  the loop's job is done — and it says so.
-- **Regularize the generator.** A generator facing one panel can overfit it, chase score noise, and
-  bloat the artifact. After RRSI (Xia et al., arXiv:2609.24972), the loop anneals the edit budget, keeps
-  an edit ledger, screens diffs for leakage *before* scoring, accepts only against a noise-calibrated
-  best-so-far, makes gains pay for growth, and prunes dead weight; a human-written held-out judge (this
-  loop's adaptation of RRSI's held-out evaluation) checks the final result once.
+- **Maker ≠ checker.** The writer never judges its own work.
+- **Compare, don't score.** Judges compare a candidate with the current best, blind and with the order
+  swapped, per criterion. Our absolute-score run stalled on judge noise; the pairwise run did not.
+- **Screen and verify before judging.** Rubric-gaming, inert text, weakened guardrails and unverified
+  facts are rejected before any judge sees them.
+- **Small changes, remembered failures.** One change per variant, with a ledger of what was rejected.
+  Ties go to the shorter version, so dead weight gets pruned.
+- **The bar rises, with you.** Rungs E1→E4 escalate only at a human checkpoint.
+- **Substrate firewall.** The loop improves *features* but never fabricates *substrates* (real data,
+  results, people). Gaps become `[OPEN]`, and you close them.
+- **Held-out check.** Judges you write, which the loop never sees, confirm the result.
 
 ---
 
 ## Two ways to use it
 
 ### 1 · Initiator (paste-and-go)
-Open **[`INITIATOR.md`](INITIATOR.md)**, fill the six slots, and paste the self-contained **THE LOOP**
-block into any capable LLM/agent session. No install.
+Open **[`INITIATOR.md`](INITIATOR.md)**, fill the six slots, write three held-out judges, and paste the
+self-contained **THE LOOP** block into any capable LLM/agent session. No install.
 
 ### 2 · Skill (for agent harnesses)
 Copy **[`skills/rqgm-loop/`](skills/rqgm-loop/)** into your agent's skills directory (e.g. a
@@ -52,29 +49,26 @@ co-evolve this spec against critical reviewers
 red-team and iterate this design until it passes
 ```
 
-A worked, fully-generic run is in **[`examples/worked-example.md`](examples/worked-example.md)**.
+A worked, fully generic run is in **[`examples/worked-example.md`](examples/worked-example.md)**.
 
 ---
 
 ## Quickstart (one paste, no files)
 
-Paste this filled minimal invocation into any capable model and swap the bracketed part:
-
 ```
-Run an RQGM co-evolution loop on the artifact below.
+Run an RQGM loop on the artifact below.
 DONE = every claim is evidence-backed (not asserted), scope is one job, success is one measurable
-  metric with a baseline + target, and an independent critic rates it sound — with NO fabricated or
-  unsupported facts.
-EVALUATORS = a domain expert, a rigor/stats skeptic, and a defensibility critic, each run as a
-  SEPARATE pass (never the writer).
-Loop: make the smallest improving edit -> the three critics score it and list ranked weaknesses ->
-  verify any new claim before trusting it -> reject any gain won by polish or by asserting data I
-  don't have -> repeat, getting stricter each round -> stop when DONE holds, then tell me the one
-  thing only I can supply.
+  metric with a baseline + target — with NO fabricated or unsupported facts.
+JUDGES = a domain expert, a rigor skeptic, and a defensibility critic, each a SEPARATE pass (never the writer).
+Each round: propose 2 small single-change variants -> reject any that game the rubric or add
+  unverified facts -> judges compare each variant with the current best, blind -> keep it only if most
+  prefer it and nothing that already passed gets worse -> repeat; stop when DONE holds or 3 rounds keep
+  nothing, then tell me the one thing only I can supply.
 ARTIFACT: <paste your draft, or describe the target>
 ```
 
-For the full resumable, guard-railed version (memory, budgets, gates), use **[`INITIATOR.md`](INITIATOR.md)**.
+For the full resumable version (memory, budget, escalation, held-out check), use
+**[`INITIATOR.md`](INITIATOR.md)**.
 
 ---
 
@@ -82,41 +76,43 @@ For the full resumable, guard-railed version (memory, budgets, gates), use **[`I
 
 | slot | meaning |
 |---|---|
-| `{{TARGET}}` | the artifact to optimize (file / doc / repo / design) |
-| `{{GROUNDING}}` | source-of-truth docs/links the agents may read |
-| `{{DONE}}` | **machine-verifiable** success spec: pass/fail criteria (as JSON), constraints (what must NOT change), the hard stop |
-| `{{EVALUATORS}}` | 2–5 adversarial judges, **each a separate agent from the generator**, plus 1 held-out judge used only at Stop |
+| `{{TARGET}}` | the artifact to improve (file / doc / repo / design) |
+| `{{GROUNDING}}` | source-of-truth docs/links, plus 1–2 exemplars of the target quality if available |
+| `{{DONE}}` | atomic, non-overlapping pass/fail criteria (JSON), must-NOT-change constraints, the hard stop |
+| `{{EVALUATORS}}` | 2–5 judge personas, **each a separate agent from the writer** |
 | `{{MEMORY}}` | path to the append-only `archive.jsonl` (state + resume) |
-| `{{BUDGET}}` | caps: MAX_ITERS, token/cost ceiling, wall-clock (+ optional regularizer overrides) |
+| `{{BUDGET}}` | max rounds, token/cost ceiling, wall-clock |
+
+You also write **three held-out judges**, which the loop never sees.
 
 ---
 
 ## How the loop works (30 seconds)
 
-Each iteration: **generate** at most `bₙ` hypothesis-tagged edits (the budget anneals to one) → a
-**leakage screen** checks the diff → a **separate evaluator panel** scores it → **verify** any new claim before trusting the score → run the **gates**
-→ record → repeat. When the epoch saturates, **escalate the evaluator** (with a human checkpoint).
-Stop when the success spec passes under the hardest utility, a **held-out judge** agrees, **and** no
-substrate gaps remain.
+Each round: **propose** 2 single-change variants → **screen** and **verify** each → **judge** each
+against the current best (one judge, a second if needed, a third on a split) → **keep** a winner only if
+most judges prefer it and nothing protected gets worse → log. After 3 rounds with nothing kept, or when
+`DONE` seems met, **check** every criterion (3 judges, majority). All pass → you decide whether to
+**escalate** the bar (E1 fair → E2 adversarial → E3 your second objective → E4 red-team) or stop. Stop
+needs every criterion passing, no `[OPEN]` gaps, and your **held-out judges** agreeing.
 
-**Gates (every iteration):** `G1` noise-aware monotonicity (vs. best-so-far − δ) · `G2`
-no-polish-reward · `G3` substrate firewall · `G4` oscillation halt · `G5` budget halt · `G6` gain pays
-for growth.
-
-**Utility ladder:** `E1` fair-but-critical → `E2` adversarial/equal-stringency → `E3` add a second
-objective (Pareto) → `E4` red-team that re-verifies every cited number.
+**Halts:** `STALL` (nothing kept and criteria still failing, so it tells you what only you can supply) ·
+`OVERFIT` (held-out check failed twice) · `BUDGET` (emits the best version so far).
 
 ---
 
-## Validated guardrails encoded
+## Evidence behind the design
 
-| Guardrail | Where | Source |
-|---|---|---|
-| Separate verifier / maker–checker | evaluator step | Anthropic, *Effective harnesses for long-running agents* |
-| Machine-verifiable `DONE` (structured criteria; don't edit the tests) | `{{DONE}}` | Anthropic (same) |
-| Anti-reward-hacking: audit before trusting a score | verify step, G2/G3 | Cursor reward-hacking study (87→73% once git history was sealed **and** network egress restricted) |
-| Bounded autonomy: budgets, rollback, human checkpoint at each escalation | G5, boundary | industry consensus |
-| Regularized self-improvement: annealed edit budget, edit ledger, leakage screen, noise-calibrated acceptance, complexity penalty, pruning | steps 1–5, G1, G6 | RRSI (Xia et al., arXiv:2609.24972), adapted from harness evolution to evaluator panels |
+| Guardrail / mechanism | Source |
+|---|---|
+| Separate checker; structured `DONE`; don't edit the tests | Anthropic, *Effective harnesses for long-running agents* |
+| Audit before trusting a score | Cursor reward-hacking study (87→73% once git history was sealed **and** network egress restricted) |
+| Evolving, escalating evaluator | RQGM (Iacob et al., arXiv:2606.26294) |
+| Leakage screen, small edits, complexity-aware acceptance, held-out check | RRSI (Xia et al., arXiv:2609.24972) |
+| Pairwise comparison, per-criterion verdicts, escalate only when uncertain, early stop, bias probes | arXiv:2506.03785, 2509.20293, 2602.13110, 2604.13717, 2606.27009, 2609.02942 |
+| All of the above, observed in practice | this repo's runs: [`runs/`](runs/) (absolute-score run vs pairwise meta-run) |
+
+The full problem → mechanism → evidence table, and what was removed and why, are in [`DESIGN.md`](DESIGN.md).
 
 ---
 
@@ -125,13 +121,11 @@ objective (Pareto) → `E4` red-team that re-verifies every cited number.
 ```
 rqgm-loop/
 ├── README.md                 ← you are here
-├── LICENSE                   ← MIT
+├── DESIGN.md                 ← first-principles design + evidence
 ├── INITIATOR.md              ← paste-and-go prompt (self-contained)
-├── skills/
-│   └── rqgm-loop/
-│       └── SKILL.md          ← agent-skill version (frontmatter + instructions)
-└── examples/
-    └── worked-example.md     ← a generic end-to-end run
+├── skills/rqgm-loop/SKILL.md ← agent-skill version
+├── examples/worked-example.md
+└── runs/                     ← archives and logs of the runs this design was derived from
 ```
 
 ---
@@ -142,16 +136,15 @@ rqgm-loop/
   arXiv:2606.26294 (2026): https://arxiv.org/abs/2606.26294
 - RRSI — Xia et al., *RRSI: Regularized Recursive Self-Improvement of Agent Harnesses*,
   arXiv:2609.24972 (2026): https://arxiv.org/abs/2609.24972
-- Karpathy — `autoresearch` loop: https://github.com/karpathy/autoresearch · "Software Is Changing
-  (Again)" (YC, 2025): https://www.latent.space/p/s3 · context engineering:
-  https://x.com/karpathy/status/1937902205765607626
+- The judge-methods papers listed above; verified abstracts are in `runs/2026-09-22-meta/research.json`.
 - Anthropic — *Effective harnesses for long-running agents* (2025):
   https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
 - Cursor — reward-hacking in coding benchmarks (2026): https://cursor.com/blog/reward-hacking-coding-benchmarks
+- Karpathy — `autoresearch` loop: https://github.com/karpathy/autoresearch · context engineering:
+  https://x.com/karpathy/status/1937902205765607626
 
-*Attribution notes: "loop engineering" is a coinage of Cherny/Osmani built around Karpathy's
-`autoresearch`, not Karpathy's term; the viral 10-rule "Karpathy CLAUDE.md" is community-attributed and
-unconfirmed. This repo cites primary sources only.*
+*Attribution note: "loop engineering" is a coinage of Cherny/Osmani built around Karpathy's
+`autoresearch`, not Karpathy's term. This repo cites primary sources only.*
 
 ---
 
