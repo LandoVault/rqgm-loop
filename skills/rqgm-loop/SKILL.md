@@ -22,7 +22,7 @@ noise-chasing and bloat, so the loop is **regularized** after RRSI (Xia et al., 
    constraints + a hard stop (propose + confirm if missing) · `EVALUATORS` — 2–5 critic personas,
    each a **separate subagent**, plus **1 held-out judge** held by the human, unseen by the
    generator · `MEMORY` — append-only `archive.jsonl` · `BUDGET` — `MAX_ITERS` (= N) + token/time caps.
-2. **Run THE LOOP**, persisting to `MEMORY` (+ a readable log) each iteration; evaluators and
+2. **Run THE LOOP**, persisting to `MEMORY` (+ a log) each iteration; evaluators and
    verifiers are subagents (else fresh-context passes), never the writer.
 
 **Units.** Scores: 0–10 per criterion plus `overall`; `S(v)` = panel mean `overall`; a judge
@@ -37,7 +37,7 @@ iteration = generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β�
   **E1**. **Calibrate:** the panel scores the unchanged version 3× in fresh contexts;
   `δ = clip(2·SD, δ_min, δ_max)`, `S*` = mean; redo per rung.
 - **1 · Generate.** Revise **vₙ** (n = 1…N, not reset per rung) with at most
-  `bₙ = 1 + round_half_up((b_max−1)·½(1+cos(π·n/N)))` edits — bundled early, single late (attributable). One edit = one component + a one-line falsifiable hypothesis; smallest reviewable
+  `bₙ = 1 + round_half_up((b_max−1)·½(1+cos(π·n/N)))` edits — bundled early, single late. One edit = one component + a one-line falsifiable hypothesis; smallest reviewable
   diff; version it. Skip hypotheses the ledger rejected on single-edit iterations absent new
   evidence. **Stalled** (no gain for `w` iterations) → ≥1 edit on a never-edited component.
   Never edit `DONE`/the rubric to pass; never fabricate a substrate (data, people, results,
@@ -45,12 +45,12 @@ iteration = generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β�
 - **2 · Evaluate.** A **leakage screen** (checker ≠ generator) reads the diff *before* scoring and
   rejects edits that echo rubric wording, assert compliance without adding mechanism, or target a
   named evaluator.
-  Then each evaluator scores vₙ on the rung's rubric (not format/length/tone): scores + ranked
-  killers + required fixes tagged to claims.
+  Then each evaluator scores vₙ on the rung's rubric (not format/length/tone): scores, ranked
+  killers, required fixes tagged to claims.
 - **3 · Verify.** Any new number/claim lacking a `citation` record → BLOCK until verified against
   primary sources.
 - **4 · Gates.** Scores that would raise `S*` or trip G1 get one averaged re-score. `ΔC` = relative
-  change in `C` vs the parent (vs the `S*` version if growing):
+  change in `C` vs the parent (vs `S*`'s version if growing):
   `G1` reject, restore best, retry once if `S(vₙ) < S* − δ` (2nd fail → HALT REGRESSION) · `G2` discard
   purely-presentational wins · `G3` revert score gained on an unevidenced substrate → `[OPEN]`, or any
   `[OPEN]` dropped without an evidenced `substrate` close · `G4` HALT if accepted vₙ ≈ vₙ₋₂ · `G5` HALT past `BUDGET`, emit best-so-far ·
@@ -71,12 +71,12 @@ iteration = generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β�
   remains, and the **held-out judge** — run by the human or a subagent on a prompt the generator never
   reads, once, on the final rung — passes every criterion. A fail (panel overfit) →
   record it in a sealed file outside `MEMORY`, reopen only that criterion ID (no critique text) with a
-  fresh held-out judge; a 2nd fail → HALT(OVERFIT). Or on any HALT. Output: version, provenanced critiques, archive/log, one next action (on HALT: reason + what the
-  human must supply).
+  fresh held-out judge; a 2nd fail → HALT(OVERFIT). Or on any HALT. Output: version, provenanced critiques, archive/log, one next action (on HALT: reason +
+  the human's missing input).
 
 ## Stance
-Tight leash, small verifiable diffs; a separate, dissenting checker; engineer context, don't wordsmith; a 90%-good
-draft is not done.
+Tight leash, small verifiable diffs; a separate, dissenting checker; engineer context, don't wordsmith; ties go to
+the simpler version; a 90%-good draft is not done.
 
 ## Memory schema (`archive.jsonl`, append-only, single-writer)
 `version` · `utility{rung,delta,s_star,s_star_version}` · `calib{runs,sd}` ·
