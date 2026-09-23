@@ -51,8 +51,8 @@ iteration = generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β�
   primary sources.
 - **4 · Gates.** `ΔS = S(vₙ) − S(parent)`; `ΔC` = relative `C` change:
   `G1` reject, restore best, retry once if `S(vₙ) < S* − δ` (2nd fail → HALT REGRESSION) · `G2` discard
-  presentational wins · `G3` revert score gained on an unevidenced substrate, or `[OPEN]` removal without evidence, → `[OPEN]` ·
-  `G4` HALT on oscillation (accepted vₙ ≈ accepted grandparent) · `G5` HALT past `BUDGET`, emit best-so-far ·
+  presentational wins · `G3` revert unevidenced substrate score gains and unevidenced `[OPEN]` removals → `[OPEN]` ·
+  `G4` HALT on oscillation (accepted vₙ's text ≈ accepted grandparent's, not scores) · `G5` HALT past `BUDGET`, emit best-so-far ·
   `G6` if `ΔS > δ` require `ΔC ≤ β₀ + β₁·ΔS`; if `|ΔS| ≤ δ` (noise) require `ΔC ≤ 0` (or `ΔC ≤ β₀`,
   once per component, for a single edit on a never-edited one); else reject, restore parent.
   Only on an accept with `ΔS > δ`: `S* = max(S*, mean(S(vₙ), fresh re-score))`.

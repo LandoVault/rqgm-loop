@@ -71,9 +71,9 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 >   restore the best version, retry once with the critique appended; on a 2nd failure →
 >   **HALT(REGRESSION)**.
 > - **G2 no-polish-reward** — a presentational top change → discard, re-revise on substance.
-> - **G3 substrate firewall** — if a score rose on an asserted-but-unevidenced substrate, or an `[OPEN]`
->   mark was removed without evidence, → revert, mark `[OPEN]`; a version with open substrates can never be "done".
-> - **G4 oscillation** — if accepted vₙ ≈ accepted grandparent (thrash) → **HALT(OSCILLATION)**, surface both.
+> - **G3 substrate firewall** — revert unevidenced substrate score gains and unevidenced `[OPEN]`
+>   removals → `[OPEN]`; a version with open substrates can never be "done".
+> - **G4 oscillation** — if accepted vₙ's text ≈ accepted grandparent's (not scores) (thrash) → **HALT(OSCILLATION)**, surface both.
 > - **G5 budget** — if iterations / tokens / wall-clock exceed `{{BUDGET}}` → **HALT(BUDGET)**, emit best-so-far.
 > - **G6 gain pays for growth** — if `ΔS > δ`, require `ΔC ≤ β₀ + β₁·ΔS`; if `|ΔS| ≤ δ` (noise), require
 >   `ΔC ≤ 0` (or `ΔC ≤ β₀`, once per component, for a single edit on a never-edited one); else reject,
