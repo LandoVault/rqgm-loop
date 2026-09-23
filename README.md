@@ -28,12 +28,11 @@ gaps only a human can close** rather than letting the generator paper over them.
 - **Substrate firewall.** The loop optimizes *features* (framing, scope, rigor) but must **surface,
   never fabricate, substrates** (real data, real results, real people). When only substrate is left,
   the loop's job is done — and it says so.
-- **Regularize the generator.** Facing the same panel every iteration, a generator can overfit it,
-  chase score noise, and bloat the artifact. Following RRSI (Xia et al., arXiv:2609.24972), the loop
-  anneals the edit budget, keeps an edit ledger, screens diffs for leakage *before* scoring, accepts only
-  against a noise-calibrated best-so-far, makes every gain pay for growth, and prunes dead weight. As
-  this loop's own adaptation of RRSI's out-of-distribution test, a held-out judge checks the final
-  result once.
+- **Regularize the generator.** A generator facing one panel can overfit it, chase score noise, and
+  bloat the artifact. After RRSI (Xia et al., arXiv:2609.24972), the loop anneals the edit budget, keeps
+  an edit ledger, screens diffs for leakage *before* scoring, accepts only against a noise-calibrated
+  best-so-far, makes gains pay for growth, and prunes dead weight; a held-out judge (this loop's
+  adaptation of RRSI's out-of-distribution test) checks the final result once.
 
 ---
 
@@ -102,7 +101,7 @@ substrate gaps remain.
 
 **Gates (every iteration):** `G1` noise-aware monotonicity (vs. best-so-far − δ) · `G2`
 no-polish-reward · `G3` substrate firewall · `G4` oscillation halt · `G5` budget halt · `G6` gain pays
-for growth (size may grow only in proportion to a real gain).
+for growth.
 
 **Utility ladder:** `E1` fair-but-critical → `E2` adversarial/equal-stringency → `E3` add a second
 objective (Pareto) → `E4` red-team that re-verifies every cited number.
