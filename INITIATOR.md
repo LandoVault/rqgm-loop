@@ -69,10 +69,10 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 > - **G1 noise-aware monotonicity** — on the *fixed* rung utility, if `S(vₙ) < S* − δ` → reject vₙ,
 >   restore the best version, retry once with the critique appended; on a 2nd failure →
 >   **HALT(REGRESSION)**.
-> - **G2 no-polish-reward** — a purely presentational top change → discard, re-revise on substance.
-> - **G3 substrate firewall** — if a score rose on an asserted-but-unevidenced substrate → revert, mark
->   `[OPEN]`; a version with open substrates can never be "done".
-> - **G4 oscillation** — if vₙ ≈ vₙ₋₂ (thrash) → **HALT(OSCILLATION)**, surface both.
+> - **G2 no-polish-reward** — a presentational top change → discard, re-revise on substance.
+> - **G3 substrate firewall** — if a score rose on an asserted-but-unevidenced substrate, or an `[OPEN]`
+>   mark was removed without evidence, → revert, mark `[OPEN]`; a version with open substrates can never be "done".
+> - **G4 oscillation** — if accepted vₙ ≈ accepted grandparent (thrash) → **HALT(OSCILLATION)**, surface both.
 > - **G5 budget** — if iterations / tokens / wall-clock exceed `{{BUDGET}}` → **HALT(BUDGET)**, emit best-so-far.
 > - **G6 gain pays for growth** — if `ΔS > δ`, require `ΔC ≤ β₀ + β₁·ΔS`; if `|ΔS| ≤ δ` (noise), require
 >   `ΔC ≤ 0` (or `ΔC ≤ β₀`, once per component, for a single edit on a never-edited one); else reject,

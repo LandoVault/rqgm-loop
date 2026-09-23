@@ -49,10 +49,10 @@ iteration = generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β�
   killers, required fixes tagged to claims.
 - **3 · Verify.** Any new number/claim lacking a `citation` record → BLOCK until verified against
   primary sources.
-- **4 · Gates.** With `ΔS = S(vₙ) − S(parent)`, `ΔC` = relative change in `C`:
+- **4 · Gates.** `ΔS = S(vₙ) − S(parent)`; `ΔC` = relative `C` change:
   `G1` reject, restore best, retry once if `S(vₙ) < S* − δ` (2nd fail → HALT REGRESSION) · `G2` discard
-  purely-presentational wins · `G3` revert score gained on an unevidenced substrate → `[OPEN]` ·
-  `G4` HALT on oscillation (vₙ≈vₙ₋₂) · `G5` HALT past `BUDGET`, emit best-so-far ·
+  presentational wins · `G3` revert score gained on an unevidenced substrate, or `[OPEN]` removal without evidence, → `[OPEN]` ·
+  `G4` HALT on oscillation (accepted vₙ ≈ accepted grandparent) · `G5` HALT past `BUDGET`, emit best-so-far ·
   `G6` if `ΔS > δ` require `ΔC ≤ β₀ + β₁·ΔS`; if `|ΔS| ≤ δ` (noise) require `ΔC ≤ 0` (or `ΔC ≤ β₀`,
   once per component, for a single edit on a never-edited one); else reject, restore parent.
   Only on an accept with `ΔS > δ`: `S* = max(S*, mean(S(vₙ), fresh re-score))`.
