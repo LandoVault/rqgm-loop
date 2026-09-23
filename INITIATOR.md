@@ -56,10 +56,10 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 > **Never edit `{{DONE}}` or the rubric to pass. Never fabricate a substrate** (real data, people,
 > results, agreements) — mark gaps `[OPEN]`.
 >
-> **2 · Evaluator step.** First a **leakage screen**: a checker (≠ the generator) reads the diff *before*
-> scoring and rejects edits that echo rubric wording, assert compliance without mechanism, or
-> target named judges (none survive → reject unscored). Each `{{EVALUATORS}}` agent (≠ the generator), seeing only vₙ, `GROUNDING`
-> and the **current** rung's rubric, scores it (not format/length/tone): scores + **ranked killers
+> **2 · Evaluator step.** First a **leakage screen**: a checker (≠ the generator) first reads the diff
+> and rejects edits echoing rubric wording, asserting compliance without mechanism, or
+> targeting named judges (none survive → reject unscored). Each `{{EVALUATORS}}` agent (≠ the generator), seeing only `GROUNDING`,
+> the **current** rung's rubric (cached prefix) then vₙ, scores it (not format/length/tone): scores + **ranked killers
 > (≤`b_max`)** + claim-tagged fixes.
 >
 > **3 · Verify before trust.** Any number or claim newly entering vₙ without a `citation` record → BLOCK;
