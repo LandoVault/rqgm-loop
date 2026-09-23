@@ -80,9 +80,9 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 >
 > **5 · Record & repeat.** Append every record (schema below; bundles share `dS`)
 > to `{{MEMORY}}`. **Progress** (step 1's "gain"): an accept with `dS > δ` or a newly passing
-> criterion (one fresh re-score confirms), none lost (adapted from arXiv:2509.20293). **Prune**
+> criterion (one fresh re-score, step 4's if run, confirms), none lost (adapted from arXiv:2509.20293). **Prune**
 > loop-added text only: a component whose last-`2w` accepted edits all lacked Progress loses it
-> (a gated edit) unless the checker upholds it; `{{DONE}}` constraints and `[OPEN]` markers exempt. The
+> (gated) unless the checker upholds it; `{{DONE}}` constraints and `[OPEN]` markers exempt. The
 > rung **saturates** when every rung criterion passes; `2w` iterations without Progress →
 > **HALT(STALL)**.
 >
