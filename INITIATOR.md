@@ -79,7 +79,7 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 >   restore the parent. Only on an accept with `ΔS > δ`: `S* = max(S*, mean(S(vₙ), fresh re-score))`.
 >
 > **5 · Record & repeat.** Append every record (schema below; bundles share `dS`)
-> to `{{MEMORY}}`. **Progress** (step 1's "gain"): an accept with `dS > δ` or a newly passing
+> to `{{MEMORY}}`. **Progress**: an accept with `dS > δ` or a newly passing
 > criterion (one fresh re-score, step 4's if run, confirms), none lost (adapted from arXiv:2509.20293). **Prune**
 > loop-added text only: a component whose last-`2w` accepted edits all lacked Progress loses it
 > (gated) unless the checker upholds it; `{{DONE}}` constraints and `[OPEN]` markers exempt. The
