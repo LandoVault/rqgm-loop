@@ -36,10 +36,9 @@ iteration = generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β�
   read `GROUNDING` first, draft **v0**, write `DONE` (each `pass:false`), list components, set rung
   **E1**. **Calibrate** once per rung (resume keeps it): the panel scores the unchanged version 3× in fresh contexts;
   `δ = clip(2·SD, δ_min, δ_max)`, `S*` = mean.
-- **1 · Generate.** Revise **vₙ** (n = 1…N across rungs), seeing only parent, `GROUNDING`, `DONE`, ledger, latest killers/fixes, with at most
+- **1 · Generate.** Revise **vₙ** (n = 1…N across rungs), seeing only parent, `GROUNDING`, `DONE`, latest killers/fixes, rejected single-edit hypotheses (skip absent new evidence) and, if Stalled, the least-recently-edited component, with at most
   `bₙ = 1 + round_half_up((b_max−1)·½(1+cos(π·n/N)))` edits. One edit = one component + one-line falsifiable hypothesis; smallest reviewable
-  diff; version it. Skip hypotheses the ledger rejected on single-edit iterations absent new
-  evidence. **Stalled** (`w` iterations without Progress, step 5) → ≥1 edit on the least-recently-edited component.
+  diff; version it. **Stalled** (`w` iterations without Progress, step 5) → ≥1 edit on it.
   Never edit `DONE`/the rubric to pass; never fabricate a substrate (data, people, results,
   agreements) — mark gaps `[OPEN]`.
 - **2 · Evaluate.** A **leakage screen** (checker ≠ generator) reads the diff *before* scoring and

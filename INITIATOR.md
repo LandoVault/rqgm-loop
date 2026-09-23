@@ -47,12 +47,12 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 > the mean.
 >
 > **1 · Generator step.** Revise **vₙ** (n = 1…N, N = MAX_ITERS, across rungs), seeing only parent,
-> `GROUNDING`, `DONE`, ledger, latest killers/fixes, with at most
+> `GROUNDING`, `DONE`, latest killers/fixes, rejected single-edit hypotheses (skip absent new
+> evidence) and, if stalled, the least-recently-edited component, with at most
 > `bₙ = 1 + round_half_up((b_max − 1)·½(1 + cos(π·n/N)))` edits, highest-leverage critiques first.
 > One edit = one component +
 > one-line falsifiable hypothesis; smallest reviewable diff; version each vₙ so any state is
-> revertable. Skip hypotheses the ledger rejected on single-edit iterations absent new evidence. If
-> **stalled** (no Progress for `w` iterations), spend ≥1 edit on the least-recently-edited component.
+> revertable. If **stalled** (no Progress for `w` iterations), spend ≥1 edit on it.
 > **Never edit `{{DONE}}` or the rubric to pass. Never fabricate a substrate** (real data, people,
 > results, agreements) — mark gaps `[OPEN]`.
 >
