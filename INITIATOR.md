@@ -34,28 +34,27 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 >
 > **Units.** Judges score each criterion and `overall` on 0–10; `S(v)` = panel mean `overall`; a judge
 > passes a criterion at ≥7, the panel on a strict majority (ties fail). `C(v)` = word count of `{{TARGET}}` (tokens for code). A
-> **component** is a top-level section or file, listed at setup. Epoch = one rung; iteration = one
-> generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β₁=5%`/point, `δ_min=0.3`.
+> **component** is a top-level section or file, listed at setup. Epoch = rung; iteration =
+> generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β₁=5%`/point, `δ_min=0.5` (≥ one score step).
 >
 > **0 · Setup (load or bootstrap).** Read `{{MEMORY}}`. If it holds prior state → resume (see schema);
-> if its last record is torn, discard it and use the prior. If empty → bootstrap: read `{{GROUNDING}}` **first**, draft **v0** of
+> discard a torn last record. If empty → bootstrap: read `{{GROUNDING}}` **first**, draft **v0** of
 > `{{TARGET}}`, write `{{DONE}}` as a checkable JSON criteria-list (every item `pass:false`), list the
 > components, set rung **E1**. Exactly one writer to the archive at a time. **Calibrate noise:** the panel
-> scores the unchanged version twice; `δ = max(δ_min, |S₁ − S₂|)`, best-so-far `S*` = their mean. Redo
-> at every rung change.
+> re-scores the unchanged version 3× in fresh contexts; `δ = max(δ_min, 2·SD)`, best-so-far `S*` = the
+> mean. Redo at every rung change.
 >
 > **1 · Generator step.** Revise **vₙ** (n = 1…N, N = MAX_ITERS, not reset per rung) with at most
 > `bₙ = 1 + round_half_up((b_max − 1)·½(1 + cos(π·n/N)))` edits, highest-leverage critiques first —
 > bundled early for coordinated fixes, single late so gains are attributable. One edit = one component +
 > a one-line falsifiable hypothesis; smallest reviewable diff; version each vₙ so any state is
-> revertable. Skip hypotheses the ledger shows rejected on a single-edit iteration unless there is new
-> evidence. If **stalled** (no gain > δ for `w` iterations), spend ≥1 edit on a never-edited component.
+> revertable. Skip hypotheses the ledger rejected on single-edit iterations absent new evidence. If **stalled** (no gain > δ for `w` iterations), spend ≥1 edit on a never-edited component.
 > **Never edit `{{DONE}}` or the rubric to pass. Never fabricate a substrate** (real data, people,
 > results, agreements) — mark gaps `[OPEN]`.
 >
 > **2 · Evaluator step.** First a **leakage screen**: a checker (≠ the generator) reads the diff *before*
-> scoring and rejects edits that echo rubric wording or assert compliance without adding mechanism, or
-> that target a named judge. Then each `{{EVALUATORS}}` agent (≠ the generator) scores vₙ under the **current** rung's rubric
+> scoring and rejects edits that echo rubric wording, assert compliance without adding mechanism, or
+> target a named judge. Then each `{{EVALUATORS}}` agent (≠ the generator) scores vₙ under the **current** rung's rubric
 > (not formatting / length / tone), returning scores + **ranked killers** + required fixes tagged to
 > claims.
 >
@@ -78,11 +77,11 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 >   accept, `S* = max(S*, S(vₙ))`.
 >
 > **5 · Record & repeat.** Append version, scores, critiques, decisions and each edit (component,
-> hypothesis, `dS`, `dC`, accepted; bundled edits share the version's `dS`) to `{{MEMORY}}`. **Prune:** a
-> component whose best accepted `dS` over the last `w` iterations is ≤ 0 goes on a deletion list; the
-> checker rules on any keep-justification; gates, `{{DONE}}` items and `[OPEN]` markers are exempt. The
-> rung **saturates** when every rung criterion passes, or when no gain > δ for `2w` iterations (i.e.
-> exploration also failed).
+> hypothesis, `dS`, `dC`, accepted; bundled edits share the version's `dS`) to `{{MEMORY}}`. **Prune** only
+> text the loop added: if every edit to a component in the last `2w` iterations had `dS ≤ 0`, its added
+> text goes on a deletion list, removed by a normal gated edit unless the checker upholds a
+> keep-justification; original content and steps 0–7 are exempt. The
+> rung **saturates** when every rung criterion passes, or on no gain > δ for `2w` iterations.
 >
 > **6 · Boundary (evolve the utility).** Advance one rung **only if** the current bar is met **and** ≥1
 > evaluator still dissents (else done, or stuck → HALT). Escalation *redefines success*, so **pause for
@@ -94,10 +93,9 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 > **7 · Stop & output.** STOP only when `{{DONE}}` passes under the escalated utility, no `[OPEN]`
 > substrate remains, **and** the **held-out judge** — kept out of this paste and run in a fresh context,
 > scoring once on the final rung — passes every criterion; a fail means the loop overfit the panel →
-> record it sealed, reopen only that criterion ID (no critique text), and use a fresh held-out judge next time. Or STOP on
-> any HALT. Output: the current version, the
-> provenanced critiques, the updated archive + log, and **one** next action (or, on HALT, the reason +
-> what a human must supply).
+> reopen only that criterion ID (no critique text) with a fresh held-out judge; a 2nd fail →
+> **HALT(OVERFIT)**. Or STOP on any HALT. Output: the current version, provenanced critiques, archive +
+> log, and **one** next action (on HALT: the reason + what a human must supply).
 >
 > **Stance (hold throughout).** **Tight leash** — small, verifiable steps. Verification **fast and
 > visual**; a model grading itself is too generous, so the checker is a separate, *dissenting* agent.

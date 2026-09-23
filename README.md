@@ -102,7 +102,7 @@ substrate gaps remain.
 
 **Gates (every iteration):** `G1` noise-aware monotonicity (vs. best-so-far − δ) · `G2`
 no-polish-reward · `G3` substrate firewall · `G4` oscillation halt · `G5` budget halt · `G6` gain pays
-for growth (size may grow only in proportion to a real gain; within noise it may not grow).
+for growth (size may grow only in proportion to a real gain).
 
 **Utility ladder:** `E1` fair-but-critical → `E2` adversarial/equal-stringency → `E3` add a second
 objective (Pareto) → `E4` red-team that re-verifies every cited number.
