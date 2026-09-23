@@ -29,14 +29,14 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 > AI-generated work — so the checker must be a **different agent** from the writer and must get
 > **stricter** as the writer improves. Re-facing one panel also lets the writer overfit it, chase score
 > noise, and bloat the artifact, so the loop is **regularized** after RRSI (Xia et al., arXiv:2609.24972;
-> the panel/held-out mapping, checker ≠ generator, per-rung δ, noise-band rule, `bₙ` rounding, prune
-> window, `S*` re-score and all defaults are this loop's adaptations).
+> the panel/held-out mapping, checker ≠ generator, screen targets, per-rung δ, noise-band rule, `bₙ`
+> rounding, prune scope/threshold/window, gain re-score and all defaults are this loop's adaptations).
 >
 > **Units.** Judges score each criterion and `overall` on 0–10; `S(v)` = panel mean `overall`; a judge
 > passes a criterion at ≥7, the panel on a strict majority (ties fail). `C(v)` = word count of
 > `{{TARGET}}` (tokens for code). A **component** is a top-level section or file, fixed at setup
 > (checker-approved). Epoch = rung; iteration = generate→gate cycle. Defaults: `b_max=3`, `w=3`,
-> `β₀=2%`, `β₁=5%`/point, `δ_min` = 1/panel size (one score step), `δ_max=1.5`.
+> `β₀=2%`, `β₁=5%`/point, `δ_min` = 1/panel size, `δ_max=1.5`.
 >
 > **0 · Setup (load or bootstrap).** Read `{{MEMORY}}`. If it holds prior state → resume (see schema);
 > discard a torn last record. If empty → bootstrap: read `{{GROUNDING}}` **first**, draft **v0** of
@@ -50,7 +50,8 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 > bundled early for coordinated fixes, single late (attributable). One edit = one component +
 > a one-line falsifiable hypothesis; smallest reviewable diff; version each vₙ so any state is
 > revertable. Skip hypotheses the ledger rejected on single-edit iterations absent new evidence. If
-> **stalled** (no gain > δ for `w` iterations), spend ≥1 edit on a never-edited component.
+> **stalled** (no gain for `w` iterations), add one edit on a never-edited (else least-recently-edited)
+> component.
 > **Never edit `{{DONE}}` or the rubric to pass. Never fabricate a substrate** (real data, people,
 > results, agreements) — mark gaps `[OPEN]`.
 >
@@ -61,11 +62,10 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 > fixes tagged to claims.
 >
 > **3 · Verify before trust.** Any number or claim newly entering vₙ without a `citation` record → BLOCK;
-> a verification agent checks primary sources before any score is trusted (assume the generator takes
-> any shortcut the rubric leaves open).
+> a verification agent checks primary sources before any score is trusted.
 >
-> **4 · Gates (every iteration — `assert … else <action>`),** with `ΔS = S(vₙ) − S(parent)` and `ΔC` =
-> relative change in `C`:
+> **4 · Gates (every iteration — `assert … else <action>`).** An apparent gain > δ is re-scored once and
+> averaged. Then, with `ΔS = S(vₙ) − S(parent)` and `ΔC` = relative change in `C`:
 > - **G1 noise-aware monotonicity** — on the *fixed* rung utility, if `S(vₙ) < S* − δ` → reject vₙ,
 >   restore the best version, retry once with the critique appended; on a 2nd failure →
 >   **HALT(REGRESSION)**.
@@ -76,14 +76,14 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 > - **G5 budget** — if iterations / tokens / wall-clock exceed `{{BUDGET}}` → **HALT(BUDGET)**, emit best-so-far.
 > - **G6 gain pays for growth** — if `ΔS > δ`, require `ΔC ≤ β₀ + β₁·ΔS`; if `|ΔS| ≤ δ` (noise), require
 >   `ΔC ≤ 0` (or `ΔC ≤ β₀`, once per component, for a single edit on a never-edited one); else reject,
->   restore the parent. Only on an accept with `ΔS > δ`: `S* = max(S*, mean(S(vₙ), fresh re-score))`.
+>   restore the parent. On accept, `S* = max(S*, S(vₙ))`; a **gain** is a rise in `S*` of more than δ.
 >
-> **5 · Record & repeat.** Append every record (schema below; bundled edits share the version's `dS`)
-> to `{{MEMORY}}`. **Prune** only text the loop added: if a component's accepted edits in the last `2w`
-> iterations all had `dS ≤ δ`, their text is deleted next iteration by a gated edit unless the checker
-> upholds a keep-justification; `{{DONE}}` must-not-change items and `[OPEN]` markers are exempt. The
-> rung **saturates** when every rung criterion passes; no gain > δ for `2w` iterations →
-> **HALT(STALL)**.
+> **5 · Record & repeat.** Append every record (schema below; bundled edits get `dS = null`) to
+> `{{MEMORY}}`. **Prune** only text the loop added, in components with an accepted edit in the last `2w`
+> iterations: if none had `dS > δ`, that text is deleted (a gated edit, one `bₙ` slot) unless the
+> checker upholds keeping it; `{{DONE}}` must-not-change items and `[OPEN]` markers are exempt. The rung
+> **saturates** when every rung criterion passes; no gain for `2w` iterations → apply pending prunes,
+> then **HALT(STALL)**.
 >
 > **6 · Boundary (evolve the utility).** Advance one rung **only if** the current bar is met **and** ≥1
 > evaluator still dissents (else done). Escalation *redefines success*, so **pause for a human
