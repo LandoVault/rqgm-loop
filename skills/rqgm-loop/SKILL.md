@@ -57,9 +57,9 @@ iteration = generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β�
   once per component, for a single edit on a never-edited one); else reject, restore parent.
   Only on an accept with `ΔS > δ`: `S* = max(S*, mean(S(vₙ), fresh re-score))`.
 - **5 · Record & repeat.** Log each edit (bundles share `dS`). **Progress**: an accept with `dS > δ` or a
-  newly passing criterion (one fresh re-score, step 4's if run, confirms), none lost (adapted from arXiv:2509.20293).
+  newly passing criterion (step 4's re-score confirms; else re-score that criterion alone), none lost (adapted from arXiv:2509.20293, 2602.15481).
   **Prune** loop-added text only: a component whose last-`2w` accepted edits all lacked Progress loses
-  it (gated) unless the checker upholds it; `DONE` constraints and `[OPEN]` markers exempt.
+  it (gated) unless checker-upheld; `DONE` constraints and `[OPEN]` markers exempt.
   The rung **saturates** when all rung criteria pass; `2w` iterations without Progress → HALT(STALL).
 - **6 · Boundary.** A judge **dissents** if it scores any criterion < 7. Advance a rung only if it
   saturates (step 5) **and** ≥1 judge dissents (none → the human may skip rungs); **pause for human
