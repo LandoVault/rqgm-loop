@@ -1,0 +1,213 @@
+{
+ "epochs_run": 19,
+ "stall": 3,
+ "strict": false,
+ "events": [
+  "e10 placebo: tie/high,tie/high -> favoritism=0/2, strict=false",
+  "HALT(STALL) at e19"
+ ],
+ "ledger": [
+  {
+   "e": 9,
+   "id": "e9-A-generator-context",
+   "component": "1 · Generate",
+   "hypothesis": "name generator inputs; drop restated schedule phrase",
+   "outcome": "WIN 2/2 / APPLIED 81ccc2a"
+  },
+  {
+   "e": 9,
+   "id": "e9-B-no-dissent-exit",
+   "component": "6 · Boundary",
+   "hypothesis": "no dissent + human declines skip -> HALT(STALL)",
+   "outcome": "LOSE screen"
+  },
+  {
+   "e": 9,
+   "id": "e9-C-g4-text",
+   "component": "4 · Gates",
+   "hypothesis": "G4 compares text, not scores",
+   "outcome": "WIN 2/2 (carried to e10)"
+  },
+  {
+   "e": 10,
+   "id": "e10-A-g4-text",
+   "component": "4 · Gates",
+   "hypothesis": "d4 and d1 improve at zero word cost. G4 now compares the text of versions, not their scores. On a plateau, judge noise can make a new version score about the sa",
+   "outcome": "WIN 2/2 prefer"
+  },
+  {
+   "e": 10,
+   "id": "e10-B-progress-criterion-rescore",
+   "component": "5 · Record & repeat",
+   "hypothesis": "d3 improves and decision quality holds. Sometimes Progress comes only from a newly passing criterion, with no accept where dS > δ, so step 4 ran no re-score. In",
+   "outcome": "WIN 2/2 prefer / APPLIED 64be981"
+  },
+  {
+   "e": 11,
+   "id": "e11-A-g4-text",
+   "component": "4 · Gates",
+   "hypothesis": "d4 and d1 improve at zero word cost. G4 now compares the text of versions, not their scores. On a plateau, judge noise can make a new version score about the sa",
+   "outcome": "WIN 2/2 prefer / APPLIED f08ef49"
+  },
+  {
+   "e": 11,
+   "id": "e11-B-g6-prescore",
+   "component": "4 · Gates",
+   "hypothesis": "d3 improves, decisions do not change, and the spec gets 2 words shorter. ΔC can be measured before any judge runs, and S is at most 10. So if vₙ fails G6 even a",
+   "outcome": "LOSE 1/3 prefer"
+  },
+  {
+   "e": 12,
+   "id": "e12-A-screen-short-circuit",
+   "component": "2 · Evaluate",
+   "hypothesis": "Right now the spec never says what happens when the leakage screen rejects every edit in vₙ. Read literally, 2–5 full-context evaluators still score a version t",
+   "outcome": "WIN 2/2 prefer"
+  },
+  {
+   "e": 12,
+   "id": "e12-B-stall-lru-component",
+   "component": "1 · Generate",
+   "hypothesis": "Step 1 requires a Stalled iteration to make '≥1 edit on a never-edited component'. After enough iterations, or with only a few components, every component has b",
+   "outcome": "WIN 2/2 prefer / APPLIED e7a498c"
+  },
+  {
+   "e": 13,
+   "id": "e13-A-screen-short-circuit",
+   "component": "2 · Evaluate",
+   "hypothesis": "The spec does not say what happens when the leakage screen rejects every edit in vₙ. Read literally, 2–5 full-context evaluators still score a version that is i",
+   "outcome": "WIN 2/3 prefer / APPLIED ece168f"
+  },
+  {
+   "e": 13,
+   "id": "e13-B-killer-cap-bn",
+   "component": "2 · Evaluate",
+   "hypothesis": "Each evaluator returns up to b_max ranked killers every iteration. The generator is allowed only bₙ ≤ b_max edits, and under the cosine schedule the next budget",
+   "outcome": "LOSE 1/3 prefer"
+  },
+  {
+   "e": 14,
+   "id": "e14-A-generator-ledger-slice",
+   "component": "1 · Generate",
+   "hypothesis": "d3 improves and decisions stay the same. Step 1 uses the ledger for only two rules: skip hypotheses rejected on single-edit iterations, and on a Stall make ≥1 e",
+   "outcome": "WIN 2/2 prefer / APPLIED 1819ee0"
+  },
+  {
+   "e": 14,
+   "id": "e14-B-evaluator-cached-prefix",
+   "component": "2 · Evaluate",
+   "hypothesis": "d3 improves at zero word cost and no decision changes. Every iteration sends GROUNDING and the rung's rubric to 2–5 evaluators, and calibration sends them 3× mo",
+   "outcome": "WIN 2/2 prefer"
+  },
+  {
+   "e": 15,
+   "id": "e15-A-evaluator-cached-prefix",
+   "component": "2 · Evaluate",
+   "hypothesis": "d3 improves at zero word cost and no decision changes. Every iteration sends GROUNDING and the rung's rubric to 2–5 evaluators, and calibration sends them 3× mo",
+   "outcome": "WIN 2/2 prefer / APPLIED 6422de8"
+  },
+  {
+   "e": 15,
+   "id": "e15-B-e3-pareto-defined",
+   "component": "6 · Boundary",
+   "hypothesis": "d1 improves and d2 holds, at +1 word (SKILL.md goes to exactly 1000). Right now E3 says only '2nd objective (Pareto)'. It never says who chooses the objective o",
+   "outcome": "LOSE screen: All three OLD strings occur exactly once in SKILL.md, and no arXiv id outside the whitelist is cited, so those checks pa"
+  },
+  {
+   "e": 16,
+   "id": "e16-A-sstar-rescore-gate",
+   "component": "4 · Gates",
+   "hypothesis": "d3 and d4 improve for +1 word, and no gate decision changes. Right now every accept with ΔS > δ triggers a fresh full-panel re-score, even when S(vₙ) ≤ S*. That",
+   "outcome": "WIN 2/2 prefer / APPLIED 885ea01"
+  },
+  {
+   "e": 16,
+   "id": "e16-B-verify-unverifiable-exit",
+   "component": "3 · Verify",
+   "hypothesis": "d1 and d2 improve for +1 word. Step 3 says a new number or claim lacking a citation record triggers 'BLOCK until verified against primary sources'. It gives no ",
+   "outcome": "LOSE screen: The 'old' string occurs exactly once in SKILL.md (verified via grep -c = 1), satisfying the mechanical precondition. How"
+  },
+  {
+   "e": 17,
+   "id": "e17-A-screen-flags-citations",
+   "component": "3 · Verify",
+   "hypothesis": "d3 improves and d6 gains 1 word, with no decision change. Right now step 3 needs its own verifier pass that re-reads every vₙ's diff to look for new numbers or ",
+   "outcome": "LOSE screen: Reject. The hunk changes \"Any new number/claim lacking a `citation` record → BLOCK\" to \"Screen-flagged uncited new numbe"
+  },
+  {
+   "e": 17,
+   "id": "e17-B-g4-lineage-grandparent",
+   "component": "4 · Gates",
+   "hypothesis": "d1 and d4 improve at zero word cost, and G4 is no weaker. 'Accepted grandparent' can be read as the version accepted two accepts ago. After G1 restores best, it",
+   "outcome": "LOSE 0/2 prefer"
+  },
+  {
+   "e": 18,
+   "id": "e18-A-logged-rung-score",
+   "component": "Units",
+   "hypothesis": "This improves d3 and d1/d4 at zero word cost. S(parent) is never defined. Read one way, the panel re-scores the parent every iteration, which doubles full-conte",
+   "outcome": "LOSE early exit (j0 A/high)"
+  },
+  {
+   "e": 18,
+   "id": "e18-B-criterion-rise-progress",
+   "component": "5 · Record & repeat",
+   "hypothesis": "This improves d4 and addresses open issue (1) at zero word cost. Right now Progress needs dS > δ or a criterion that crosses the pass line. Steady real gains on",
+   "outcome": "LOSE screen: Hunk 2's OLD string (\"`DONE` constraints and `[OPEN]` markers exempt.\") does not occur anywhere in skills/rqgm-loop/SKIL"
+  },
+  {
+   "e": 19,
+   "id": "e19-A-prune-script-revert",
+   "component": "5 · Record & repeat",
+   "hypothesis": "Right now step 5 says a component whose last-2w accepted edits all lacked Progress 'loses it (gated)'. It never says who produces that version, so by default th",
+   "outcome": "LOSE 0/2 prefer"
+  },
+  {
+   "e": 19,
+   "id": "e19-B-verify-before-scoring",
+   "component": "3 · Verify",
+   "hypothesis": "Step 3 comes after step 2, so 2–5 full-context evaluators score a version before any uncited new number or claim is BLOCKed. When a claim then fails verificatio",
+   "outcome": "LOSE screen: The OLD string (\"Any new number/claim lacking a `citation` record → BLOCK until verified against primary sources.\") occu"
+  }
+ ],
+ "heldout": [
+  {
+   "overall": "B",
+   "per": {
+    "d1": "B",
+    "d2": "B",
+    "d3": "B",
+    "d4": "B",
+    "d5": "tie",
+    "d6": "A"
+   },
+   "conf": "high",
+   "why": "Adopt B. It removes the never-edited-component deadlock, defines what happens when the screen rejects everything, fixes G4 and the undefined bar, and closes the [OPEN]-removal gap. Stall now tracks per-criterion Progress, and re-scores are fewer. Cost: 1000/1000 words, vaguer prune wording."
+  },
+  {
+   "overall": "B",
+   "per": {
+    "d1": "B",
+    "d2": "B",
+    "d3": "B",
+    "d4": "B",
+    "d5": "B",
+    "d6": "A"
+   },
+   "conf": "high",
+   "why": "Adopt B. Its least-recently-edited stall rule removes A's deadlock once every component has been edited. It rejects unscored when the screen rejects every edit, uses cached-prefix evaluation and gates the S* re-score. Progress counts confirmed per-criterion passes. It hits exactly 1000 words."
+  },
+  {
+   "overall": "B",
+   "per": {
+    "d1": "B",
+    "d2": "B",
+    "d3": "B",
+    "d4": "B",
+    "d5": "B",
+    "d6": "A"
+   },
+   "conf": "med",
+   "why": "Adopt B. Least-recently-edited stall fixes A's deadlock once every component is edited. B also gates [OPEN] removals and slices context. Per-criterion Progress resists noise. Caveats: rejected versions may count as Progress, and SKILL.md sits at exactly 1000 words."
+  }
+ ]
+}
