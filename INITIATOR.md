@@ -42,9 +42,9 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 > **0 · Setup (load or bootstrap).** Read `{{MEMORY}}`. If it holds prior state → resume (see schema);
 > discard a torn last record. If empty → bootstrap: read `{{GROUNDING}}` **first**, draft **v0** of
 > `{{TARGET}}`, write `{{DONE}}` as a checkable JSON criteria-list (every item `pass:false`), list the
-> components, set rung **E1**. **Calibrate noise:** the panel
+> components, set rung **E1**. **Calibrate noise once per rung** (resume keeps it): the panel
 > scores the unchanged version 3× in fresh contexts; `δ = clip(2·SD, δ_min, δ_max)`, best-so-far `S*` =
-> the mean. Redo at every rung change.
+> the mean.
 >
 > **1 · Generator step.** Revise **vₙ** (n = 1…N, N = MAX_ITERS, not reset per rung) with at most
 > `bₙ = 1 + round_half_up((b_max − 1)·½(1 + cos(π·n/N)))` edits, highest-leverage critiques first —

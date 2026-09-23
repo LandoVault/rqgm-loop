@@ -34,8 +34,8 @@ iteration = generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β�
 
 - **0 · Setup.** Read `MEMORY`; resume if any (drop a torn last record), else
   read `GROUNDING` first, draft **v0**, write `DONE` (each `pass:false`), list components, set rung
-  **E1**. **Calibrate:** the panel scores the unchanged version 3× in fresh contexts;
-  `δ = clip(2·SD, δ_min, δ_max)`, `S*` = mean; redo per rung.
+  **E1**. **Calibrate** once per rung (resume keeps it): the panel scores the unchanged version 3× in fresh contexts;
+  `δ = clip(2·SD, δ_min, δ_max)`, `S*` = mean.
 - **1 · Generate.** Revise **vₙ** (n = 1…N, not reset per rung) with at most
   `bₙ = 1 + round_half_up((b_max−1)·½(1+cos(π·n/N)))` edits — bundled early, single late. One edit = one component + a one-line falsifiable hypothesis; smallest reviewable
   diff; version it. Skip hypotheses the ledger rejected on single-edit iterations absent new
