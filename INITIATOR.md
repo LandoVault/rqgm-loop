@@ -52,7 +52,7 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 > One edit = one component +
 > one-line falsifiable hypothesis; smallest reviewable diff; version each vₙ so any state is
 > revertable. Skip hypotheses the ledger rejected on single-edit iterations absent new evidence. If
-> **stalled** (no Progress for `w` iterations), spend ≥1 edit on a never-edited component.
+> **stalled** (no Progress for `w` iterations), spend ≥1 edit on the least-recently-edited component.
 > **Never edit `{{DONE}}` or the rubric to pass. Never fabricate a substrate** (real data, people,
 > results, agreements) — mark gaps `[OPEN]`.
 >

@@ -39,7 +39,7 @@ iteration = generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β�
 - **1 · Generate.** Revise **vₙ** (n = 1…N across rungs), seeing only parent, `GROUNDING`, `DONE`, ledger, latest killers/fixes, with at most
   `bₙ = 1 + round_half_up((b_max−1)·½(1+cos(π·n/N)))` edits. One edit = one component + one-line falsifiable hypothesis; smallest reviewable
   diff; version it. Skip hypotheses the ledger rejected on single-edit iterations absent new
-  evidence. **Stalled** (`w` iterations without Progress, step 5) → ≥1 edit on a never-edited component.
+  evidence. **Stalled** (`w` iterations without Progress, step 5) → ≥1 edit on the least-recently-edited component.
   Never edit `DONE`/the rubric to pass; never fabricate a substrate (data, people, results,
   agreements) — mark gaps `[OPEN]`.
 - **2 · Evaluate.** A **leakage screen** (checker ≠ generator) reads the diff *before* scoring and
