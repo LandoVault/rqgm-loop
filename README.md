@@ -32,7 +32,7 @@ gaps only a human can close** rather than letting the generator paper over them.
   bloat the artifact. After RRSI (Xia et al., arXiv:2609.24972), the loop anneals the edit budget, keeps
   an edit ledger, screens diffs for leakage *before* scoring, accepts only against a noise-calibrated
   best-so-far, makes gains pay for growth, and prunes dead weight; a held-out judge (this loop's
-  adaptation of RRSI's out-of-distribution test) checks the final result once.
+  adaptation of RRSI's held-out evaluation) checks the final result once.
 
 ---
 

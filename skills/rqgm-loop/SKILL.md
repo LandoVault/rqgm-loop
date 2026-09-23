@@ -28,7 +28,9 @@ noise-chasing and bloat, so the loop is **regularized** after RRSI (Xia et al., 
 **Units.** Scores: 0–10 per criterion plus `overall`; `S(v)` = panel mean `overall`; a judge
 passes a criterion at ≥7, the panel on a strict majority (ties fail). `C(v)` = word count of `TARGET`
 (tokens for code). A **component** = a top-level section or file, fixed at setup (checker-approved). Epoch = rung;
-iteration = generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β₁=5%`/point, `δ_min` = 1/panel size, `δ_max=1.5`.
+iteration = generate→gate cycle. `dS = S(vₙ) − S(parent)`; `ΔC` = relative change in `C`
+vs parent. Newly passing a criterion (panel majority, re-score-confirmed) without
+newly failing one counts as `ΔS > δ`. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β₁=5%`/point, `δ_min` = 1/panel size, `δ_max=1.5`.
 
 ## THE LOOP
 
@@ -39,7 +41,7 @@ iteration = generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β�
 - **1 · Generate.** Revise **vₙ** (n = 1…N, not reset per rung) with at most
   `bₙ = 1 + round_half_up((b_max−1)·½(1+cos(π·n/N)))` edits — bundled early, single late. One edit = one component + a one-line falsifiable hypothesis; smallest reviewable
   diff; version it. Skip hypotheses the ledger rejected on single-edit iterations absent new
-  evidence. **Stalled** (no gain for `w` iterations) → ≥1 edit on a never-edited component.
+  evidence. **Stalled** (no gain > δ for `w` iterations) → ≥1 edit on a never-edited component.
   Never edit `DONE`/the rubric to pass; never fabricate a substrate (data, people, results,
   agreements) — mark gaps `[OPEN]`.
 - **2 · Evaluate.** A **leakage screen** (checker ≠ generator) reads the diff *before* scoring and
@@ -49,30 +51,29 @@ iteration = generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β�
   killers, required fixes tagged to claims.
 - **3 · Verify.** Any new number/claim lacking a `citation` record → BLOCK until verified against
   primary sources.
-- **4 · Gates.** Scores that would raise `S*` or trip G1 get one averaged re-score. `ΔC` = relative
-  change in `C` vs the parent (vs `S*`'s version if growing):
+- **4 · Gates.** With `ΔS = dS`:
   `G1` reject, restore best, retry once if `S(vₙ) < S* − δ` (2nd fail → HALT REGRESSION) · `G2` discard
-  purely-presentational wins · `G3` revert score gained on an unevidenced substrate → `[OPEN]`, or any
-  `[OPEN]` dropped without an evidenced `substrate` close · `G4` HALT if accepted vₙ ≈ vₙ₋₂ · `G5` HALT past `BUDGET`, emit best-so-far ·
-  `G6` if `S(vₙ) > S* + δ` require `ΔC ≤ β₀ + β₁·(S(vₙ) − S*)`; else require `ΔC ≤ 0` (or `ΔC ≤ β₀`,
-  once per component, for a single edit on a never-edited one); else reject, restore parent. On
-  accept, `S* = max(S*, S(vₙ))`. **Gain**: `S*` up > δ within `w` iterations.
+  purely-presentational wins · `G3` revert score gained on an unevidenced substrate → `[OPEN]` ·
+  `G4` HALT on oscillation (vₙ≈vₙ₋₂) · `G5` HALT past `BUDGET`, emit best-so-far ·
+  `G6` if `ΔS > δ` require `ΔC ≤ β₀ + β₁·ΔS`; if `|ΔS| ≤ δ` (noise) require `ΔC ≤ 0` (or `ΔC ≤ β₀`,
+  once per component, for a single edit on a never-edited one); else reject, restore parent.
+  Only on an accept with `ΔS > δ`: `S* = max(S*, mean(S(vₙ), fresh re-score))`.
 - **5 · Record & repeat.** Log each edit (bundles share the version's `dS`). **Prune** only text the loop added: if a component's accepted edits in the
   last `2w` iterations all had `dS ≤ δ`, their text is deleted (a gated edit) unless the checker upholds
   keeping it; `DONE` must-not-change items and `[OPEN]` markers are exempt.
-  The rung **saturates** when all rung criteria pass; no gain for `2w` iterations → HALT(STALL).
+  The rung **saturates** when all rung criteria pass; no gain > δ for `2w` iterations → HALT(STALL).
 - **6 · Boundary.** A judge **dissents** if it scores any criterion < 7. Advance a rung only if the
-  bar is met **and** ≥1 judge dissents (none → final rung `DONE` names); **pause for human
-  confirmation** (escalation redefines success), then recalibrate, reset windows. Rungs:
+  bar is met **and** ≥1 judge dissents (none → final rung); either way **pause for human
+  confirmation** (escalation redefines success), then recalibrate. Rungs (cumulative):
   E1 fair-critical → E2 adversarial/equal-stringency (reject polish, demand derivations) →
-  E3 2nd objective (also reject versions the `S*` version dominates) → E4 red-team re-verifies every
+  E3 2nd objective (reject versions the `S*` version dominates) → E4 red-team re-verifies every
   cited number.
 - **7 · Stop.** STOP only when `DONE` passes under the escalated utility, no `[OPEN]` substrate
   remains, and the **held-out judge** — run by the human or a subagent on a prompt the generator never
   reads, once, on the final rung — passes every criterion. A fail (panel overfit) →
   record it in a sealed file outside `MEMORY`, reopen only that criterion ID (no critique text) with a
-  fresh held-out judge; a 2nd fail → HALT(OVERFIT). Or on any HALT. Output: version, provenanced critiques, archive/log, one next action (on HALT: reason +
-  the human's missing input).
+  fresh held-out judge; a 2nd fail → HALT(OVERFIT). Or on any HALT. Output: version, provenanced critiques, archive/log, one next action (on HALT: reason + what the
+  human must supply).
 
 ## Stance
 Tight leash, small verifiable diffs; a separate, dissenting checker; engineer context, don't wordsmith; ties go to
@@ -86,8 +87,8 @@ the simpler version; a 90%-good draft is not done.
 
 ## Notes
 - From RRSI: step 1's budget/ledger/stall, step 2's screen, G1, G6, pruning. **Adapted**: panel =
-  evolve set; held-out judge ≈ OOD test (a judge shift); checker ≠ generator; screen targets;
-  falsifiable hypotheses; per-rung δ; re-scoring; noise band (ν → never-edited
-  allowance); `C` = size; `bₙ` rounding; prune scope/window; numeric defaults.
+  evolve set; held-out judge ≈ held-out split (a judge shift); checker ≠ generator; screen targets;
+  criterion-pass gains; per-rung δ; re-scoring; noise band (ν → never-edited allowance); `C` = size;
+  `bₙ` rounding; prune threshold/window; numeric defaults.
 - Also: maker–checker, structured `DONE` (Anthropic, *Effective harnesses*); audit-before-trust
   (Cursor).
