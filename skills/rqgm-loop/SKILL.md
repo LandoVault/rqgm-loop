@@ -61,8 +61,8 @@ iteration = generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β�
   **Prune** loop-added text only: a component whose last-`2w` accepted edits all lacked Progress loses
   it (gated) unless the checker upholds it; `DONE` constraints and `[OPEN]` markers exempt.
   The rung **saturates** when all rung criteria pass; `2w` iterations without Progress → HALT(STALL).
-- **6 · Boundary.** A judge **dissents** if it scores any criterion < 7. Advance a rung only if the
-  bar is met **and** ≥1 judge dissents (none → the human may skip rungs); **pause for human
+- **6 · Boundary.** A judge **dissents** if it scores any criterion < 7. Advance a rung only if it
+  saturates (step 5) **and** ≥1 judge dissents (none → the human may skip rungs); **pause for human
   confirmation** (escalation redefines success). Rungs (cumulative):
   E1 fair-critical → E2 adversarial/equal-stringency (reject polish, demand derivations) →
   E3 2nd objective (Pareto) → E4 red-team re-verifies every cited number.

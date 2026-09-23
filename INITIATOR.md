@@ -87,7 +87,7 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 > **HALT(STALL)**.
 >
 > **6 · Boundary (evolve the utility).** A judge **dissents** if it scores any criterion < 7. Advance
-> one rung **only if** the current bar is met **and** ≥1 judge dissents (none → the human may skip
+> one rung **only if** it saturates (step 5) **and** ≥1 judge dissents (none → the human may skip
 > rungs). Escalation *redefines success*, so **pause for a human checkpoint here**. Record the utility event; scores across a boundary are not comparable. Rungs (cumulative): **E1** fair-but-critical → **E2** adversarial /
 > equal-stringency (reject polish; demand every number derived) → **E3** add a 2nd objective as a Pareto
 > axis (e.g. defensibility / moat) → **E4** red-team that re-verifies every cited number.

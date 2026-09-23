@@ -95,7 +95,7 @@ For the full resumable, guard-railed version (memory, budgets, gates), use **[`I
 
 Each iteration: **generate** at most `bₙ` hypothesis-tagged edits (the budget anneals to one) → a
 **leakage screen** checks the diff → a **separate evaluator panel** scores it → **verify** any new claim before trusting the score → run the **gates**
-→ record → repeat. When the epoch's bar is met, **escalate the evaluator** (with a human checkpoint).
+→ record → repeat. When the epoch saturates, **escalate the evaluator** (with a human checkpoint).
 Stop when the success spec passes under the hardest utility, a **held-out judge** agrees, **and** no
 substrate gaps remain.
 
