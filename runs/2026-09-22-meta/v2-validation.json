@@ -1,0 +1,236 @@
+{
+ "guardrails": {
+  "issues": [
+   {
+    "where": "skills/rqgm-loop/SKILL.md (NEW) — 'Each round' step 4 / DESIGN.md 'What was removed' row 'Gates G1–G6 as a list' (claims 'G1 and G4 follow from compare against best plus the ledger')",
+    "problem": "ORIGINAL/PREVIOUS have an explicit G4: HALT(OSCILLATION) when vₙ ≈ vₙ₋₂ (thrashing between two versions), which stops the loop and surfaces both versions to the human. NEW has no oscillation detector, no HALT(OSCILLATION), and no code path that ever surfaces a thrash pattern to the human. DESIGN.md asserts G4 'follows from' pairwise comparison-against-best plus the ledger, but the actual mechanisms are: (a) a kept change can only be reverted if ALL judges agree (raises friction on reversal) and (b) the ledger blocks re-proposing ideas that were REJECTED (not ideas that were previously ACCEPTED-then-reverted). Neither mechanism detects or halts a cycle where the loop repeatedly accepts A→B→A→B... across rounds when each direction independently gets a bare majority of a possibly-rotating judge subset (only 1–3 of the panel run per round) to prefer it over the immediately-preceding 'best'. This is a plausible, not proven, equivalence: the claim in DESIGN.md is asserted rather than demonstrated, and the human-facing safety property (being alerted when the loop is thrashing, so they can intervene) is lost.",
+    "fix": "Either (1) add back an explicit oscillation check — e.g., after each accept, compare vₙ's diff/text to vₙ₋₂'s and HALT(OSCILLATION) + surface both to the human if they match — or (2) if the pairwise/unanimity-to-revert design is kept as the sole mitigation, state explicitly in DESIGN.md why full equivalence holds (e.g., prove that under 'majority-to-accept, unanimity-to-revert' no accepted-state cycle of length >1 can recur without at least one full-panel dissent being recorded, and add a lightweight cheap check — e.g. version-similarity against the last N accepted 'best' states — purely to surface a detected cycle to the human, matching the original's 'surface both' behavior) rather than relying on an unproven structural argument.",
+    "severity": "med"
+   }
+  ],
+  "verdict": "Mostly no weakening: maker-checker separation, never-edit-DONE/rubric, substrate firewall, verify-before-trust, no-polish-reward, regression/monotonicity, budget halt, human checkpoint at escalation, held-out sealing/never-reuse, leakage screen, torn-record resume, and single-writer archive are all preserved or strengthened in NEW (SKILL.md + INITIATOR.md, backed by DESIGN.md's justified redesign of scoring/calibration/complexity gates into pairwise comparison + ties-favor-shorter). The one plausible uncovered removal is the explicit oscillation/thrash guardrail (G4, HALT(OSCILLATION) with human surfacing), which DESIGN.md claims is subsumed by 'compare against best' + the ledger but does not actually replicate the original's detect-and-surface-to-human behavior for a repeating accept/revert cycle."
+ },
+ "completeness": {
+  "verdict": "The design is sound and much leaner, but it has two dead or undefined states (an [OPEN] remaining after every criterion passes, and escalation triggered by \"killers\" that the pass/fail check never produces). It also lacks two elements the evidence supports: deterministic checks where a criterion can be tested mechanically, and judging each pair in both orders. Beyond that, a few rules can be deleted: E4, the separate pruning clause, and re-offering losing winners.",
+  "issues": [
+   {
+    "where": "SKILL.md Boundary/Stop; INITIATOR.md Boundary/Stop",
+    "problem": "Some states have no next step. (a) Every DONE criterion passes, but an [OPEN] marker is still in best. Stop is not allowed, the loop is not stalled, and no rule says what to do next. It can only run until HALT(BUDGET). (b) The human declines the escalation at the Boundary pause, and nothing says what happens then. (c) Stop requires a pass 'at the final rung', which could mean E4 or the rung reached. If it means E4, the 'otherwise go to Stop' branch at a lower rung can never be satisfied.",
+    "fix": "Add one line to Stop: 'If [OPEN]s remain, list them and pause for the human's substrates. If none can be supplied, HALT(STALL) and name them. If escalation is declined, go to Stop.' Change 'final rung' to 'the current rung'.",
+    "severity": "high"
+   },
+   {
+    "where": "SKILL.md Boundary ('a check judge still names a killer'); DESIGN.md problem 8",
+    "problem": "Escalation depends on killers, but the Check step collects only pass/fail per criterion, so killers are undefined at that point. It is also the wrong trigger. The documented failure is judge leniency (RQGM 2606.26294: over-acceptance up to 1.91x). Lenient E1 judges name no killer, so the loop stops at the weakest rung, which is the Problem 2 failure again. The meta-run's 26 of 32 pairwise wins (81%) is consistent with lenient acceptance, not only with real gains.",
+    "fix": "Delete the killer condition: 'If a higher rung exists, pause for the human's confirmation, then escalate.' Stop requires at least E2. Reset the stall count when the rung changes (this is not specified now).",
+    "severity": "high"
+   },
+   {
+    "where": "DESIGN.md problems 3/5; SKILL.md Setup (DONE) and Check",
+    "problem": "Missing element: every criterion is decided by LLM judges, even ones a machine can test (tests pass, build succeeds, word limits, required sections present, citations resolve). The skill explicitly targets codebases and specs. Deterministic checks have no judge noise and cannot be flattered. Evidence: 2606.09498 (Self-Harness: regression-test validation before adopting an edit), 2605.21384 (SpecBench: a visible-vs-held-out test gap shows reward hacking), and Anthropic Effective harnesses (don't edit the tests), which DESIGN already cites.",
+    "fix": "Add one clause to DONE: 'Each criterion names its check: a command or test when it can be checked mechanically (run it at Screen and Check; its result overrides judges), otherwise judges.' Nothing else changes.",
+    "severity": "med"
+   },
+   {
+    "where": "SKILL.md Each round step 3 (one judge first, early stop); DESIGN.md problem 3",
+    "problem": "'Order swapped between judges' combined with 'run one judge first; stop if it prefers best with high confidence' means a variant can be rejected by one judge that saw only one A/B order. Position bias is the main pairwise bias. The one-time identity/placebo probe cannot detect it when the versions differ. The research.json evidence that DESIGN cites for sequential judging, 2602.13110 (SCOPE), uses a bidirectional (both-orders) preference signal for this reason.",
+    "fix": "Replace 'order swapped between judges' with 'each judge sees both orders; if its verdicts disagree, it counts as a tie.' Keep the early stop.",
+    "severity": "med"
+   },
+   {
+    "where": "DESIGN.md problem 2; SKILL.md Roles and Stance ('cheaper model for the screen and judges')",
+    "problem": "Independence is solved only with separate contexts. A fresh context of the same model family shares that family's preferences, so the writer can still 'judge' through a sibling. The over-acceptance evidence (1.91x for AI-generated work) is about model reviewers favoring model text, not about a shared context. 2603.00077 (Autorubric) reports judge-family differences across tasks. The Stance line even suggests a cheaper model for judges without saying it should come from a different family.",
+    "fix": "Add to Roles: 'Where available, judges and held-out judges use a different model family from the generator.' One clause, no new mechanism.",
+    "severity": "med"
+   },
+   {
+    "where": "SKILL.md Roles/Judges ('current rung's rubric'); INITIATOR.md slots",
+    "problem": "The rubric is referenced (judges' cached prefix, and 'never edit the rubric'), but no slot or step says where it comes from. The loop could write it itself, which leaves a way around the rule against editing DONE.",
+    "fix": "Define it in Setup: 'rubric = the DONE criteria plus the current rung's stance line, fixed at setup and changed only at a human-confirmed escalation.' No new slot is needed.",
+    "severity": "med"
+   },
+   {
+    "where": "SKILL.md Boundary E3 / Keep (protected list)",
+    "problem": "Once named, the E3 objective is 'protected'. It is not a DONE criterion, though, so Check and the held-out check never test it and Stop does not require it. Protection alone only stops the objective from getting worse. Nothing makes the loop achieve it.",
+    "fix": "'The E3 objective, once the human names it, is appended to DONE as a criterion.' The human wrote it, so the rule against editing DONE is not violated. Then delete 'the E3 objective once named' from the protected list, because 'criteria best already passes' covers it.",
+    "severity": "low"
+   },
+   {
+    "where": "SKILL.md Boundary E4; Step 2 Verifier",
+    "problem": "The rules overlap. The Verifier already checks every new number or claim, so only the claims in v0 are never verified. E4 is a whole rung that exists just to cover that gap, and it is a verification pass, not a judge stance.",
+    "fix": "At Setup, send v0's numbers and claims to the Verifier. Then every claim in best has been verified, and E4 can be deleted. The ladder becomes E1, E2, E3.",
+    "severity": "low"
+   },
+   {
+    "where": "SKILL.md step 4 (pruning clause, 'ties go to the shorter one'); step 3 ('cosmetic = tie')",
+    "problem": "Three rules express one idea: cosmetic = tie, a shorter variant rated no worse is kept, and ties go to the shorter. Strict mode ('keeping needs every judge') also leaves it unclear whether a tie still keeps a deletion.",
+    "fix": "Merge them into one rule: 'A tie counts as a win for the shorter version (in strict mode too).' Delete the separate pruning sentence.",
+    "severity": "low"
+   },
+   {
+    "where": "SKILL.md step 4 ('offer the other winners again next round'); INITIATOR.md same",
+    "problem": "This can be removed. The ledger blocks only rejected ideas, so the generator is already free to re-propose a winner that wasn't applied. The rule adds bookkeeping, and it doesn't say whether re-offered winners count toward K = 2.",
+    "fix": "Delete it. Log the losers as 'kept:false, won' so the generator can see them in the ledger.",
+    "severity": "low"
+   },
+   {
+    "where": "SKILL.md Stop vs INITIATOR.md Stop (held-out failure)",
+    "problem": "The two files disagree. SKILL requires 'new human-written judges next time' after a held-out failure, and INITIATOR does not. Only criterion IDs leak to the loop, so reusing the same judges exposes almost nothing, and writing new ones is a costly step for the human.",
+    "fix": "Delete 'use new human-written judges next time' from SKILL so it matches INITIATOR.",
+    "severity": "low"
+   },
+   {
+    "where": "DESIGN.md evidence column (legend, problems 1, 2, 4, 7, 8, 9, 10)",
+    "problem": "The evidence tagging doesn't match the stated standard. '[paper]' is defined as a verified abstract in research.json, but the RQGM (2606.26294) and RRSI (2609.24972) papers are not in research.json. They come from the rrsi run grounding. Anthropic and Cursor carry no tag. 2604.23472 concerns scoring optimizers in a meta-loop, not reusing artifact scores. 2606.23075 is an attack-surface study, cited for human-confirmed escalation. The [own] held-out 3/3 result was a pairwise preference, not the per-criterion pass/fail procedure the design specifies. GEPA/DemoEvolve (2605.24539) is the actual support for exemplars in GROUNDING and is not cited for it. 2607.12227's main lesson, comparing against a matched-budget baseline, is cited only as support for the held-out check.",
+    "fix": "Change the legend to 'verified abstract or primary PDF in runs/'. Drop the two misapplied citations. Cite 2605.24539 for exemplars. Label the held-out 3/3 as 'pairwise, not the specified check'. Note the matched-budget baseline as the test for any future claim that 'the loop helps', with no change to the run procedure.",
+    "severity": "low"
+   }
+  ]
+ },
+ "evidence": {
+  "verdict": "Most numeric/evidence claims in DESIGN.md and README.md check out precisely against the run archives (the 0.33 panel-mean shift, 1-point single-judge swing, 11 screen rejections, the 15/47 and 26/32 and 16-applied meta-run counts, 3/3 held-out, ~6.8 vs ~11 agents/round, RQGM's 1.91x figure, RRSI's leakage-critic/pruner/OOD-gain claims, and the Cursor 87.1%→73.0% figure all verified). One evidence line in DESIGN.md ('parallel replay broke' / order-stable deterministic resume) has no support in any run file and should be corrected or removed; two other issues are minor (a 1-edit discrepancy between log.md and archive.jsonl on RRSI screen rejections, and an unverified 'evidence-aware credit' label attributed to RRSI).",
+  "issues": [
+   {
+    "where": "DESIGN.md, problem #10 (State and cost), evidence column: \"Order-stable sequential runs resume deterministically, while a parallel replay broke.\"",
+    "problem": "This [own] evidence claim has no support anywhere in the run artifacts. runs/2026-09-22-meta/log.md only says 'plus 5 wasted re-runs on the broken resume' with no mention of a parallel vs. sequential distinction or of order-stable deterministic resume; grepping all of runs/2026-09-22-meta/ and runs/2026-09-22-rrsi/ for 'parallel', 'sequential', or 'deterministic' turns up nothing matching this specific claim. It reads as an invented/embellished detail dressed up as observed evidence.",
+    "fix": "Either cite the specific archive/log line that supports 'parallel replay broke' and 'order-stable ... resume deterministically', or soften the claim to what the logs actually show: 'resume failed 5 times in epochs 1-9 for unspecified reasons (fixed later in the run)', or remove the sentence.",
+    "severity": "high"
+   },
+   {
+    "where": "runs/2026-09-22-rrsi/log.md vs runs/2026-09-22-rrsi/archive.jsonl (screen-rejection count), referenced indirectly by DESIGN.md row 4 ('The screen rejected 11 edits in run 1...')",
+    "problem": "log.md's own summary says 'Leakage screen rejected 12 edits across the run', but summing the per-version screen records in archive.jsonl (v2:2, v3:1, v4:3, v5:2, v8:1, v10:2; v6/v7/v9 passed 0 rejected) totals 11, not 12. DESIGN.md's '11' matches the raw archive data but contradicts the run's own log.md narrative — the two source-of-truth run files disagree with each other by one.",
+    "fix": "Recount from archive.jsonl (11) and correct runs/2026-09-22-rrsi/log.md's summary line from 'rejected 12 edits' to 'rejected 11 edits' so the design doc's citation and the underlying run log agree.",
+    "severity": "low"
+   },
+   {
+    "where": "DESIGN.md row 6 evidence: \"RRSI proposal regularizers (edit budget, evidence-aware credit; removing them costs OOD)\"",
+    "problem": "The RRSI abstract (arXiv:2609.24972) confirms the temporally-annealed edit budget, the leakage critic/pruner, and an OOD benchmark gain (up to 4.7 points), but does not mention an 'evidence-aware credit' regularizer by that name — that appears to be this repo's own paraphrase/extension rather than a verified element of the paper, and research.json (which lists 23 other verified papers) never verifies RRSI or RQGM themselves.",
+    "fix": "Either point to the specific RRSI section/table that defines 'evidence-aware credit' (if it exists under different terminology) or drop that phrase and keep only the abstract-confirmed regularizers (edit budget, critic, pruner).",
+    "severity": "low"
+   }
+  ]
+ },
+ "dryrun": {
+  "issues": [
+   {
+    "where": "Step 3 (Judge), 'a confidence, and at most 2 killers of the version it prefers'",
+    "problem": "Contradicts normal usage: a 'killer' should be a fatal flaw in the losing/rejected version, but the sentence attaches killers to 'the version it prefers' (the winner). The generator later consumes 'the latest killers' to target its next hypothesis (Step 1), so this ambiguity directly changes what gets optimized.",
+    "fix": "Rewrite explicitly: 'at most 2 killers — fatal flaws in the version it does NOT prefer' (or, if killers are meant as supporting reasons for the winner, rename them 'reasons' to avoid the fatal-flaw connotation).",
+    "severity": "high"
+   },
+   {
+    "where": "Boundary section: 'If a higher rung exists and a check judge still names a killer, pause for human confirmation, then escalate.'",
+    "problem": "Step 5 (Check) never has check-judges produce 'killers' — they only give per-criterion pass/fail. Also Boundary is only reached when all criteria already passed (per Step 5), so it's unclear how a killer can exist at that point.",
+    "fix": "Either add a killer output to the Check step's judge protocol, or rephrase Boundary's trigger to reference something Check actually produces (e.g. a judge's residual-concern note despite a pass).",
+    "severity": "high"
+   },
+   {
+    "where": "Boundary section",
+    "problem": "No next state is defined for the human declining escalation. This is exactly the branch requested in the dry-run and the spec is silent — does the loop stay at the current rung and proceed to Stop, or HALT, or something else?",
+    "fix": "Add an explicit branch: 'If the human declines, remain at the current rung and proceed to Stop' (or define a HALT(DECLINED) outcome).",
+    "severity": "high"
+   },
+   {
+    "where": "Roles: 'Screen sees *best* and one diff.'",
+    "problem": "Step 2 requires Screen to reject a diff that 'echoes rubric wording' or 'targets a judge,' which requires visibility into DONE/the rubric — not listed among what Screen is permitted to see. A role is being asked to do a job with information it's not granted.",
+    "fix": "Add DONE/rubric to Screen's visible inputs, or drop the rubric-echo check from Screen's responsibilities.",
+    "severity": "med"
+   },
+   {
+    "where": "Stop section: 'reopen only those criterion IDs, once (no critique text)'",
+    "problem": "Unclear whether reopening re-enters the full round loop (propose K=2/screen/judge/keep) or is a lighter direct-edit path, and whether Step 5's Check must re-run before the second held-out attempt.",
+    "fix": "State explicitly: 'Reopening re-runs the normal round loop scoped to only the failing criterion IDs, followed by a fresh Check, then the second held-out attempt with new judges.'",
+    "severity": "med"
+   },
+   {
+    "where": "Step 3 (Judge): 'stop if it prefers best with high confidence'",
+    "problem": "No confidence scale or threshold is defined anywhere in the spec, so this early-stop condition isn't mechanically decidable.",
+    "fix": "Define the confidence scale (e.g. low/med/high or 1-5) and state the numeric/qualitative cutoff for 'high.'",
+    "severity": "med"
+   },
+   {
+    "where": "Step 3 (Judge): third-judge tiebreak",
+    "problem": "When judges 1 and 2 split, a third judge runs — but if that third judge also ties, there is no majority among the three and no resolution rule is given.",
+    "fix": "Add a fallback for a true 1-1-tie/no-majority outcome (e.g. treat as not-kept, or escalate to a 4th judge).",
+    "severity": "med"
+   },
+   {
+    "where": "Memory schema (`archive.jsonl` record types)",
+    "problem": "The Setup's bias-probe outcome (normal vs. strict mode) has no corresponding record type in the memory schema, so a resumed run can't recover whether strict mode is active.",
+    "fix": "Add a `bias_probe{result, mode}` record type and include it in the 'Resume =' list.",
+    "severity": "med"
+   },
+   {
+    "where": "BUDGET slot vs. Boundary escalation",
+    "problem": "It's unspecified whether BUDGET (e.g. 12 rounds/150k tokens/45 min) is a single global cap across all rungs or resets per rung when Boundary escalates E1->E2->E3->E4.",
+    "fix": "State explicitly whether BUDGET is global or per-rung.",
+    "severity": "low"
+   },
+   {
+    "where": "Step 4 (Keep): 'A shorter variant that no judge rates worse is also kept (pruning).'",
+    "problem": "Ambiguous scope of 'rates worse' — worse than best overall, or on any single criterion — which differs from the adjacent protected-item rule's per-criterion framing.",
+    "fix": "Clarify: 'no judge rates it worse than best on any single criterion or overall.'",
+    "severity": "low"
+   }
+  ],
+  "verdict": "Mostly executable via the worked-example template, but not fully executable as written: three high-severity gaps block deterministic execution of exactly the branches requested — killers are defined self-contradictorily (attached to the winner rather than the loser), Boundary's trigger references a 'killer' that the Check step never produces, and there is no defined next state for a human declining escalation."
+ },
+ "ablation": [
+  {
+   "prefersNew": true,
+   "per": {
+    "sound": "tie",
+    "guardrails": "new",
+    "token_efficiency": "new",
+    "noise_robust": "new",
+    "grounded": "new",
+    "simple_elegant": "new"
+   },
+   "conf": "high",
+   "why": "B replaces A's noisy absolute 0-10 scoring/formula soup (β₀,β₁,δ,cosine bₙ) with blind pairwise A/B/tie majority voting plus a one-time bias probe, backed by DESIGN.md's own-run evidence that scalar scoring stalled and drifted while pairwise held. Guardrails (screen, verify, held-out, no-DONE-edit) are preserved and the bias probe adds a genuine noise check; sequential judge escalation (\"run one first, stop if high-confidence\") cuts agent calls versus A's presumed all-evaluators-every-round. B is also far simpler with no tunable parameters.",
+   "top_fix": "Inline a one-line summary of DESIGN.md's key evidence (why pairwise beats scalar) directly in SKILL.md so the loop's rationale is self-contained without requiring a separate file read."
+  },
+  {
+   "prefersNew": true,
+   "per": {
+    "sound": "new",
+    "guardrails": "new",
+    "token_efficiency": "new",
+    "noise_robust": "new",
+    "grounded": "new",
+    "simple_elegant": "new"
+   },
+   "conf": "high",
+   "why": "A (current) replaces B's brittle absolute-scoring machinery (S*, deltas, β0/β1, gates G1-G6) with pairwise blind judging plus a bias probe — evidenced in DESIGN.md as fixing an observed stall from scoring noise. A also strengthens guardrails (screen catches guardrail-weakening/improper [OPEN] removal; protected-item regression check; 3-judge held-out vs B's 1), cuts token cost via sequential judge early-stopping, and drops ~10 tunable parameters for a simpler, more legible loop.",
+   "top_fix": "Boundary in A triggers escalation when \"a check judge still names a killer,\" but the Check step it references only yields per-criterion pass/fail marks, not killers (killers are defined only in the round Judge step). Tie this explicitly so the escalation trigger is well-defined."
+  },
+  {
+   "prefersNew": true,
+   "per": {
+    "sound": "new",
+    "guardrails": "tie",
+    "token_efficiency": "new",
+    "noise_robust": "new",
+    "grounded": "new",
+    "simple_elegant": "new"
+   },
+   "conf": "high",
+   "why": "B replaces A's noisy absolute 0-10 scoring/δ-calibration/cosine-budget machinery with pairwise A/B/tie judging plus a one-time bias probe — fewer parameters, cheaper (escalates judges only on disagreement vs A's fixed full panel + per-rung calibration), and DESIGN.md documents own-run evidence (scalar gate stalled, cosine/bundling caused credit-assignment fights) that A's complexity didn't help.",
+   "top_fix": "Pull the one-line rationale for the bias probe / pairwise-over-scalar choice (the strongest noise-robustness mechanism) directly into SKILL.md's Setup section, so the guardrail's justification survives even if DESIGN.md isn't read alongside it."
+  }
+ ],
+ "heldout": [
+  {
+   "prefersNew": true,
+   "conf": "high",
+   "why": "I would adopt B. It drops A's six-parameter scalar machinery for blind pairwise judging with majority and protected-item vetoes, scoped role contexts and a 3-judge held-out majority. All guardrails remain, and verification no longer deadlocks. A HALTs on the scalar mean, which can hide per-criterion progress. B's weak points: its after-stall rule is unreachable, and one unswapped judge can early-reject.",
+   "top_fix": "Step 5 of B sends the first stall with failing criteria straight to HALT(STALL), so step 1's 'after a stall, target the least-recently-changed section' can never run. Fix: run one forced-exploration round before halting. Also, randomize judge 1's A/B order, and do not let a single judge's early reject mark an idea as rejected in the ledger."
+  },
+  {
+   "prefersNew": true,
+   "conf": "high",
+   "why": "A swaps B's noisy scalar gates (δ, S*, the max-ratchet G1) for blind pairwise judging per criterion, adding judges only when earlier ones disagree. That scalar gating stalled run 1. A's one-change variants also close B's bundled-credit free-rider route. A screens and verifies before judging. Gaps: the screen is not given the rubric, escalation trigger is undefined, and nothing stops growth.",
+   "top_fix": "Give the Screen the DONE constraints, the current rung's rubric and the judge persona names. As written, A says the Screen \"sees best and one diff\", so it cannot detect rubric echo or judge-targeting. The screen is the real filter against score-gaming: judges preferred 26 of 32 screened variants in the meta-run. Also, make the check judges return killers, so escalation cannot be skipped without the human deciding."
+  }
+ ]
+}

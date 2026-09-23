@@ -16,7 +16,7 @@
 | 9 | v9 | 6.33 | G6 reject (ΔS < −δ) |
 | 10 | v10 | 6.50 | accept (noise band, −1.3% size) → **HALT(STALL)** |
 
-Leakage screen rejected 12 edits across the run (each restored before scoring), e.g. dropping
+Leakage screen rejected 11 edits across the run (each restored before scoring), e.g. dropping
 rubric-echo screening, dropping `[OPEN]` prune exemptions, S* allowed to decrease, a run-specific
 "steps 0–7" exemption the generator itself wrote, and a lowered held-out bar.
 

@@ -19,14 +19,15 @@ human can close** instead of papering over them.
 
 ## Why it works
 
-- **Maker ≠ checker.** The writer never judges its own work.
+- **Maker ≠ checker.** The writer never judges its own work; judges come from a different model family where possible.
+- **Tests beat opinions.** Any criterion a command can check (tests, builds, caps) is checked mechanically.
 - **Compare, don't score.** Judges compare a candidate with the current best, blind and with the order
   swapped, per criterion. Our absolute-score run stalled on judge noise; the pairwise run did not.
 - **Screen and verify before judging.** Rubric-gaming, inert text, weakened guardrails and unverified
   facts are rejected before any judge sees them.
 - **Small changes, remembered failures.** One change per variant, with a ledger of what was rejected.
   Ties go to the shorter version, so dead weight gets pruned.
-- **The bar rises, with you.** Rungs E1→E4 escalate only at a human checkpoint.
+- **The bar rises, with you.** Rungs E1→E3 escalate only at a human checkpoint.
 - **Substrate firewall.** The loop improves *features* but never fabricates *substrates* (real data,
   results, people). Gaps become `[OPEN]`, and you close them.
 - **Held-out check.** Judges you write, which the loop never sees, confirm the result.
@@ -78,10 +79,10 @@ For the full resumable version (memory, budget, escalation, held-out check), use
 |---|---|
 | `{{TARGET}}` | the artifact to improve (file / doc / repo / design) |
 | `{{GROUNDING}}` | source-of-truth docs/links, plus 1–2 exemplars of the target quality if available |
-| `{{DONE}}` | atomic, non-overlapping pass/fail criteria (JSON), must-NOT-change constraints, the hard stop |
+| `{{DONE}}` | atomic, non-overlapping pass/fail criteria (JSON), each naming its check (a test if mechanical, else judges); must-NOT-change constraints; the final rung |
 | `{{EVALUATORS}}` | 2–5 judge personas, **each a separate agent from the writer** |
 | `{{MEMORY}}` | path to the append-only `archive.jsonl` (state + resume) |
-| `{{BUDGET}}` | max rounds, token/cost ceiling, wall-clock |
+| `{{BUDGET}}` | one global cap: max rounds, token/cost ceiling, wall-clock |
 
 You also write **three held-out judges**, which the loop never sees.
 
@@ -92,11 +93,11 @@ You also write **three held-out judges**, which the loop never sees.
 Each round: **propose** 2 single-change variants → **screen** and **verify** each → **judge** each
 against the current best (one judge, a second if needed, a third on a split) → **keep** a winner only if
 most judges prefer it and nothing protected gets worse → log. After 3 rounds with nothing kept, or when
-`DONE` seems met, **check** every criterion (3 judges, majority). All pass → you decide whether to
-**escalate** the bar (E1 fair → E2 adversarial → E3 your second objective → E4 red-team) or stop. Stop
-needs every criterion passing, no `[OPEN]` gaps, and your **held-out judges** agreeing.
+`DONE` seems met, **check** every criterion (tests first, then 3 judges by majority). All pass → you
+decide whether to **escalate** the bar (E1 fair → E2 adversarial → E3 your second criterion) or stop.
+Stop needs every criterion passing, no `[OPEN]` gaps, and your **held-out judges** agreeing.
 
-**Halts:** `STALL` (nothing kept and criteria still failing, so it tells you what only you can supply) ·
+**Halts:** `STALL` (nothing kept and criteria still failing, or `[OPEN]` gaps left: it tells you what only you can supply) ·
 `OVERFIT` (held-out check failed twice) · `BUDGET` (emits the best version so far).
 
 ---

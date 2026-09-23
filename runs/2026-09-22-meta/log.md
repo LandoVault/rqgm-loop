@@ -39,8 +39,8 @@ literal-undo G4 (narrows coverage) · verify only screen-flagged claims (×3) ·
 tied to bₙ · E3 Pareto definition (screen) · scripted prune revert.
 
 ## Cost
-Research 5 agents / 0.32M subagent tokens. Epochs 1–9: ~83 agents (plus 5 wasted re-runs on the broken
-resume). Lean epochs 9–19: 75 agents / 4.52M subagent tokens / 73 min. ~6.8 agents per lean epoch vs
+Research 5 agents / 0.32M subagent tokens. Epochs 1–9: ~83 agents (plus 5 wasted re-runs: resuming the parallel run replayed agents out of
+order, so finished epochs re-ran live; stopped and restarted sequentially). Lean epochs 9–19: 75 agents / 4.52M subagent tokens / 73 min. ~6.8 agents per lean epoch vs
 ~11 before.
 
 ## Open (for the human)
