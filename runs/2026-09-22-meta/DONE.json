@@ -1,0 +1,15 @@
+{
+  "run": "meta-loop: RQGM loop improves its own design + token efficiency, grounded in recent RSI research",
+  "baseline": "v10 (commit bded944)",
+  "target": ["skills/rqgm-loop/SKILL.md", "INITIATOR.md", "README.md"],
+  "pairwise_criteria": [
+    {"id": "d1-sound", "test": "rules are internally consistent and executable by an agent host (no undefined terms, no deadlocks, clear state transitions)"},
+    {"id": "d2-guardrails", "test": "maker-checker, substrate firewall, human checkpoint at escalation, G1-G6, held-out sealing, rubric-echo screening are preserved or strengthened (a 'worse' here vetoes a variant)"},
+    {"id": "d3-token-efficiency", "test": "the loop as specified spends fewer agent calls / context tokens per iteration for the same decision quality (diff-only context, model tiering, pairwise/early-exit judging, caching)"},
+    {"id": "d4-noise-robust", "test": "acceptance decisions are robust to LLM-judge noise and cannot stall while real per-criterion progress is made"},
+    {"id": "d5-grounded", "test": "new mechanisms are grounded in verified recent RSI research, cited faithfully, adaptations labeled"},
+    {"id": "d6-compact", "test": "SKILL.md <= 1000 words, INITIATOR.md <= 1300, README.md <= 1150; domain-agnostic"}
+  ],
+  "accept_rule": "variant passes the leakage screen, majority of pairwise judges prefer it over the current baseline, no judge rates d2 worse, word caps hold",
+  "stop": "20 epochs, or 3 consecutive epochs with no accepted variant (HALT STALL), or proposer reports convergence; then held-out pairwise check final vs v10"
+}
