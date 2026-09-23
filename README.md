@@ -84,7 +84,7 @@ For the full resumable version (memory, budget, escalation, held-out check), use
 | `{{MEMORY}}` | path to the append-only `archive.jsonl` (state + resume) |
 | `{{BUDGET}}` | one global cap: max rounds, token/cost ceiling, wall-clock |
 
-You also write **three held-out judges**, which the loop never sees.
+You also write **three held-out judges** (plus three spares), which the loop never sees.
 
 ---
 
@@ -97,8 +97,9 @@ most judges prefer it and nothing protected gets worse → log. After 3 rounds w
 decide whether to **escalate** the bar (E1 fair → E2 adversarial → E3 your second criterion) or stop.
 Stop needs every criterion passing, no `[OPEN]` gaps, and your **held-out judges** agreeing.
 
-**Halts:** `STALL` (nothing kept and criteria still failing, or `[OPEN]` gaps left: it tells you what only you can supply) ·
-`OVERFIT` (held-out check failed twice) · `BUDGET` (emits the best version so far).
+**Halts:** `STALL` (nothing kept, criteria still failing) · `OPEN` (a substrate gap only you can
+close) · `OSCILLATION` (a kept change was undone, so you pick) · `OVERFIT` (held-out check failed twice)
+· `BUDGET` (emits the best version so far). Each tells you exactly what only you can supply.
 
 ---
 

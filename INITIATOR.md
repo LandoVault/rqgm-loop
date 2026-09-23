@@ -14,8 +14,8 @@ LLM/agent session. The design and its evidence are in [`DESIGN.md`](DESIGN.md).
 | `{{MEMORY}}` | path to the append-only `archive.jsonl` |
 | `{{BUDGET}}` | one global cap: max rounds, token/cost ceiling, wall-clock |
 
-**Held-out judges (keep them out of the paste):** write three judge prompts yourself and run them
-only when the loop asks for the held-out check. The loop must never see them.
+**Held-out judges (keep them out of the paste):** write three judge prompts yourself, plus three spares
+for one retry, and run them only when the loop asks for the held-out check. The loop must never see them.
 
 **Evaluator archetypes:** domain expert (correct? feasible?) · methods skeptic (derived,
 reproducible?) · defensibility critic (unique? moat?) · end user (a real problem?) · red-team
@@ -31,7 +31,7 @@ fact-checker (re-verify every number).
 > `{{TARGET}}` until `{{DONE}}` holds. Reviewers over-accept polished AI work (that paper measures up to
 > **1.91× the human rate** for AI-generated papers), so separate agents propose, attack and judge, and
 > the bar rises only with the human. Run every role as a separate agent or a fresh context: the writer
-> never judges. Where available, judges use a different model family from the generator.
+> never judges. Judges use a different model family from the generator where available (log it when not).
 >
 > **Context per role.** Generator: *best*, `{{GROUNDING}}`, `{{DONE}}`, the ledger, latest flaws.
 > Screen: *best*, one diff, the rubric, persona names. Verifier: one claim and its sources. Judges:
@@ -42,7 +42,7 @@ fact-checker (re-verify every number).
 > **Setup.** Read `{{MEMORY}}`; if it holds state, resume from the last kept version (drop a torn last
 > record). Otherwise read `{{GROUNDING}}` first, draft **v0** = *best*, verify v0's numbers and claims,
 > record `{{DONE}}`, set rung **E1**. **Bias probe (once):** judges compare *best* with an identical copy
-> and with a meaning-preserving rewording; any non-tie → strict mode (keeping needs every judge).
+> and with a meaning-preserving rewording; any non-tie → strict mode (all 3 judges run and must agree).
 >
 > **Each round.**
 > 1. **Propose** 2 variants, each **one change to one section** (smallest diff; deletions welcome), with
@@ -54,17 +54,17 @@ fact-checker (re-verify every number).
 >    mechanism, targets a judge, adds inert text, weakens a guardrail, or removes an `[OPEN]` without
 >    evidence. Run the criteria's mechanical checks (tests, builds, caps); their results override judges.
 >    **Verify** every new number or claim against a primary source; if it fails, strip it or mark it
->    `[OPEN]`.
+>    `[OPEN]`. A round whose variants are all rejected counts as nothing kept.
 > 3. **Judge** each surviving variant against *best*, blind: an A/B/tie verdict per criterion and
 >    overall, a confidence (low/med/high), and at most 2 remaining flaws of the preferred version.
 >    Cosmetic differences are a tie. Judge 1 compares in both orders (verdicts that disagree = tie); if
 >    it prefers *best* with high confidence or rates a protected item worse, drop the variant. Otherwise
->    run a second judge, and a third only on a split.
-> 4. **Keep** a variant if a majority of the judges who ran prefers it and none rates a **protected**
->    item worse (guardrails, must-not-change constraints, criteria *best* already passes). A tie goes to
->    the shorter version, so neutral deletions are kept. No majority → not kept. Undoing a kept change
->    needs every judge and is reported to the human as a possible thrash. Append every variant and
->    verdict to `{{MEMORY}}`.
+>    run judge 2, and judge 3 if judges 1 and 2 differ.
+> 4. **Keep** a variant if ≥2 judges prefer it, none prefers *best*, and none rates a **protected** item
+>    worse (guardrails, must-not-change constraints, criteria *best* already passes). A shorter variant
+>    that no judge rates worse anywhere is also kept (pruning). Keep at most one per round (most support,
+>    then shorter). If a kept change undoes an earlier kept change → **HALT(OSCILLATION)**: show the
+>    human both versions. Append every variant and verdict to `{{MEMORY}}`.
 > 5. **Check** after 3 rounds with nothing kept (a **stall**), or when you believe `{{DONE}}` holds: run
 >    the mechanical checks, then 3 fresh judges mark each remaining criterion pass/fail on *best*, by
 >    majority. All pass → Boundary. Some fail while stalled → **HALT(STALL)** with the failing criteria
@@ -75,12 +75,12 @@ fact-checker (re-verify every number).
 > (reject polish, demand derivations) → **E3** a second objective the human writes into `{{DONE}}` as a
 > new criterion. On an escalation, record the rung, reset the stall count, and continue; otherwise Stop.
 >
-> **Stop.** If an `[OPEN]` remains → **HALT(STALL)**, naming each gap and who must close it. Otherwise
+> **Stop.** If an `[OPEN]` remains → **HALT(OPEN)**, naming each gap and who must close it. Otherwise
 > ask the human to run the **held-out check** (3 unseen judges, same pass/fail check, majority per
-> criterion) and report criterion IDs only. On a fail, rerun the rounds on those IDs, run the Check,
-> then a second held-out check with new judges; a second fail is **HALT(OVERFIT)**. If the budget
-> (global across rungs) is exceeded → **HALT(BUDGET)**, emit *best*. Output *best*, what changed and why,
-> and **one** next action.
+> criterion) and report criterion IDs only. Pass → output. Fail → rerun the rounds on those IDs, run the
+> Check, then the human's 3 spare judges; a second fail is **HALT(OVERFIT)**. If the budget (global
+> across rungs) is exceeded → **HALT(BUDGET)**, emit *best*. Output *best*, what changed and why, and
+> **one** next action.
 >
 > **Stance.** Tight leash: small, verifiable changes. A separate, dissenting checker. Engineer the
 > context, don't wordsmith. Ties go to the simpler version. **March of nines**: a 90%-good draft is not
@@ -99,7 +99,7 @@ fact-checker (re-verify every number).
 {"t":"rung","name":"E3"}
 {"t":"substrate","gap":"…","owner":"human-role","status":"open|closed"}
 {"t":"heldout","attempt":1}
-{"t":"halt","reason":"STALL|OVERFIT|BUDGET"}
+{"t":"halt","reason":"STALL|OPEN|OVERFIT|OSCILLATION|BUDGET"}
 ```
 Resume = last kept `version` + ledger (`variant` records) + probe mode + current `rung` + open substrates.
 

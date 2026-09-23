@@ -1,0 +1,113 @@
+{
+ "ablation": [
+  {
+   "pref": "new",
+   "conf": "high",
+   "per": {
+    "sound": "new",
+    "guardrails": "new",
+    "token_efficiency": "old",
+    "noise_robust": "new",
+    "grounded": "tie",
+    "simple_elegant": "old"
+   },
+   "why": "B (c3eebb2) is a direct bug-fix pass over A (ff9eab2) that repairs real soundness gaps and adds guardrails the task explicitly asks about. Soundness: A's Boundary step references a check judge \\\"naming a killer\\\" but the Check step (step 5) only produces per-criterion pass/fail, not killers — a dangling/undefined trigger; B replaces it with a clean rung-comparison rule (\\\"if the current rung is below the final rung, pause for the human\\\"). A also never defines \\\"rubric\\\" despite using it repeatedly; B defines it precisely (DONE criteria + rung stance line, fixed except at human-confirmed escalation) and never persists the bias-probe result across resume, so a resumed run forgets whether strict mode applies — B adds probe{mode} to memory and to the resume line. A's Stop section doesn't gate on remaining [OPEN] markers before running the held-out check; B explicitly HALTs(STALL) if any [OPEN] remains first. Guardrails: B adds model-family separation for judges vs. generator, a same-judge both-order comparison with a tie fallback on disagreement (directly targeting judge position bias), mechanical/test-based checks that override judge opinion where a criterion is mechanically checkable, explicit thrash reporting to the human when a kept change is undone, and gives the Screen persona names/rubric so it can actually enforce \\\"don't target a judge.\\\" These map almost one-to-one onto the guardrail list in the prompt, so B measurably strengthens maker-checker, verify-before-trust, and oscillation-surfacing. Noise robustness: the same-judge both-order check and mechanical-check-overrides-judges rule are concrete defenses against judge noise/position bias that A lacks. Trade-off: B is ~20% longer and adds more moving parts (probe mode, persona visibility, mechanical-check hook), so it loses on raw token_efficiency and simple_elegant versus A's tighter prose — but the added complexity is load-bearing (it closes real gaps) rather than padding, so it's a fair price for the correctness gains. Grounded is a tie; neither version's diff changes how mechanisms tie back to DESIGN.md evidence.",
+   "top_fix": "Keep B, but tighten it back toward A's brevity where possible — e.g. fold the Stop section's four bullets into fewer sentences and confirm the newly-added mechanical-check hook has a concrete example in DONE, so the extra machinery doesn't become the next source of undefined-term ambiguity."
+  },
+  {
+   "pref": "new",
+   "conf": "high",
+   "per": {
+    "sound": "new",
+    "guardrails": "new",
+    "token_efficiency": "old",
+    "noise_robust": "new",
+    "grounded": "tie",
+    "simple_elegant": "new"
+   },
+   "why": "Reading both texts directly (not the commit messages), A fixes several real defects present in B: (1) B's Screen role sees only \"best and one diff\" but Step 2 asks Screen to reject a diff that \"echoes rubric wording\" — Screen has no access to the rubric to check that, a dangling requirement; A gives Screen the rubric explicitly. (2) B's Boundary trigger — \"a check judge still names a killer\" — doesn't connect to Step 5's Check, which only produces pass/fail verdicts, not \"killers\"; also Boundary calls it \"final rung\" while Setup calls the same thing \"hard stop,\" a naming mismatch. A's Boundary trigger (\"current rung is below the final rung, pause for human\") is simple and consistent with its own Setup wording. (3) A adds a per-criterion mechanical check that \"overrides judges\" when a criterion can be tested by command/test — a concrete noise-reduction mechanism entirely absent from B, directly helping noise_robust and guardrails. (4) A has judge 1 evaluate both orderings of the same pair to catch that judge's own position bias; B only swaps which judge sees which order across different judges, which doesn't detect an individual judge's bias — weaker noise_robust. (5) A requires judges from a different model family than the generator (self-preference bias guard); B has no such rule. (6) A explicitly reports an undone/kept-change reversal to the human as a possible thrash (matches the \"oscillation surfaced\" guardrail); B only requires unanimity to undo, with no human-facing report. (7) A's Memory schema persists `probe{mode}` so resume preserves whether strict mode is active; B's schema omits this, so a resumed run loses that guardrail state — a real resume-soundness gap. (8) A drops B's E4 rung (a red-team re-verify-every-number pass), which is redundant with the per-round Verifier already checking every claim — a legitimate simplification, not a loss. The only clear edge for B is length/token efficiency (82 vs 101 lines) — some of A's fixes could probably be stated more tersely — but the substantive guardrail and soundness gains are worth the extra tokens.",
+   "top_fix": "Keep A's fixes (rubric visible to Screen, mechanical-check override, both-order same-judge bias probe, model-family separation for judges, thrash reported to human, probe mode persisted in Memory) but tighten the prose back toward B's length — several of A's additions are stated more verbosely than needed and could be compressed without losing the mechanism."
+  }
+ ],
+ "dryrun": {
+  "verdict": "Mostly executable, but 8 concrete ambiguities/gaps surface when dry-running the 11 branches — mainly around what counts as a \"split,\" how strict mode's \"every judge\" is enforced, thrash/held-out bookkeeping missing from the memory schema, and partial-survival rounds.",
+  "issues": [
+   {
+    "where": "Branch 1 — judge 1 both-order disagreement (Each round, step 3)",
+    "problem": "Judge 1's disagreement counts as a tie, then 'run judge 2, and judge 3 only on a split.' The spec never defines what a 'split' is when judge 1's own verdict is itself a tie (not a clean A vs B). If judge 2 then prefers the variant, is tie+prefer a 'split' that should trigger judge 3, or does it resolve at 2 judges? Also unclear how 'majority of judges who ran' is computed with a tie in the denominator (1 tie + 1 prefer = majority achieved, or not?).",
+    "fix": "Define 'split' explicitly as 'the judges who have run so far do not unanimously agree' (which includes tie-vs-prefer), and state that ties are excluded from the majority denominator (majority is computed only over judges who expressed a preference).",
+    "severity": "high"
+   },
+   {
+    "where": "Branch 3 — screen rejection interacting with round mechanics (Each round, steps 2–3)",
+    "problem": "The spec never says what happens when only one of the two proposed variants survives Screen (or none do). It's unclear whether a round with 0 surviving variants counts toward the '3 rounds with nothing kept' stall counter, and whether a round with 1 survivor still runs the full judge/keep procedure normally.",
+    "fix": "State explicitly: a round that screens out all variants still counts as a round with 'nothing kept' toward the stall counter, and a round with one survivor proceeds through Judge/Keep on that single variant only.",
+    "severity": "med"
+   },
+   {
+    "where": "Branch 4 — kept deletion via tie-to-shorter (Each round, step 4)",
+    "problem": "'A tie goes to the shorter version' is stated as an unconditional exception to the majority-keep rule, but it's not clear whether the protected-item safeguard ('none rates protected worse') still gates a tie-driven keep. A lenient tie verdict could auto-keep a deletion that happens to remove protected/guardrail content.",
+    "fix": "Add explicitly: 'the tie-to-shorter rule is still subject to the protected-item check; a tie that removes or weakens a protected item is not kept.'",
+    "severity": "high"
+   },
+   {
+    "where": "Branch 6 — stall -> HALT(STALL) vs Branch 8 — Stop-time [OPEN] -> HALT(STALL) (Each round step 5 vs Stop section)",
+    "problem": "The same halt name HALT(STALL) is used for two structurally different triggers (a mid-loop stalled check with failing criteria, vs. an unresolved [OPEN] discovered at Stop time), with no stated difference in resume semantics for the two cases. The Memory schema's halt{reason} record doesn't distinguish them either.",
+    "fix": "Either rename one of the two conditions (e.g. HALT(OPEN) for the Stop-time case) or specify that halt{reason} must record which trigger fired and that resume behavior is identical regardless.",
+    "severity": "med"
+   },
+   {
+    "where": "Branch 9 — held-out fails once, reopens, second held-out passes (Stop section)",
+    "problem": "Two gaps: (1) the success path after a second (passing) held-out check is never stated — it presumably falls through to the final 'Output best...' bullet, but this isn't explicit; (2) Setup only has the human write 3 held-out prompts once, but Stop requires 'new human-written judges' on a retry — there's no provision in Setup for the human to prepare spares, so this is an unplanned mid-run request back to the human.",
+    "fix": "Add an explicit 'if it passes, proceed to Output' sentence, and note in Setup that the human should be prepared to supply a second set of 3 held-out judges if the first check fails once.",
+    "severity": "med"
+   },
+   {
+    "where": "Branch 10 — resume from MEMORY mid-run in strict mode (Setup / Stance)",
+    "problem": "'Strict mode: keeping a change needs every judge' is ambiguous about whether it forces all 3 judges to run every round (overriding the normal split-triggered invocation of judge 2/3) or merely requires unanimity among whichever judges happened to run under the normal trigger rule. The latter reading makes strict mode nearly meaningless when only judge 1 runs and prefers the variant.",
+    "fix": "Clarify: 'in strict mode, run all 3 judges every round regardless of split, and keep only on unanimous preference.'",
+    "severity": "high"
+   },
+   {
+    "where": "Branch 11 — a kept change undone later (thrash) (Each round, step 4; Memory section)",
+    "problem": "'Undoing a kept change needs every judge and is reported to the human as a possible thrash' has no corresponding record type in the Memory schema (version, variant, citation, probe, check, rung, substrate, heldout, halt — no 'thrash' entry), so a thrash report has no durable, resumable record, and it's unclear whether the report pauses the loop or is only logged.",
+    "fix": "Add a `thrash{version_undone, round, judges}` record type to the Memory schema, and state whether reporting a thrash pauses for human acknowledgment or is asynchronous/advisory only.",
+    "severity": "med"
+   },
+   {
+    "where": "Roles section — 'judges come from a different model family than the generator, where available'",
+    "problem": "No fallback is defined for when a different-family judge is unavailable; the loop could silently proceed with same-family generator/judges, weakening the independence guarantee the design relies on (e.g. for the bias probe and split resolution) without flagging it anywhere.",
+    "fix": "Require that same-family fallback be logged (e.g. in the version or check record) so a human auditing the archive can see when judge independence was degraded.",
+    "severity": "low"
+   }
+  ]
+ },
+ "guardrails": {
+  "verdict": "One weakening found: the original hard HALT(OSCILLATION) guardrail was downgraded in NEW to a non-halting 'thrash report,' with the loop no longer required to stop and let the human decide before continuing. All other original guardrails (maker-checker separation, substrate firewall, never-edit-DONE/rubric, verify-before-trust, no-polish-reward, monotonicity/regression, budget halt, human checkpoint at escalation, torn-record resume, single-writer archive) are preserved or strengthened in NEW (e.g. added model-family separation for judges, mechanical-checks-override-judges, screening before judging). New rules not present in ORIGINAL (held-out check, simpler-on-ties, bias probe/strict mode) are consistently stated between SKILL.md and INITIATOR.md. No SKILL/INITIATOR disagreements were found across setup, roles, round steps, boundary, stop, memory schema, or stance sections — wording is paraphrased but rules match verbatim in substance (checked: rung/escalation language, HALT reason set {STALL, OVERFIT, BUDGET}, verify/mechanical-check ordering, ties-to-shorter rule, thrash wording, single-writer memory header).",
+  "issues": [
+   {
+    "where": "skills/rqgm-loop/SKILL.md line 68 vs INITIATOR.md lines 65-66 (identical wording in both, so no SKILL/INITIATOR disagreement here — the issue is against ORIGINAL); compare ORIGINAL skills/rqgm-loop/SKILL.md G4 and ORIGINAL INITIATOR.md G4 (both: 'if vₙ ≈ vₙ₋₂ (thrash between two versions) → HALT(OSCILLATION), surface both')",
+    "problem": "Weakening of the oscillation guardrail. ORIGINAL made oscillation a hard stop: detecting vₙ≈vₙ₋₂ forces HALT(OSCILLATION) and both versions are surfaced to the human before the loop proceeds. NEW replaces this with a non-halting rule: undoing a kept change merely 'needs every judge' (a screening bar) and 'is reported to the human as a possible thrash' — the loop is not required to stop, and the human is only informed, not asked to decide, before further rounds run. NEW's HALT-reason set is now {STALL, OVERFIT, BUDGET} — REGRESSION and OSCILLATION halts are gone, confirming the mandatory-stop mechanism was dropped, not just renamed.",
+    "fix": "Add a hard halt (e.g. HALT(OSCILLATION)) when a kept change is undone or best cycles between two prior states across rounds, surfacing both versions to the human for a decision before further rounds run — in addition to, not instead of, the unanimity bar and thrash report. Apply the same fix in both skills/rqgm-loop/SKILL.md and INITIATOR.md so they continue to state the same rule.",
+    "severity": "med"
+   }
+  ]
+ },
+ "evidence": {
+  "verdict": "Nearly all claims supported. Every numeric/count claim in DESIGN.md that could be cross-checked against runs/ was verified exactly (meta-run's 47 variants / 15 screen-rejected / 26-of-32 wins / 16 applied; RRSI run's 11 screen rejections, iteration-10 stall, 0.33 panel-mean shift and 1-point single-judge swing; 3/3 held-out preference; the 5 wasted resume re-runs; all cited research.json paper mechanisms). Two low-severity, pre-existing sourcing gaps remain open (not new errors).",
+  "issues": [
+   {
+    "where": "DESIGN.md row 2 (Independence), evidence column: \"RQGM 2606.26294: a baseline reviewer over-accepts AI-generated papers at up to 1.91× the human rate.\"",
+    "problem": "grounding.md (the file this task designates as the source for RQGM/RRSI claims) contains only RRSI extraction notes and the RQGM paper title/link; it never states the 1.91x figure anywhere, so this citation cannot be independently checked against the supplied run records.",
+    "fix": "Either add the supporting excerpt/verification note to grounding.md (re-fetch the RQGM abstract and record the figure with a verify record, as was done for RRSI Table 5), or soften the citation to note it has not been locally re-verified in this repo's grounding file.",
+    "severity": "low"
+   },
+   {
+    "where": "DESIGN.md row 6 (Search), evidence column: \"RRSI §3.2 proposal regularizers: an edit budget and evidence-aware credit assignment; removing them lowered OOD (Table 2).\"",
+    "problem": "The term \"evidence-aware credit assignment\" only appears in grounding.md's generator-authored RRSI extraction section, which is explicitly marked \"verify, do not trust.\" It maps to RRSI Eq. 10 (edit history L_t) but is not confirmed to be the paper's own terminology — likely this repo's paraphrase. This was already flagged as low-severity in runs/2026-09-22-meta/v2-validation.json and remains unresolved.",
+    "fix": "Either point to the specific RRSI section/table defining 'evidence-aware credit' under that name, or drop the phrase and cite only the abstract-confirmed regularizers (edit budget, leakage critic, pruner), per v2-validation.json's own suggested fix.",
+    "severity": "low"
+   }
+  ]
+ }
+}

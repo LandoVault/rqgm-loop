@@ -31,3 +31,7 @@ evolve set <-> the fixed evaluator panel (the generator adaptively reuses the sa
 - Proposer, analyst and leakage critic are all the same backbone model (Claude Opus 4.8) -- "critic != generator" is our adaptation.
 - t = 0..T-1; T = total rounds.
 - Held-out / OOD benchmarks never scored during evolution.
+
+## Verification events (2026-09-23)
+- RQGM abstract (arXiv:2606.26294, fetched): "The strongest baseline reviewer over-accepts AI-generated papers at up to 1.91x the human rate."
+- RRSI PDF (arXiv:2609.24972, text-extracted): section heading "Evidence-Aware Credit Assignment" exists; the method "prevents the search from repeatedly spending its capacity on hypotheses it has already falsified".
