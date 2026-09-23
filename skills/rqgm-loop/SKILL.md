@@ -45,8 +45,8 @@ iteration = generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β�
 - **2 · Evaluate.** A **leakage screen** (checker ≠ generator) reads the diff *before* scoring and
   rejects edits that echo rubric wording, assert compliance without adding mechanism, or target a
   named evaluator.
-  Then each evaluator scores vₙ on the rung's rubric (not format/length/tone): scores, ranked
-  killers (≤`b_max`), required fixes tagged to claims.
+  Then each evaluator, seeing only vₙ, `GROUNDING` and the rung's rubric, scores it (not format/length/tone): scores, ranked
+  killers (≤`b_max`), claim-tagged required fixes.
 - **3 · Verify.** Any new number/claim lacking a `citation` record → BLOCK until verified against
   primary sources.
 - **4 · Gates.** `ΔS = S(vₙ) − S(parent)`; `ΔC` = relative `C` change:
