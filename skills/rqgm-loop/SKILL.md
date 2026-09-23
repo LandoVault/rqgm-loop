@@ -67,9 +67,9 @@ iteration = generate→gate cycle. Defaults: `b_max=3`, `w=3`, `β₀=2%`, `β�
   E3 2nd objective (Pareto) → E4 red-team re-verifies every cited number.
 - **7 · Stop.** STOP only when `DONE` passes under the escalated utility, no `[OPEN]` substrate
   remains, and the **held-out judge** — a prompt file the human supplies and the generator never
-  opens, run once on the final rung — scores no criterion below `7 − δ`. A fail (panel overfit) →
+  opens, run once on the final rung — passes every criterion. A fail (panel overfit) →
   seal its critique outside `MEMORY` (log only `heldout{attempt}`), reopen only that criterion ID with
-  a fresh human-written judge; a 2nd fail → HALT(OVERFIT). Or on any HALT. Output: version,
+  a fresh human-written judge; a 2nd fail → HALT(OVERFIT). Or STOP on any HALT. Output: version,
   provenanced critiques, archive/log, one next action (on HALT: reason + what the human must supply).
 
 ## Stance
@@ -85,7 +85,7 @@ the simpler version; a 90%-good draft is not done.
 ## Notes
 - Highest-value moves: **evolving the evaluator**; the **substrate firewall** (surface, never fake).
 - From RRSI: step 1's budget/ledger/stall, step 2's screen, G1, G6, pruning. **Adapted**: panel =
-  evolve set; held-out judge ≈ held-out split (a judge shift, noise-aware); checker ≠ generator;
+  evolve set; held-out judge ≈ held-out split (a judge shift); checker ≠ generator;
   screen targets; per-rung δ; `S*` re-score; noise band (ν → never-edited allowance); `C` = size;
   `bₙ` rounding; prune threshold/window; numeric defaults.
 - Also: maker–checker, structured `DONE` (Anthropic, *Effective harnesses*); audit-before-trust

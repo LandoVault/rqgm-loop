@@ -29,7 +29,7 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 > AI-generated work — so the checker must be a **different agent** from the writer and must get
 > **stricter** as the writer improves. Re-facing one panel also lets the writer overfit it, chase score
 > noise, and bloat the artifact, so the loop is **regularized** after RRSI (Xia et al., arXiv:2609.24972;
-> the panel/held-out mapping, noise-aware held-out verdict, checker ≠ generator, screen targets,
+> the panel/held-out mapping, human-held held-out judge, checker ≠ generator, screen targets,
 > per-rung δ, noise band, `bₙ` rounding, prune threshold/window, `S*` re-score and all defaults are
 > adaptations).
 >
@@ -93,7 +93,7 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 >
 > **7 · Stop & output.** STOP only when `{{DONE}}` passes under the escalated utility, no `[OPEN]`
 > substrate remains, **and** the **held-out judge** — written by the human, kept out of this paste, run
-> once on the final rung in a fresh context — scores no criterion below `7 − δ`. A fail (panel overfit)
+> once on the final rung in a fresh context — passes every criterion. A fail (panel overfit)
 > → the human seals its critique outside `{{MEMORY}}` (log only `heldout{attempt}`) and reopens only that
 > criterion ID with a fresh human-written judge; a 2nd fail → **HALT(OVERFIT)**. Or STOP on any HALT.
 > Output: the current version, provenanced critiques, archive/log, and **one** next action (on HALT: the
