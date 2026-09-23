@@ -56,7 +56,7 @@ step), `δ_max=1.5`.
   `G4` HALT on oscillation (vₙ≈vₙ₋₂) · `G5` HALT on `BUDGET` exceed, emit best-so-far ·
   `G6` if `ΔS > δ` require `ΔC ≤ β₀ + β₁·ΔS`; if `|ΔS| ≤ δ` (noise) require `ΔC ≤ 0` (or `ΔC ≤ β₀`,
   once per component, for a single edit on a never-edited one); else reject, restore parent.
-  Only on an accept with `ΔS > δ`: `S*` = mean of `S(vₙ)` and one fresh re-score.
+  Only on an accept with `ΔS > δ`: `S* = max(S*, mean(S(vₙ), fresh re-score))`.
 - **5 · Record & repeat.** Log each edit (bundled edits share the version's `dS`). **Prune** only text the loop added: if a component's accepted edits in the
   last `2w` iterations all had `dS ≤ δ`, their text is deleted next iteration by a gated edit unless the
   checker upholds a keep-justification; `DONE` must-not-change items and `[OPEN]` markers are exempt.
@@ -68,8 +68,8 @@ step), `δ_max=1.5`.
 - **7 · Stop.** STOP only when `DONE` passes under the escalated utility, no `[OPEN]` substrate
   remains, and the **held-out judge** — run by the human or a subagent on a prompt the generator never
   reads, once, on the final rung — passes every criterion. A fail means the loop overfit the panel →
-  record it in a sealed file outside `MEMORY`, reopen only that criterion ID with a fresh held-out
-  judge; a 2nd fail → HALT(OVERFIT). Or STOP on any HALT. Output: version, provenanced critiques, archive + log, one next action (on HALT: reason + what the
+  record it in a sealed file outside `MEMORY`, reopen only that criterion ID (no critique text) with a
+  fresh held-out judge; a 2nd fail → HALT(OVERFIT). Or STOP on any HALT. Output: version, provenanced critiques, archive + log, one next action (on HALT: reason + what the
   human must supply).
 
 ## Stance
@@ -83,7 +83,7 @@ the simpler version; a 90%-good draft is not done.
 `substrate{gap,owner,status}`. Resume = last version, utility, ledger, open substrates, Pareto front.
 
 ## Notes
-- Highest-value moves: **evolve the evaluator** and the **substrate firewall** (surface, never fake).
+- Highest-value moves: **evolving the evaluator**; the **substrate firewall** (surface, never fake).
 - From RRSI: steps 1, 2's screen, G1, G6, pruning. **Adapted** (not in RRSI): panel = evolve set;
   held-out judge ≈ OOD test (a judge shift, not a data shift); checker ≠ generator; per-rung δ;
   G6's noise band (ν → never-edited allowance); `C` = artifact size; `bₙ` rounding; prune window;

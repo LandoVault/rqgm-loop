@@ -76,7 +76,7 @@ powered?) · defensibility critic (unique? moat?) · end-user (real problem?) ·
 > - **G5 budget** — if iterations / tokens / wall-clock exceed `{{BUDGET}}` → **HALT(BUDGET)**, emit best-so-far.
 > - **G6 gain pays for growth** — if `ΔS > δ`, require `ΔC ≤ β₀ + β₁·ΔS`; if `|ΔS| ≤ δ` (noise), require
 >   `ΔC ≤ 0` (or `ΔC ≤ β₀`, once per component, for a single edit on a never-edited one); else reject,
->   restore the parent. Only on an accept with `ΔS > δ`: `S*` = mean of `S(vₙ)` and one fresh re-score.
+>   restore the parent. Only on an accept with `ΔS > δ`: `S* = max(S*, mean(S(vₙ), fresh re-score))`.
 >
 > **5 · Record & repeat.** Append every record (schema below; bundled edits share the version's `dS`)
 > to `{{MEMORY}}`. **Prune** only text the loop added: if a component's accepted edits in the last `2w`
