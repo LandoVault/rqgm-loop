@@ -1,0 +1,212 @@
+{
+ "verified": [
+  {
+   "arxiv_id": "2604.13717",
+   "title": "On Cost-Effective LLM-as-a-Judge Improvement Techniques",
+   "authors_or_org": "Ryan Lail, Luke Markham",
+   "date": "2026-04",
+   "mechanism": "Compares ensemble scoring, criteria injection, calibration context, and adaptive escalation; ensemble+criteria injection reach 85.8% accuracy (+13.5pp over baseline), generalizing across providers.",
+   "design_lesson": "Combine ensemble scoring with per-task criteria injection in RQGM's held-out judge to cut scalar-score noise; reserve costly escalation only for low-confidence verdicts.",
+   "token_lesson": "Use adaptive escalation: cheap single-pass judging by default, expensive re-scoring only when judge confidence is low."
+  },
+  {
+   "arxiv_id": "2601.05420",
+   "title": "Efficient Inference for Noisy LLM-as-a-Judge Evaluation",
+   "authors_or_org": "Yiqun T Chen, Sizhu Lu, Sijia Li, Moran Guo, Shengyi Li",
+   "date": "2026-01",
+   "mechanism": "Derives efficient estimators via semiparametric theory, comparing measurement-error correction vs. prediction-powered inference to debias noisy judge outputs without extra full judge calls.",
+   "design_lesson": "Statistically debias RQGM's held-out judge scores via PPI-style correction instead of paying for repeated full-context re-judging each iteration.",
+   "token_lesson": "Correct noisy judge scores post hoc with prediction-powered inference rather than re-running full judge calls."
+  },
+  {
+   "arxiv_id": "2606.09498",
+   "title": "Self-Harness: Harnesses That Improve Themselves",
+   "authors_or_org": "Hangfan Zhang, Shao Zhang, Kangcong Li, Chen Zhang, Yang Chen, Yiqun Zhang, Lei Bai, Shuyue Hu",
+   "date": "2026-06",
+   "mechanism": "Agents autonomously refine their own harnesses via failure-pattern identification, targeted modification generation, and regression-test validation, yielding up to 132% relative gains.",
+   "design_lesson": "Let RQGM's meta-loop autonomously edit its own harness/prompt using failure-pattern diagnosis plus regression-test validation before adopting each mutation.",
+   "token_lesson": ""
+  },
+  {
+   "arxiv_id": "2604.25850",
+   "title": "Agentic Harness Engineering: Observability-Driven Automatic Evolution of Coding-Agent Harnesses",
+   "authors_or_org": "Jiahang Lin, Shichun Liu, Chengjun Pan, Lizhi Lin, Shihan Dou, Zhiheng Xi, Xuanjing Huang, Hang Yan, Zhenhua Han, Tao Gui, Yu-Gang Jiang",
+   "date": "2026-04",
+   "mechanism": "Three observability pillars—editable/revertible harness components, trajectory-to-evidence conversion, prediction-verified edits—lift Terminal-Bench 2 pass rate 69.7% to 77.0%, transferring across benchmarks.",
+   "design_lesson": "Require every RQGM loop-design edit to be revertible, backed by trajectory evidence, and validated against a stated prediction before merging into the next epoch.",
+   "token_lesson": ""
+  },
+  {
+   "arxiv_id": "2607.12227",
+   "title": "Rethinking the Evaluation of Harness Evolution for Agents",
+   "authors_or_org": "Yike Wang, Huaisheng Zhu, Zhengyu Hu, Yige Yuan, Zhengyu Chen, Shakti Senthil, Hannaneh Hajishirzi, Yulia Tsvetkov, Pradeep Dasigi, Teng Xiao",
+   "date": "2026-07",
+   "mechanism": "Matched-budget ablation shows harness-evolution evaluations conflate design gains with extra search budget; evolution often underperforms simple test-time scaling and generalizes poorly to held-out tasks.",
+   "design_lesson": "Ablate each RQGM loop-design mutation against a matched-compute baseline (more sampling, same budget) before crediting the loop-design change itself.",
+   "token_lesson": ""
+  },
+  {
+   "arxiv_id": "2605.24539",
+   "title": "DemoEvolve: Overcoming Sparse Feedback in Agentic Harness Evolution with Demonstrations",
+   "authors_or_org": "Lirong Che, Yuzhe Yang, Peiwen Lin, Chuang Wang, Xueqian Wang, Jian Su",
+   "date": "2026-05",
+   "mechanism": "Injects human expert trajectories to guide harness editing under sparse, stochastic feedback, making evolution more diagnosable, localizable, and stable than self-rollout-only approaches.",
+   "design_lesson": "When RQGM's per-iteration feedback is sparse or noisy, seed mutations with a few human-approved exemplar trajectories instead of relying solely on self-generated rollouts.",
+   "token_lesson": ""
+  },
+  {
+   "arxiv_id": "2507.19457",
+   "title": "GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning",
+   "authors_or_org": "Lakshya A Agrawal et al. (Berkeley/Stanford-affiliated)",
+   "date": "2025-07",
+   "mechanism": "Reflects in natural language on sampled trajectories to diagnose failures, mutates prompts, and maintains a Pareto archive of complementary variants; beats GRPO by 6% with far fewer rollouts.",
+   "design_lesson": "Replace RQGM's single-branch mutation lineage with a Pareto archive of complementary variants plus per-criterion textual reflection, not one scalar reward.",
+   "token_lesson": "Natural-language reflection on trajectories can replace costly RL rollouts while improving prompt quality."
+  },
+  {
+   "arxiv_id": "2603.00077",
+   "title": "Autorubric: A Unifying Framework for Rubric-Based LLM Evaluation on Non-Verifiable Tasks",
+   "authors_or_org": "Delip Rao, Chris Callison-Burch",
+   "date": "2026-02",
+   "mechanism": "Unified API for rubric evaluation with configurable bias mitigation, calibration, ensembling, and abstention; reveals criterion-specific failures and judge-family differences across tasks.",
+   "design_lesson": "Give RQGM's held-out judge per-criterion isolated scoring calls with built-in abstention and calibration, exposing which specific criteria fail instead of one scalar score.",
+   "token_lesson": ""
+  },
+  {
+   "arxiv_id": "2602.05125",
+   "title": "Rethinking Rubric Generation for Improving LLM Judge and Reward Modeling for Open-ended Tasks",
+   "authors_or_org": "William F. Shen, Xinchi Qiu, Chenxi Whitehouse, Lisa Alazraki, Shashwat Goel, Francesco Barbieri, Timon Willi, Akhil Mathur, Ilias Leontiadis",
+   "date": "2026-02",
+   "mechanism": "RRD framework recursively decomposes and filters rubrics to remove overlap/redundancy, improving judge accuracy up to +17.7 points and reward-signal quality up to 160%.",
+   "design_lesson": "Periodically recursively decompose and de-duplicate RQGM's rubric criteria each epoch, rather than only re-scoring the artifact against a static rubric.",
+   "token_lesson": ""
+  },
+  {
+   "arxiv_id": "2606.04465",
+   "title": "SePO: Self-Evolving Prompt Agent for System Prompt Optimization",
+   "authors_or_org": "Wangcheng Tao, Han Wu, Weng-Fai Wong",
+   "date": "2026-06",
+   "mechanism": "A single self-referential agent optimizes both task-agent prompts and its own prompt via evolutionary search, pretrained across tasks then fine-tuned; beats Manual-CoT/TextGrad/MetaSPO by 4.49 pts avg.",
+   "design_lesson": "Make RQGM's own meta-prompt a first-class evolutionary target alongside the artifact, kept in a stepping-stone archive to prevent net-shrink regressions across epochs.",
+   "token_lesson": ""
+  },
+  {
+   "arxiv_id": "2604.23472",
+   "title": "Escher-Loop: Mutual Evolution by Closed-Loop Self-Referential Optimization",
+   "authors_or_org": "Ziyang Liu, Xinyan Guo, Xuchen Wei, Han Hao, Liu Yang",
+   "date": "2026-04",
+   "mechanism": "Coevolves Task Agents and Optimizer Agents; a dynamic benchmarking mechanism reuses task-agent scores to evaluate optimizers for free, surpassing static-baseline performance ceilings.",
+   "design_lesson": "Reuse RQGM's existing per-iteration scores to cheaply evaluate loop-design mutations themselves, avoiding a separate costly meta-evaluation pass each epoch.",
+   "token_lesson": "Score loop-design mutations by reusing existing per-iteration judge outputs instead of running a separate meta-eval pass."
+  },
+  {
+   "arxiv_id": "2609.02942",
+   "title": "Judging LLM-as-a-Judge: Concerning Rubric Artifacts in LLM-based Automated Text Generation Evaluation",
+   "authors_or_org": "Anshul Bagaria, Sowmya S Sundaram, Gokul S Krishnan, Balaraman Ravindran",
+   "date": "2026-08",
+   "mechanism": "Classifiers trained only on rubric text (no responses) predict judge scores above chance, and judges often fail to flip scores when responses/criteria are intentionally reversed.",
+   "design_lesson": "Before adopting a rubric revision, test it with a rubric-only classifier and a reversed-response probe to catch artifact bias that would mask real stalls.",
+   "token_lesson": ""
+  },
+  {
+   "arxiv_id": "2603.17172",
+   "title": "Noise-Response Calibration: A Causal Intervention Protocol for LLM-Judges",
+   "authors_or_org": "Maxim Khomiakov, Jes Frellsen",
+   "date": "2026-03",
+   "mechanism": "Injects controlled input perturbations and measures causal response deltas; text-judges degrade predictably under noise while tabular judges do not, correlating noise-robustness with accuracy.",
+   "design_lesson": "Calibrate RQGM's held-out judge's noise floor via controlled perturbation probes each epoch rather than assuming a fixed noise-tolerance threshold.",
+   "token_lesson": ""
+  },
+  {
+   "arxiv_id": "2601.20913",
+   "title": "Noisy but Valid: Robust Statistical Evaluation of LLMs with Imperfect Judges",
+   "authors_or_org": "Chen Feng, Minghe Shen, Ananth Balashankar, Carsten Gerner-Beuerle, Miguel R. D. Rodrigues",
+   "date": "2026-01",
+   "mechanism": "Hypothesis-testing framework uses a calibration set to estimate judge TPR/FPR, giving finite-sample Type-I error control for pass/fail decisions despite imperfect judges.",
+   "design_lesson": "Define RQGM's 'gain pays for growth' pass/fail threshold via a calibrated hypothesis test with error control, not an ad hoc noise-adjusted cutoff.",
+   "token_lesson": ""
+  },
+  {
+   "arxiv_id": "2512.21326",
+   "title": "Measuring all the noises of LLM Evals",
+   "authors_or_org": "Sida Wang",
+   "date": "2025-12",
+   "mechanism": "Decomposes eval noise into prediction noise (model variance) and data noise (item sampling); prediction noise typically exceeds data noise and totals are highly predictable per eval.",
+   "design_lesson": "When RQGM stalls, first diagnose whether it's judge prediction noise or criterion/item sampling noise, since averaging judge calls usually helps more than adding criteria.",
+   "token_lesson": ""
+  },
+  {
+   "arxiv_id": "2509.20293",
+   "title": "When Judgment Becomes Noise: How Design Failures in LLM Judge Benchmarks Silently Undermine Validity",
+   "authors_or_org": "Benjamin Feuer, Chiung-Yi Tseng, Astitwa Sarthak Lathe, Oussama Elachqar, John P Dickerson",
+   "date": "2025-09",
+   "mechanism": "Schematic adherence and psychometric validity diagnostics show Arena-Hard-Auto rankings hide over 90% unexplained variance for some models, with aggregation masking true uncertainty.",
+   "design_lesson": "Replace RQGM's single aggregated score with structured per-criterion verdicts plus a psychometric-validity check so aggregation stops hiding real per-criterion progress.",
+   "token_lesson": ""
+  },
+  {
+   "arxiv_id": "2605.21384",
+   "title": "SpecBench: Measuring Reward Hacking in Long-Horizon Coding Agents",
+   "authors_or_org": "Bingchen Zhao, Dhruv Srikanth, Yuxiang Wu, Zhengyao Jiang",
+   "date": "2026-05",
+   "mechanism": "Benchmarks reward hacking by comparing visible-test vs. held-out-test pass rates across 30 systems tasks; the gap grows 28pp per tenfold increase in code size.",
+   "design_lesson": "Have RQGM's held-out judge specifically probe for architectural shortcuts via held-out integration checks scaled to artifact size, not just surface criteria.",
+   "token_lesson": ""
+  },
+  {
+   "arxiv_id": "2606.23075",
+   "title": "Safety in Self-Evolving LLM Agent Systems: Threats, Amplification, and Case Studies",
+   "authors_or_org": "Ruixiao Lin, Xinhao Deng, Qingming Li, Jianan Ma, Yunhao Feng, Yuqi Qing, Zhenyuan Li, Yechao Zhang, Shiwen Cui, Changhua Meng, Tianwei Zhang, Xingjun Ma, Qi Li, Ke Xu, Shouling Ji",
+   "date": "2026-06",
+   "mechanism": "A Module-Lifecycle Attack Surface matrix finds self-evolving systems expose 3.5x more attack surface with 100% malicious-payload persistence, and existing defenses block only 2.5% of attacks.",
+   "design_lesson": "Bound how much a single RQGM epoch may change evaluator/judge weighting per step, since self-evolving loops let small evaluator flaws persist and compound.",
+   "token_lesson": ""
+  },
+  {
+   "arxiv_id": "2602.15481",
+   "title": "LLM-as-Judge on a Budget",
+   "authors_or_org": "Aadirupa Saha, Aniket Wagde, Branislav Kveton",
+   "date": "2026-02",
+   "mechanism": "Variance-adaptive multi-armed-bandit allocation directs repeated judge queries toward higher-uncertainty candidates/criteria instead of uniform re-scoring, with theoretical error bounds.",
+   "design_lesson": "Allocate RQGM's judge-call budget via a bandit targeting high-variance criteria for re-scoring, replacing the flat 3-full-context-judge pass to cut tokens.",
+   "token_lesson": "A variance-adaptive bandit over judge queries beats uniform re-scoring at the same query budget."
+  },
+  {
+   "arxiv_id": "2506.03785",
+   "title": "Knockout LLM Assessment: Using Large Language Models for Evaluations through Iterative Pairwise Comparisons",
+   "authors_or_org": "Isik Baran Sandan, Tu Anh Dinh, Jan Niehues",
+   "date": "2025-06",
+   "mechanism": "Tournament-style single-elimination pairwise comparisons replace absolute scoring, improving correlation with human ratings by about 0.07 on exam and translation evaluation tasks.",
+   "design_lesson": "Consider pairwise knockout rounds between candidate variants instead of RQGM's absolute scalar score, cutting scoring noise with fewer full judge calls than round-robin.",
+   "token_lesson": ""
+  },
+  {
+   "arxiv_id": "2602.13110",
+   "title": "SCOPE: Selective Conformal Optimized Pairwise LLM Judging",
+   "authors_or_org": "Sher Badshah, Ali Emami, Hassan Sajjad",
+   "date": "2026-02",
+   "mechanism": "Conformal calibration sets an abstention threshold bounding error among non-abstained pairwise judgments at level alpha, using Bidirectional Preference Entropy as a bias-neutral uncertainty signal.",
+   "design_lesson": "Use conformal-calibrated abstention so RQGM re-judges only comparisons flagged uncertain, bounding error statistically while skipping confident ones to save tokens.",
+   "token_lesson": "Abstain-and-skip confident pairwise judgments via conformal calibration to cut redundant judge calls."
+  },
+  {
+   "arxiv_id": "2605.30568",
+   "title": "Generating and Refining Dynamic Evaluation Rubrics for LLM-as-a-Judge",
+   "authors_or_org": "Zijie Wang, Eduardo Blanco",
+   "date": "2026-05",
+   "mechanism": "Training-free method generates dataset- and instance-level rubrics without human annotation, then iteratively refines them via meta-judge reward signals, outperforming larger proprietary baselines.",
+   "design_lesson": "Auto-generate and iteratively refine RQGM's per-iteration rubric at the instance level via meta-judge feedback instead of keeping one static rubric across epochs.",
+   "token_lesson": ""
+  },
+  {
+   "arxiv_id": "2606.27009",
+   "title": "Semantic Early-Stopping for Iterative LLM Agent Loops",
+   "authors_or_org": "Sahil Shrivastava",
+   "date": "2026-06",
+   "mechanism": "Halts writer-critic loops when consecutive draft embeddings stop changing meaning and quality plateaus, cutting tokens 38% vs. fixed iteration caps; quality-gated variants backfired on judging cost.",
+   "design_lesson": "Replace RQGM's fixed epoch cap with embedding-based plateau detection to auto-halt stalled epochs early; skip extra quality-gate judge calls, which raised cost without benefit.",
+   "token_lesson": "Semantic plateau detection on draft embeddings cut agent-loop tokens 38% versus fixed iteration limits."
+  }
+ ],
+ "rejected": []
+}
