@@ -1,0 +1,20 @@
+{
+ "id": "r4-b",
+ "edits": [
+  {
+   "file": "skills/rqgm-loop/SKILL.md",
+   "old": "   a **stall** unless every variant ended ERROR (two such in a row → **HALT(ERROR)**). **Check** after 3\n   stalls since the last keep, or a `DONE` claim: each criterion by its check on *best*, with 3 fresh\n   judges per `judges` criterion (majority; strict: 3/3). A Check or held-out result stands until\n   *best*, the rung or `DONE` changes. All required `pass` → Boundary; else, after 3 stalls,\n   **HALT(STALL)**, naming what each non-`pass` required criterion needs (source, approved\n   restructure or human input); else the next round.",
+   "new": "   a **stall** unless every variant ended ERROR (twice in a row → **HALT(ERROR)**). **Check** after 3\n   stalls since the last keep, or a `DONE` claim: each criterion by its check on *best*, with 3 fresh\n   judges per `judges` criterion (majority; strict: 3/3). Check and held-out results stand until\n   *best*, the rung or `DONE` changes. All required pass → Boundary; else, after 3 stalls,\n   **HALT(STALL)**, naming each non-pass required criterion's need (source, approved restructure or\n   human input); else the next round, budget permitting (Stop)."
+  },
+  {
+   "file": "INITIATOR.md",
+   "old": "   stall unless every variant ended ERROR (two such in a row → HALT(ERROR)). CHECK after 3 stalls\n   since the last keep, or when you believe {{DONE}} holds: each criterion by its check on *best*, with\n   3 fresh judges per judges criterion (majority; strict: 3/3). A Check or held-out result stands until\n   *best*, the rung or {{DONE}} changes. All required pass → Boundary; else, after 3 stalls,\n   HALT(STALL), naming what each non-pass required criterion needs (source, approved restructure\n   or human input); else the next round.",
+   "new": "   stall unless every variant ended ERROR (twice in a row → HALT(ERROR)). CHECK after 3 stalls\n   since the last keep, or when you believe {{DONE}} holds: each criterion by its check on *best*, with\n   3 fresh judges per judges criterion (majority; strict: 3/3). Check and held-out results stand until\n   *best*, the rung or {{DONE}} changes. All required pass → Boundary; else, after 3 stalls,\n   HALT(STALL), naming each non-pass required criterion's need (source, approved restructure or\n   human input); else the next round, budget permitting (STOP)."
+  },
+  {
+   "file": "DESIGN.md",
+   "old": "Check after 3 stall rounds or a `DONE` claim; a result stands until *best*, the rung or `DONE` changes. Budget: rounds and time from records, tokens `null` unless reported. Start a round only if remaining time covers twice the costliest round;",
+   "new": "Check after 3 stalls or a `DONE` claim; a result stands until *best*, the rung or `DONE` changes. Budget: rounds and time from records, tokens `null` unless reported. Start every round only if remaining time covers twice the costliest round;"
+  }
+ ]
+}
