@@ -42,8 +42,8 @@ unrunnable check). Retry an ERROR once, then drop the variant (not a rejection) 
 unchecked. UNKNOWN is never a tie, pass or support. Never re-ask a returned verdict.
 
 ## Each round
-Start a round only if one is left and remaining time (and reported tokens) cover twice the costliest
-round so far; else Check: all required pass → Boundary, else **HALT(BUDGET)**.
+Start a round only if `setup.budget` leaves one and time (and reported tokens) for twice the costliest
+logged `round` (none: 0); else Check: all required pass → Boundary, else **HALT(BUDGET)**.
 
 1. **Propose** 2 variants, each **one change to one section** of *best* (or an approved restructure),
    with a hypothesis naming its criterion; target failing command checks first. Skip ideas the records
@@ -80,10 +80,10 @@ fair-critical → **E2** adversarial (reject polish, demand derivations) → **E
 objective (`amend`). On escalation: log `rung`, rerun the probe, reset the stall count.
 
 ## Stop
-A required `[OPEN]` → **HALT(OPEN)**: name each gap and owner; the human closes it with Verifier-checked
-evidence or waives it by `amend`. Otherwise the human runs the held-out judges (pass/fail by majority),
-reporting only failing IDs (`heldout.pass`). Fail → those IDs fail *best*'s Check; rerun rounds on
-them; spares run only once a changed *best* passes Check; a second fail → **HALT(OVERFIT)**.
+A required `[OPEN]` → **HALT(OPEN)**: name each gap and its owner; the human closes it with evidence the
+Verifier checks, or waives it by `amend`. Otherwise the human runs the held-out judges (pass/fail by
+majority), reporting failing criterion IDs only. Fail → rerun rounds on those IDs; the spares run only
+once a changed *best* passes Check; a second fail → **HALT(OVERFIT)**.
 
 **Output** at every exit: *best*; COMPLETE (final rung, held-out pass) or PARTIAL; each criterion as
 pass/fail/unchecked/waived and how decided (command, source, judges with model families, same family =

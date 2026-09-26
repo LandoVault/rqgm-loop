@@ -1,0 +1,20 @@
+{
+ "id": "r7-b",
+ "edits": [
+  {
+   "file": "skills/rqgm-loop/SKILL.md",
+   "old": "Start a round only if one is left and remaining time (and reported tokens) cover twice the costliest\nround so far; else Check: all required pass → Boundary, else **HALT(BUDGET)**.",
+   "new": "Start a round only if `setup.budget` leaves one and time (and reported tokens) for twice the costliest\nlogged `round` (none: 0); else Check: all required pass → Boundary, else **HALT(BUDGET)**."
+  },
+  {
+   "file": "INITIATOR.md",
+   "old": "EACH ROUND. Start a round only if one is left and remaining time and tokens (each if reported) cover\ntwice the costliest round so far; else Check: all required pass → Boundary, else HALT(BUDGET).",
+   "new": "EACH ROUND. Start a round only if setup.budget leaves one and time and tokens (each if reported) for\ntwice the costliest logged round (none: 0); else Check: all required pass → Boundary, else HALT(BUDGET)."
+  },
+  {
+   "file": "DESIGN.md",
+   "old": "Budget: rounds and time from records, tokens `null` unless reported. Start every round only if remaining time covers twice the costliest round; else Check, then Boundary or HALT(BUDGET).",
+   "new": "Budget (tokens `null` unless reported): start a round only if `setup.budget` leaves one and time for twice the costliest logged round (none: 0); else Check, then Boundary or HALT(BUDGET)."
+  }
+ ]
+}

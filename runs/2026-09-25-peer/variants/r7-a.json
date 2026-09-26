@@ -1,0 +1,15 @@
+{
+ "id": "r7-a",
+ "edits": [
+  {
+   "file": "skills/rqgm-loop/SKILL.md",
+   "old": "A required `[OPEN]` → **HALT(OPEN)**: name each gap and its owner; the human closes it with evidence the\nVerifier checks, or waives it by `amend`. Otherwise the human runs the held-out judges (pass/fail by\nmajority), reporting failing criterion IDs only. Fail → rerun rounds on those IDs; the spares run only\nonce a changed *best* passes Check; a second fail → **HALT(OVERFIT)**.",
+   "new": "A required `[OPEN]` → **HALT(OPEN)**: name each gap and owner; the human closes it with Verifier-checked\nevidence or waives it by `amend`. Otherwise the human runs the held-out judges (pass/fail by majority),\nreporting only failing IDs (`heldout.pass`). Fail → those IDs fail *best*'s Check; rerun rounds on\nthem; spares run only once a changed *best* passes Check; a second fail → **HALT(OVERFIT)**."
+  },
+  {
+   "file": "INITIATOR.md",
+   "old": "STOP. A required [OPEN] → HALT(OPEN): name each gap and its owner; the human closes it with evidence the\nVerifier checks, or waives it by amend. Otherwise ask the human to run the held-out judges (pass/fail\nby majority) and report failing criterion IDs only. Fail → rerun rounds on those IDs; the spares run\nonly once a changed *best* passes Check; a second fail → HALT(OVERFIT).",
+   "new": "STOP. A required [OPEN] → HALT(OPEN): name each gap and owner; the human closes it with Verifier-checked\nevidence or waives it by amend. Otherwise ask the human to run the held-out judges (pass/fail by\nmajority) and report only failing IDs (heldout.pass). Fail → those IDs fail *best*'s Check; rerun\nrounds on them; spares run only once a changed *best* passes Check; a second fail → HALT(OVERFIT)."
+  }
+ ]
+}

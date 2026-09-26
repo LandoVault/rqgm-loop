@@ -1,0 +1,34 @@
+--- A/skills/rqgm-loop/SKILL.md
++++ B/skills/rqgm-loop/SKILL.md
+@@ -80,10 +80,10 @@
+ objective (`amend`). On escalation: log `rung`, rerun the probe, reset the stall count.
+ 
+ ## Stop
+-A required `[OPEN]` → **HALT(OPEN)**: name each gap and its owner; the human closes it with evidence the
+-Verifier checks, or waives it by `amend`. Otherwise the human runs the held-out judges (pass/fail by
+-majority), reporting failing criterion IDs only. Fail → rerun rounds on those IDs; the spares run only
+-once a changed *best* passes Check; a second fail → **HALT(OVERFIT)**.
++A required `[OPEN]` → **HALT(OPEN)**: name each gap and owner; the human closes it with Verifier-checked
++evidence or waives it by `amend`. Otherwise the human runs the held-out judges (pass/fail by majority),
++reporting only failing IDs (`heldout.pass`). Fail → those IDs fail *best*'s Check; rerun rounds on
++them; spares run only once a changed *best* passes Check; a second fail → **HALT(OVERFIT)**.
+ 
+ **Output** at every exit: *best*; COMPLETE (final rung, held-out pass) or PARTIAL; each criterion as
+ pass/fail/unchecked/waived and how decided (command, source, judges with model families, same family =
+--- A/INITIATOR.md
++++ B/INITIATOR.md
+@@ -102,10 +102,10 @@
+ STOP. E1 fair-critical → E2 adversarial (reject polish, demand derivations) → E3 a second, human-added
+ objective (amend). On escalation: log rung, rerun the probe, reset the stall count.
+ 
+-STOP. A required [OPEN] → HALT(OPEN): name each gap and its owner; the human closes it with evidence the
+-Verifier checks, or waives it by amend. Otherwise ask the human to run the held-out judges (pass/fail
+-by majority) and report failing criterion IDs only. Fail → rerun rounds on those IDs; the spares run
+-only once a changed *best* passes Check; a second fail → HALT(OVERFIT).
++STOP. A required [OPEN] → HALT(OPEN): name each gap and owner; the human closes it with Verifier-checked
++evidence or waives it by amend. Otherwise ask the human to run the held-out judges (pass/fail by
++majority) and report only failing IDs (heldout.pass). Fail → those IDs fail *best*'s Check; rerun
++rounds on them; spares run only once a changed *best* passes Check; a second fail → HALT(OVERFIT).
+ 
+ OUTPUT at every exit: *best*; COMPLETE (final rung, held-out pass) or PARTIAL; each criterion as
+ pass/fail/unchecked/waived and how decided (command, source, judges with model families, same family =
