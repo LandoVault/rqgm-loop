@@ -1,0 +1,15 @@
+{
+ "id": "r1-b",
+ "edits": [
+  {
+   "file": "skills/rqgm-loop/SKILL.md",
+   "old": "`substrate{gap,owner,required,status}`",
+   "new": "`substrate{gap,owner,required,status,evidence}`"
+  },
+  {
+   "file": "INITIATOR.md",
+   "old": "substrate{gap,owner,required,status}",
+   "new": "substrate{gap,owner,required,status,evidence}"
+  }
+ ]
+}

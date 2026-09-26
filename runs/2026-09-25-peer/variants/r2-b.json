@@ -1,0 +1,15 @@
+{
+ "id": "r2-b",
+ "edits": [
+  {
+   "file": "INITIATOR.md",
+   "old": "(if you cannot write files,\nprint each for the human to keep):",
+   "new": "(if you cannot write files,\nprint each; the human pastes them back to resume):"
+  },
+  {
+   "file": "INITIATOR.md",
+   "old": "Count rounds, stalls and spend from these records, never from recollection.",
+   "new": "Count rounds, stalls and spend only from these records."
+  }
+ ]
+}

@@ -1,0 +1,22 @@
+--- A/skills/rqgm-loop/SKILL.md
++++ B/skills/rqgm-loop/SKILL.md
+@@ -86,7 +86,7 @@
+ 
+ **Output** at every exit: *best*; COMPLETE (final rung, held-out pass) or PARTIAL; each criterion as
+ pass/fail/unchecked/waived and how decided (command, source, judges with model families, same family =
+-one source, or held-out); the first held-out result; every `amend`; rounds, time and tokens (or `null`);
++one source, or held-out); the latest held-out result; every `amend`; rounds, time and tokens (or `null`);
+ whether `rqgm_check.py` audited it; one next action.
+ 
+ ## Memory
+--- A/INITIATOR.md
++++ B/INITIATOR.md
+@@ -110,7 +110,7 @@
+ 
+ OUTPUT at every exit: *best*; COMPLETE (final rung, held-out pass) or PARTIAL; each criterion as
+ pass/fail/unchecked/waived and how decided (command, source, judges with model families, same family =
+-one source, or held-out); the first held-out result; every amend; rounds, time and tokens (or null);
++one source, or held-out); the latest held-out result; every amend; rounds, time and tokens (or null);
+ whether rqgm_check.py audited it; one next action.
+ ```
+ 

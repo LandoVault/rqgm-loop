@@ -67,9 +67,9 @@ unchecked. UNKNOWN is never a tie, pass or support. Never re-ask a returned verd
    a **stall** unless every variant ended ERROR (two such in a row → **HALT(ERROR)**). **Check** after 3
    stall rounds since the last keep, or a `DONE` claim: each criterion by its check on *best*, with 3
    fresh judges per `judges` criterion (majority; strict: 3/3). A Check or held-out result stands until
-   *best*, the rung or `DONE` changes. All required pass → Boundary; else, after 3 stalls,
-   **HALT(STALL)**, naming what each non-passing required criterion needs: a source, an approved
-   restructure, or human input.
+   *best*, the rung or `DONE` changes. All required pass → Boundary. Failing after 3 stalls →
+   **HALT(STALL)**, naming what each failing criterion needs: a source, an approved restructure, or
+   human input.
 
 ## Boundary
 Below the final rung, **pause**: the human escalates or stops (PARTIAL); at it, **Stop**. **E1**
@@ -95,6 +95,6 @@ Lines `{"t":name,…fields}`: `setup{loop:"v3",done,models,budget:{rounds,minute
 `round{n,best,t0,t1,tokens,variants[{id,section,words,diff,gates:{apply,commands,verifier,screen},verdicts[{slot,model,orders:[overallAB,overallBA],overall:variant|best|tie|UNKNOWN|ERROR,criteria,confidence,retries}],outcome:kept|rejected|dropped}],kept}`,
 `citation{claim,locator,status,criterion}`, `probe{rung,mode,identity,seeded:{criterion,pair,check},misses}`,
 `check{version,rung,trigger:setup|stall|claim|budget,results{id:{kind,value,votes}}}`, `amend{what,why,done}`,
-`rung{name}`, `substrate{gap,owner,required,status}`, `heldout{attempt,set,version,pass}`, `exit{status,reason}`.
+`rung{name}`, `substrate{gap,owner,required,status,evidence}`, `heldout{attempt,set,version,pass}`, `exit{status,reason}`.
 Count from records, never recollection. If `rqgm_check.py` runs here, audit `MEMORY` each round; a
 violation pauses for the human.

@@ -93,9 +93,9 @@ EACH ROUND.
    stall unless every variant ended ERROR (two such in a row → HALT(ERROR)). CHECK after 3 stall rounds
    since the last keep, or when you believe {{DONE}} holds: each criterion by its check on *best*, with
    3 fresh judges per judges criterion (majority; strict: 3/3). A Check or held-out result stands until
-   *best*, the rung or {{DONE}} changes. All required pass → Boundary; else, after 3 stalls,
-   HALT(STALL), naming what each non-passing required criterion needs: a source, an approved
-   restructure, or human input.
+   *best*, the rung or {{DONE}} changes. All required pass → Boundary. Failing after 3 stalls →
+   HALT(STALL), naming what each failing criterion needs: a source, an approved restructure, or human
+   input.
 
 BOUNDARY. Below the final rung (default E2), pause: the human escalates or stops (PARTIAL); at it,
 STOP. E1 fair-critical → E2 adversarial (reject polish, demand derivations) → E3 a second, human-added

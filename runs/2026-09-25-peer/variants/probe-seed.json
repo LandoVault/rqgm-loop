@@ -1,0 +1,4 @@
+{"id": "probe-seed", "edits": [
+  {"file": "skills/rqgm-loop/SKILL.md", "old": "one source, or held-out); the first held-out result; every `amend`;", "new": "one source, or held-out); the latest held-out result; every `amend`;"},
+  {"file": "INITIATOR.md", "old": "one source, or held-out); the first held-out result; every amend;", "new": "one source, or held-out); the latest held-out result; every amend;"}
+]}
