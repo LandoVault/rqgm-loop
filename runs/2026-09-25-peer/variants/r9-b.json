@@ -1,0 +1,15 @@
+{
+ "id": "r9-b",
+ "edits": [
+  {
+   "file": "INITIATOR.md",
+   "old": "Otherwise ask the human to run the held-out judges and report only\nmajority-failed criteria (heldout.pass{id:false}).",
+   "new": "Otherwise have the human alone run and see the held-out judges, reporting only\nmajority-failed criteria (heldout.pass{id:false})."
+  },
+  {
+   "file": "DESIGN.md",
+   "old": "stored outside `TARGET`, `GROUNDING`, `MEMORY` and the repo, spent per `TARGET`; majority-failed criteria fail *best*'s Check (`rqgm_check.py` `result()`). The first result is always reported;",
+   "new": "stored outside `TARGET`, `GROUNDING`, `MEMORY` and the repo (unauditable), spent per `TARGET`; majority-failed criteria fail *best*'s Check (`rqgm_check.py` `result()`). The first result is reported;"
+  }
+ ]
+}

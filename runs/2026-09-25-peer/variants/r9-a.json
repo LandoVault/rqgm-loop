@@ -1,0 +1,20 @@
+{
+ "id": "r9-a",
+ "edits": [
+  {
+   "file": "skills/rqgm-loop/SKILL.md",
+   "old": "Otherwise the human runs the held-out judges, reporting only\nmajority-failed criteria (`heldout.pass{id:false}`). Fail → those (none named: all required) fail\n*best*'s Check; rerun rounds on them; spares run only once a changed *best* passes Check; a second\nfail → **HALT(OVERFIT)**.",
+   "new": "Otherwise the human runs held-out judges, reporting only\nmajority-failed criteria (`heldout.pass{id:false}`; unnamed fail: all required); those fail *best*'s\nCheck. Fail (any required) → rerun rounds on them; spares run only once a changed *best* passes\nCheck; a second fail → **HALT(OVERFIT)**."
+  },
+  {
+   "file": "INITIATOR.md",
+   "old": "Otherwise ask the human to run the held-out judges and report only\nmajority-failed criteria (heldout.pass{id:false}). Fail → those (none named: all required) fail\n*best*'s Check; rerun rounds on them; spares run only once a changed *best* passes Check; a second\nfail → HALT(OVERFIT).",
+   "new": "Otherwise have the human run the held-out judges and report only\nmajority-failed criteria (heldout.pass{id:false}; unnamed fail: all required); those fail *best*'s\nCheck. Fail (any required) → rerun rounds on them; spares run only once a changed *best* passes\nCheck; a second fail → HALT(OVERFIT)."
+  },
+  {
+   "file": "DESIGN.md",
+   "old": "majority-failed criteria fail *best*'s Check (`rqgm_check.py` `result()`). The first result is always reported;",
+   "new": "majority-failed criteria fail *best*'s Check (`rqgm_check.py` `r_heldout`, `result()`). The first result is reported;"
+  }
+ ]
+}
