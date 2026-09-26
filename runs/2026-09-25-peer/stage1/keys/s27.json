@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r4-a": "dropped",
+  "r4-b": "dropped"
+ },
+ "judge_needed": "none",
+ "next": "HALT(ERROR)",
+ "strict": false,
+ "why": "\"A result is a verdict, UNKNOWN or ERROR (timeout, unparsable, unapplied diff, unrunnable or file-editing check); UNKNOWN is never a tie, pass or support. Retry an ERROR once (retries), then drop its variant (not a rejection) or leave its criterion unchecked. Never re-ask a verdict.\" r4-a (Screen ERROR after one retry) and r4-b (judge 1 ERROR after one retry) are dropped. \"A round keeping nothing is a stall unless every variant ended ERROR (twice in a row -> HALT(ERROR)).\" Round 3 also ended with every variant ERROR, so this is the second all-ERROR round in a row -> HALT(ERROR). Normal mode. Auditor (--pending): outcomes {\"r4-a\": \"dropped\", \"r4-b\": \"dropped\"}, required_keep null, next_due \"halt:ERROR\"; archive audit ok=True, probe mode at E1: normal."
+}

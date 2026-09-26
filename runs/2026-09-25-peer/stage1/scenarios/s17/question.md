@@ -1,0 +1,1 @@
+Round 2 of the ADR loop is judged; see pending.json. Both variants passed every gate, and for each, judge 1 preferred the variant in both orders (medium confidence for r2-a, high for r2-b) and judge 2 preferred the variant. Both variants leave the ADR at 1175 words. No DONE claim is being made. Decide each variant's outcome and the next step.

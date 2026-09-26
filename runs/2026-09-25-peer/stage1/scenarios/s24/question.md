@@ -1,0 +1,1 @@
+Round 2 of the pipeline-README loop is back; see pending.json. For variant r2-a, judge 1 preferred the variant in both orders and judge 2 preferred the variant. For variant r2-b, judge 1 preferred best in both orders with medium confidence and judge 2 preferred best. Judge 3 was not asked about either. No DONE claim is being made. Decide each variant's outcome and the next step.

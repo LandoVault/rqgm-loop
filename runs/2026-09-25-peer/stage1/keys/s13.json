@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r4-a": "rejected",
+  "r4-b": "kept"
+ },
+ "judge_needed": "none",
+ "next": "next_round",
+ "strict": true,
+ "why": "Strict mode at E2: \"Probe (per rung): judge 1 compares best, both orders, with an identical copy and a copy you (never the generator) seeded with one judges-criterion defect that a Check judge marks. A non-tie, miss or ERROR, or no judges criterion (no probe) -> strict mode, told to the human.\" The E2 probe's identical-copy comparison came back tie/variant (a non-tie), so E2 is strict (E1's normal probe does not carry over; the probe is per rung). \"Keep a variant without a veto if >=2 judges prefer it (strict: 3) and none prefers best; or, if shorter, all 3 judges completed without UNKNOWN, none preferring best or rating anything worse. Keep at most one (most support, then shorter, then first); apply exactly the judged text.\" r4-a has 2 of 3 preferences, but strict needs 3, and it is longer than best (1712 > 1698) -> rejected. r4-b is shorter (1650 < 1698), all 3 judges completed without UNKNOWN, none prefers best or rates anything worse -> eligible by the shorter clause, and it is the only eligible variant -> kept. Next round. Auditor (--pending): outcomes {\"r4-a\": \"rejected\", \"r4-b\": \"kept\"}, required_keep \"r4-b\", next_due \"round\"; archive audit ok=True, probe mode at E2: strict."
+}

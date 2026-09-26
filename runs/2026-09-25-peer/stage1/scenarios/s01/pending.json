@@ -1,0 +1,116 @@
+{
+ "t": "round",
+ "n": 5,
+ "best": "v2",
+ "t0": "2026-09-11T10:44:00Z",
+ "t1": "2026-09-11T11:02:00Z",
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r5-a",
+   "section": "## Travel",
+   "words": 1604,
+   "diff": [
+    {
+     "section": "## Travel",
+     "old": "Travel to conferences.",
+     "new": "Travel: 2,500 dollars per year."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "totals-match": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-b-large",
+     "orders": [
+      "best",
+      "best"
+     ],
+     "overall": "best",
+     "criteria": {
+      "totals-match": "tie",
+      "rates-sourced": "tie",
+      "justified": "best",
+      "indirect-rate": "tie"
+     },
+     "confidence": "high",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r5-b",
+   "section": "## Other direct costs",
+   "words": 1610,
+   "diff": [
+    {
+     "section": "## Other direct costs",
+     "old": "Supplies and publication fees.",
+     "new": "Supplies (12,000 dollars) support the Aim 1 assays; open-access fees (4,000 dollars) cover two papers."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "totals-match": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-b-large",
+     "orders": [
+      "tie",
+      "tie"
+     ],
+     "overall": "tie",
+     "criteria": {
+      "totals-match": "tie",
+      "rates-sourced": "tie",
+      "justified": "tie",
+      "indirect-rate": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-a-large",
+     "overall": "tie",
+     "criteria": {
+      "totals-match": "tie",
+      "rates-sourced": "tie",
+      "justified": "tie",
+      "indirect-rate": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "judge-b-medium",
+     "overall": "variant",
+     "criteria": {
+      "totals-match": "tie",
+      "rates-sourced": "tie",
+      "justified": "variant",
+      "indirect-rate": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  }
+ ]
+}

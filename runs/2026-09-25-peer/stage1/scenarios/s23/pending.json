@@ -1,0 +1,116 @@
+{
+ "t": "round",
+ "n": 5,
+ "best": "v1",
+ "t0": null,
+ "t1": null,
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r5-a",
+   "section": "## Risks",
+   "words": 1264,
+   "diff": [
+    {
+     "section": "## Risks",
+     "old": "Execution risk exists.",
+     "new": "The main risk is hiring two senior engineers by March."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "figures-add-up": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-a-large",
+     "orders": [
+      "best",
+      "best"
+     ],
+     "overall": "best",
+     "criteria": {
+      "figures-add-up": "tie",
+      "figures-sourced": "tie",
+      "decision-ready": "tie",
+      "ask": "tie"
+     },
+     "confidence": "high",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r5-b",
+   "section": "## Options",
+   "words": 1255,
+   "diff": [
+    {
+     "section": "## Options",
+     "old": "We could build or buy.",
+     "new": "Build (14 months, 2.4 million dollars) or buy (5 months, 3.1 million dollars over three years); we recommend build."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "figures-add-up": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-a-large",
+     "orders": [
+      "variant",
+      "variant"
+     ],
+     "overall": "variant",
+     "criteria": {
+      "figures-add-up": "tie",
+      "figures-sourced": "tie",
+      "decision-ready": "variant",
+      "ask": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-b-large",
+     "overall": "tie",
+     "criteria": {
+      "figures-add-up": "tie",
+      "figures-sourced": "tie",
+      "decision-ready": "tie",
+      "ask": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "judge-a-medium",
+     "overall": "best",
+     "criteria": {
+      "figures-add-up": "tie",
+      "figures-sourced": "tie",
+      "decision-ready": "tie",
+      "ask": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  }
+ ]
+}

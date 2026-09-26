@@ -1,0 +1,103 @@
+{
+ "t": "round",
+ "n": 5,
+ "best": "v2",
+ "t0": null,
+ "t1": null,
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r5-a",
+   "section": "## Thank you",
+   "words": 3290,
+   "diff": [
+    {
+     "section": "## Thank you",
+     "old": "Thank you to our donors.",
+     "new": "Thank you."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "numbers-reconcile": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-b-large",
+     "orders": [
+      "best",
+      "best"
+     ],
+     "overall": "best",
+     "criteria": {
+      "numbers-reconcile": "tie",
+      "impact-sourced": "tie",
+      "donor-readable": "best",
+      "auditor-statement": "tie"
+     },
+     "confidence": "high",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r5-b",
+   "section": "## Financials",
+   "words": 3279,
+   "diff": [
+    {
+     "section": "## Financials",
+     "old": "Our finances are healthy.",
+     "new": "Of every dollar, 84 cents went to programs; the full audited statements follow."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "numbers-reconcile": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-b-large",
+     "orders": [
+      "variant",
+      "variant"
+     ],
+     "overall": "variant",
+     "criteria": {
+      "numbers-reconcile": "tie",
+      "impact-sourced": "tie",
+      "donor-readable": "variant",
+      "auditor-statement": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-c-large",
+     "overall": "variant",
+     "criteria": {
+      "numbers-reconcile": "tie",
+      "impact-sourced": "tie",
+      "donor-readable": "variant",
+      "auditor-statement": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  }
+ ]
+}

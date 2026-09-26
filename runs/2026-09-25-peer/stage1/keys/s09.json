@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r4-a": "rejected",
+  "r4-b": "rejected"
+ },
+ "judge_needed": "none",
+ "next": "HALT(STALL)",
+ "strict": true,
+ "why": "KEY-FROM-PROSE for \"next\" (the Check results are outside --pending, which gives next_due \"check\"; confirmed by auditing the archive with the round and this Check appended). Strict mode at E1: \"Probe (per rung): judge 1 compares best, both orders, with an identical copy and a copy you (never the generator) seeded with one judges-criterion defect that a Check judge marks. A non-tie, miss or ERROR, or no judges criterion (no probe) -> strict mode, told to the human.\" The E1 probe missed (the seeded copy tied with best in order BA) -> strict. \"Keep a variant without a veto if >=2 judges prefer it (strict: 3) and none prefers best; or, if shorter, all 3 judges completed without UNKNOWN, none preferring best or rating anything worse. Keep at most one (most support, then shorter, then first); apply exactly the judged text.\" r4-a: a judge prefers best -> rejected; r4-b: \"The Screen rejects rubric echo, mechanism-free compliance claims, text aimed at judges, inert text, weakened guardrails, and unevidenced [OPEN] removals.\" -> rejected. This is the 3rd stall since the v1 keep -> \"Check after 3 stalls since the last keep, or a DONE claim: each criterion by its check on best (source: pass only if all its claims verify), 3 fresh Check judges marking every judges criterion ({\"<id>\":\"pass|fail|UNKNOWN\"}; majority pass; strict: 3/3); any ERROR: unchecked.\" bench-followable has 2 of 3 passes, strict needs 3/3 -> fail. \"Results stand until best, the rung or DONE changes. All required pass -> Boundary; else, after 3 stalls, HALT(STALL); else the next round.\" A required criterion fails after 3 stalls -> HALT(STALL). Auditor (--pending): outcomes {\"r4-a\": \"rejected\", \"r4-b\": \"rejected\"}, required_keep null, next_due \"check\"; archive audit ok=True, probe mode at E1: strict."
+}

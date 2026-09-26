@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r9-a": "kept",
+  "r9-b": "rejected"
+ },
+ "judge_needed": "none",
+ "next": "check",
+ "strict": false,
+ "why": "r9-a: 2 prefer it, none best, no veto -> kept (\"Keep a variant without a veto if >=2 judges prefer it (strict: 3) and none prefers best; or, if shorter, all 3 judges completed without UNKNOWN, none preferring best or rating anything worse. Keep at most one (most support, then shorter, then first); apply exactly the judged text.\"); r9-b: a judge prefers best -> rejected. \"Start a round only if one remains and each reported budget covers twice the costliest round; else Check: all required pass -> Boundary, else HALT(BUDGET).\" Rounds remain (9 of 12), but 240 - 186 = 54 minutes are left and the costliest round is now round 9 at 28 minutes (earlier rounds were at most 20): 54 < 2 x 28 = 56 -> no new round -> Check. The Check runs on the new best v4 (no Check on it yet); its result then decides Boundary or HALT(BUDGET). Normal mode. Auditor (--pending): outcomes {\"r9-a\": \"kept\", \"r9-b\": \"rejected\"}, required_keep \"r9-a\", next_due \"check\"; archive audit ok=True, probe mode at E1: normal."
+}

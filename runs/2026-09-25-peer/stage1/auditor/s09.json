@@ -1,0 +1,90 @@
+{
+ "scenario": "s09",
+ "source_key": "c05a",
+ "commands": [
+  "python skills/rqgm-loop/rqgm_check.py audit runs/2026-09-25-peer/stage1/scenarios/s09/archive.jsonl",
+  "python skills/rqgm-loop/rqgm_check.py audit runs/2026-09-25-peer/stage1/scenarios/s09/archive.jsonl --pending runs/2026-09-25-peer/stage1/scenarios/s09/pending.json"
+ ],
+ "archive_audit": {
+  "exit": 0,
+  "ok": true,
+  "violations": [],
+  "unauditable": [],
+  "warnings": [],
+  "set_aside": [],
+  "torn_tail": false,
+  "state": {
+   "best": "v1",
+   "rung": "E1",
+   "final_rung": "E2",
+   "probe_modes": {
+    "E1": "strict"
+   },
+   "stall": 2,
+   "error_streak": 0,
+   "rounds": 3,
+   "minutes": null,
+   "tokens": null,
+   "standing_checks": [],
+   "open_required_gaps": [],
+   "heldout": [],
+   "amends": 0,
+   "next_due": "round",
+   "status": "ACTIVE"
+  }
+ },
+ "pending_audit": {
+  "exit": 0,
+  "output": {
+   "required_keep": null,
+   "outcomes": {
+    "r4-a": "rejected",
+    "r4-b": "rejected"
+   },
+   "next_due": "check",
+   "archive_ok": true
+  }
+ },
+ "aux_with_check": {
+  "purpose": "the round logged, then the Check that question.md reports",
+  "check_record": {
+   "t": "check",
+   "version": "v1",
+   "rung": "E1",
+   "trigger": "stall",
+   "models": [
+    "judge-a-large",
+    "judge-b-large",
+    "judge-a-medium"
+   ],
+   "results": {
+    "units-consistent": {
+     "kind": "command",
+     "value": "pass"
+    },
+    "reagents-sourced": {
+     "kind": "source",
+     "value": "pass"
+    },
+    "bench-followable": {
+     "kind": "judges",
+     "value": "fail",
+     "votes": [
+      "pass",
+      "pass",
+      "fail"
+     ]
+    }
+   }
+  },
+  "violations": [],
+  "next_due": "halt:STALL",
+  "standing_checks": [
+   {
+    "version": "v1",
+    "rung": "E1",
+    "epoch": 0
+   }
+  ]
+ }
+}

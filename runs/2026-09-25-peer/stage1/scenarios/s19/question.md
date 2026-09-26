@@ -1,0 +1,1 @@
+Round 3 of the landing-page loop is back; see pending.json. Variant r3-a fails the accessibility check, which best passes. Variant r3-b passes every gate; judge 1 preferred it in both orders and judge 2 preferred it. No DONE claim is being made. Decide each variant's outcome and the next step.

@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r4-a": "kept",
+  "r4-b": "rejected"
+ },
+ "judge_needed": "none",
+ "next": "next_round",
+ "strict": false,
+ "why": "\"Keep a variant without a veto if >=2 judges prefer it (strict: 3) and none prefers best; or, if shorter, all 3 judges completed without UNKNOWN, none preferring best or rating anything worse. Keep at most one (most support, then shorter, then first); apply exactly the judged text.\" r4-a: 2 prefer it, none best, no veto -> kept (best becomes v3). r4-b: a judge prefers best -> rejected. \"Each non-pass is non-pass in best's Check. Spares run only on a changed best passing Check; until then, rounds (or HALT(BUDGET)); a second non-pass -> HALT(OVERFIT).\" v3 is a changed best but has not passed a Check, so spares cannot run yet; with no DONE claim and no stalls, the loop continues -> next round. Normal mode. Auditor (--pending): outcomes {\"r4-a\": \"kept\", \"r4-b\": \"rejected\"}, required_keep \"r4-a\", next_due \"round\"; archive audit ok=True, probe mode at E1: normal."
+}

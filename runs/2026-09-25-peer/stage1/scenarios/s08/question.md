@@ -1,0 +1,1 @@
+Round 5 of the environmental-summary loop is judged; see pending.json. For variant r5-a, judge 1 preferred the variant in both orders and judges 2 and 3 tied. Variant r5-b breaks the table parser, which passes on best. No DONE claim is being made. Decide each variant's outcome and the next step.

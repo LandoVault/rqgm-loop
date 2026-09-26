@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r4-a": "rejected",
+  "r4-b": "rejected"
+ },
+ "judge_needed": "none",
+ "next": "HALT(STALL)",
+ "strict": false,
+ "why": "r4-a is longer than best (2230 > 2214) with no preference -> rejected; r4-b: \"Judge 1 compares in both orders (disagreement = UNKNOWN; confidence: the lower); its veto or high-confidence preference for best rejects the variant. Else judge 2, then judge 3 unless 1 and 2 prefer the same version. Strict mode: all 3, no early rejection.\" -> rejected. Rounds 2, 3, 4 are 3 stalls since the v1 keep. \"Each non-pass is non-pass in best's Check. Spares run only on a changed best passing Check; until then, rounds (or HALT(BUDGET)); a second non-pass -> HALT(OVERFIT).\" The Check on v1 at E1 (all pass) stands, with the held-out non-pass on limitations-honest applied: \"Results stand until best, the rung or DONE changes. All required pass -> Boundary; else, after 3 stalls, HALT(STALL); else the next round.\" A required criterion is non-pass after 3 stalls -> HALT(STALL). Spares cannot run: best is unchanged. Normal mode. Auditor (--pending): outcomes {\"r4-a\": \"rejected\", \"r4-b\": \"rejected\"}, required_keep null, next_due \"halt:STALL\"; archive audit ok=True, probe mode at E1: normal."
+}

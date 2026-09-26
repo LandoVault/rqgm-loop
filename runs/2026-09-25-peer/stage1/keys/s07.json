@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r4-a": "rejected",
+  "r4-b": "rejected"
+ },
+ "judge_needed": "none",
+ "next": "held_out",
+ "strict": true,
+ "why": "KEY-FROM-PROSE for \"next\" (the Check results are outside --pending, which gives next_due \"check\"; confirmed by auditing the archive with the round and this Check appended). Strict mode: the E1 probe's identical copy drew a non-tie (\"Probe (per rung): judge 1 compares best, both orders, with an identical copy and a copy you (never the generator) seeded with one judges-criterion defect that a Check judge marks. A non-tie, miss or ERROR, or no judges criterion (no probe) -> strict mode, told to the human.\"). \"Keep a variant without a veto if >=2 judges prefer it (strict: 3) and none prefers best; or, if shorter, all 3 judges completed without UNKNOWN, none preferring best or rating anything worse. Keep at most one (most support, then shorter, then first); apply exactly the judged text.\" r4-a has 2 of 3 (strict needs 3) and is longer than best (2074 > 2066) -> rejected; r4-b: \"A command failing where best passes rejects the variant (shared failures don't).\" -> rejected. 3rd stall -> Check: \"Check after 3 stalls since the last keep, or a DONE claim: each criterion by its check on best (source: pass only if all its claims verify), 3 fresh Check judges marking every judges criterion ({\"<id>\":\"pass|fail|UNKNOWN\"}; majority pass; strict: 3/3); any ERROR: unchecked.\" Both judges criteria pass 3/3, command and source pass -> all required pass -> Boundary. E1 is the final rung: \"Below the final rung (default E2), pause: the human escalates (log rung and probe, reset stalls) or stops (exit PARTIAL, no held-out). At it, Stop.\" \"A required [OPEN] (in best, unwaived, criterion not optional) -> HALT(OPEN): name each gap and owner. Else each held-out judge marks every required criterion pass/fail/UNKNOWN, fresh on best, DONE and GROUNDING; the human reports only the marks (heldout.results; Check rule).\" No [OPEN] -> held-out. Auditor (--pending): outcomes {\"r4-a\": \"rejected\", \"r4-b\": \"rejected\"}, required_keep null, next_due \"check\"; archive audit ok=True, probe mode at E1: strict."
+}

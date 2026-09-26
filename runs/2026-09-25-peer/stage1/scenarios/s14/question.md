@@ -1,0 +1,1 @@
+Round 3 of the library-code loop is done; see pending.json. Variant r3-a passes the tests and fails lint; judge 1 preferred it in both orders and judge 2 preferred it. Variant r3-b fails both the tests and lint. No DONE claim is being made. Decide each variant's outcome and the next step.

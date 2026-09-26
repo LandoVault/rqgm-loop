@@ -1,0 +1,142 @@
+{
+ "t": "round",
+ "n": 3,
+ "best": "v0",
+ "t0": "2026-09-16T09:05:00Z",
+ "t1": "2026-09-16T09:22:00Z",
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r3-a",
+   "section": "## Triage",
+   "words": 1508,
+   "diff": [
+    {
+     "section": "## Triage",
+     "old": "Check the dashboards.",
+     "new": "Open the service dashboard, note the first failing dependency, and post it in the incident channel."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "links-resolve": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-c-large",
+     "orders": [
+      "tie",
+      "variant"
+     ],
+     "overall": "UNKNOWN",
+     "criteria": {
+      "links-resolve": "tie",
+      "commands-verified": "tie",
+      "oncall-usable": "UNKNOWN",
+      "escalation-tree": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-b-large",
+     "overall": "variant",
+     "criteria": {
+      "links-resolve": "tie",
+      "commands-verified": "tie",
+      "oncall-usable": "variant",
+      "escalation-tree": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "judge-c-medium",
+     "overall": "variant",
+     "criteria": {
+      "links-resolve": "tie",
+      "commands-verified": "tie",
+      "oncall-usable": "variant",
+      "escalation-tree": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r3-b",
+   "section": "## Mitigation",
+   "words": 1515,
+   "diff": [
+    {
+     "section": "## Mitigation",
+     "old": "Roll back if needed.",
+     "new": "If the last deploy is under an hour old, run kubectl rollout undo and watch error rates."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "links-resolve": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-c-large",
+     "orders": [
+      "tie",
+      "tie"
+     ],
+     "overall": "tie",
+     "criteria": {
+      "links-resolve": "tie",
+      "commands-verified": "tie",
+      "oncall-usable": "tie",
+      "escalation-tree": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-b-large",
+     "overall": "tie",
+     "criteria": {
+      "links-resolve": "tie",
+      "commands-verified": "tie",
+      "oncall-usable": "tie",
+      "escalation-tree": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "judge-c-medium",
+     "overall": "tie",
+     "criteria": {
+      "links-resolve": "tie",
+      "commands-verified": "tie",
+      "oncall-usable": "tie",
+      "escalation-tree": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  }
+ ]
+}

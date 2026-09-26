@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r5-a": "rejected",
+  "r5-b": "rejected"
+ },
+ "judge_needed": "none",
+ "next": "next_round",
+ "strict": false,
+ "why": "\"Judge 1 compares in both orders (disagreement = UNKNOWN; confidence: the lower); its veto or high-confidence preference for best rejects the variant. Else judge 2, then judge 3 unless 1 and 2 prefer the same version. Strict mode: all 3, no early rejection.\" r5-a: rejected by judge 1's high-confidence preference for best. r5-b: judge 3 prefers best -> not kept -> rejected. \"A round keeping nothing is a stall unless every variant ended ERROR (twice in a row -> HALT(ERROR)).\" Stalls since the last keep: rounds 2 and 3 at E1, then the human escalated: \"Below the final rung (default E2), pause: the human escalates (log rung and probe, reset stalls) or stops (exit PARTIAL, no held-out). At it, Stop.\" The escalation reset the count, so this is the 2nd stall at E2 (rounds 4 and 5) -> fewer than 3 -> no Check -> next round. Normal mode at E2 (clean E2 probe). Auditor (--pending): outcomes {\"r5-a\": \"rejected\", \"r5-b\": \"rejected\"}, required_keep null, next_due \"round\"; archive audit ok=True, probe mode at E2: normal."
+}

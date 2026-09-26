@@ -1,0 +1,1 @@
+Round 3 of the CLI-code loop is complete; see pending.json. Variant r3-a: all three judges preferred the variant (judge 1 in both orders). Variant r3-b: judge 1 preferred the variant in both orders, judge 2 preferred the variant and judge 3 tied. Both passed every gate. No DONE claim is being made. Decide each variant's outcome and the next step.

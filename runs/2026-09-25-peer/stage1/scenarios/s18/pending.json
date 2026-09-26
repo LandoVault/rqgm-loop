@@ -1,0 +1,129 @@
+{
+ "t": "round",
+ "n": 4,
+ "best": "v2",
+ "t0": "2026-09-10T11:24:00Z",
+ "t1": "2026-09-10T11:53:00Z",
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r4-a",
+   "section": "## Executive summary",
+   "words": 5069,
+   "diff": [
+    {
+     "section": "## Executive summary",
+     "old": "We are pleased to respond.",
+     "new": "We answer all twelve numbered requirements; section 2 maps each to a delivery phase."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "forms-complete": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-c-large",
+     "orders": [
+      "variant",
+      "variant"
+     ],
+     "overall": "variant",
+     "criteria": {
+      "forms-complete": "tie",
+      "references-verified": "tie",
+      "compliant-narrative": "variant",
+      "bid-price": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-a-large",
+     "overall": "variant",
+     "criteria": {
+      "forms-complete": "tie",
+      "references-verified": "tie",
+      "compliant-narrative": "variant",
+      "bid-price": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r4-b",
+   "section": "## Past performance",
+   "words": 5080,
+   "diff": [
+    {
+     "section": "## Past performance",
+     "old": "We have done similar work.",
+     "new": "Contract 2023-118 (county permits system) was delivered on time and on budget."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "forms-complete": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-c-large",
+     "orders": [
+      "tie",
+      "tie"
+     ],
+     "overall": "tie",
+     "criteria": {
+      "forms-complete": "tie",
+      "references-verified": "tie",
+      "compliant-narrative": "tie",
+      "bid-price": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-a-large",
+     "overall": "best",
+     "criteria": {
+      "forms-complete": "tie",
+      "references-verified": "tie",
+      "compliant-narrative": "best",
+      "bid-price": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "judge-c-medium",
+     "overall": "tie",
+     "criteria": {
+      "forms-complete": "tie",
+      "references-verified": "tie",
+      "compliant-narrative": "tie",
+      "bid-price": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  }
+ ]
+}

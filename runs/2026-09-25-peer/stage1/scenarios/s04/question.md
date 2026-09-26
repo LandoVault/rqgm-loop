@@ -1,0 +1,1 @@
+Round 4 of the README loop is judged; see pending.json. The Screen turned down variant r4-a as inert text. For variant r4-b, judge 1 tied in both orders, judge 2 preferred the variant and judge 3 tied. No DONE claim is being made. Decide each variant's outcome and the next step.

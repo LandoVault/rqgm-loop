@@ -1,0 +1,67 @@
+{
+ "t": "round",
+ "n": 4,
+ "best": "v1",
+ "t0": "2026-09-24T08:44:00Z",
+ "t1": "2026-09-24T08:55:00Z",
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r4-a",
+   "section": "## Numbers and dates",
+   "words": 1914,
+   "diff": [
+    {
+     "section": "## Numbers and dates",
+     "old": "Localize numbers.",
+     "new": "Write dates as DD.MM.YYYY and use a comma as the decimal separator."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "glossary-consistent": "pass"
+    },
+    "verifier": "pass",
+    "screen": "ERROR",
+    "retries": 1
+   },
+   "verdicts": []
+  },
+  {
+   "id": "r4-b",
+   "section": "## Punctuation",
+   "words": 1910,
+   "diff": [
+    {
+     "section": "## Punctuation",
+     "old": "Follow local rules.",
+     "new": "Use German quotation marks and a non-breaking space before units."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "glossary-consistent": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-b-large",
+     "orders": [
+      "variant",
+      "ERROR"
+     ],
+     "overall": "ERROR",
+     "criteria": {},
+     "confidence": null,
+     "retries": 1
+    }
+   ]
+  }
+ ]
+}

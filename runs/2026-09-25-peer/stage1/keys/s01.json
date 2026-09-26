@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r5-a": "rejected",
+  "r5-b": "rejected"
+ },
+ "judge_needed": "none",
+ "next": "check",
+ "strict": false,
+ "why": "r5-a: \"Judge 1 compares in both orders (disagreement = UNKNOWN; confidence: the lower); its veto or high-confidence preference for best rejects the variant. Else judge 2, then judge 3 unless 1 and 2 prefer the same version. Strict mode: all 3, no early rejection.\" -> rejected early. r5-b: 1 of 3 prefers it and it is longer than best (1610 > 1605) -> rejected (\"Keep a variant without a veto if >=2 judges prefer it (strict: 3) and none prefers best; or, if shorter, all 3 judges completed without UNKNOWN, none preferring best or rating anything worse. Keep at most one (most support, then shorter, then first); apply exactly the judged text.\"). Rounds 3, 4, 5 are 3 stalls since the v2 keep -> \"Check after 3 stalls since the last keep, or a DONE claim: each criterion by its check on best (source: pass only if all its claims verify), 3 fresh Check judges marking every judges criterion ({\"<id>\":\"pass|fail|UNKNOWN\"}; majority pass; strict: 3/3); any ERROR: unchecked.\" The failing Check after round 1 was on v1; best has changed to v2 since, so it no longer stands: \"Results stand until best, the rung or DONE changes. All required pass -> Boundary; else, after 3 stalls, HALT(STALL); else the next round.\" -> run a fresh Check on v2. Normal mode. Auditor (--pending): outcomes {\"r5-a\": \"rejected\", \"r5-b\": \"rejected\"}, required_keep null, next_due \"check\"; archive audit ok=True, probe mode at E1: normal."
+}

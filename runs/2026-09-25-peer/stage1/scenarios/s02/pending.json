@@ -1,0 +1,124 @@
+{
+ "t": "round",
+ "n": 5,
+ "best": "v2",
+ "t0": null,
+ "t1": null,
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r5-a",
+   "section": "## Monitoring",
+   "words": 4146,
+   "diff": [
+    {
+     "section": "## Monitoring",
+     "old": "Progress will be reported.",
+     "new": "Progress will be reported."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "targets-add-up": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-b-large",
+     "orders": [
+      "best",
+      "best"
+     ],
+     "overall": "best",
+     "criteria": {
+      "targets-add-up": "tie",
+      "baselines-sourced": "tie",
+      "feasible": "tie",
+      "case-studies": "tie",
+      "cost-per-tonne": "tie",
+      "2030-target": "tie"
+     },
+     "confidence": "high",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r5-b",
+   "section": "## Targets",
+   "words": 4137,
+   "diff": [
+    {
+     "section": "## Targets",
+     "old": "Cut emissions 55% by 2030.",
+     "new": "Cut emissions 55% by 2030; bus electrification costs about 180 dollars per tonne avoided."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "targets-add-up": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-b-large",
+     "orders": [
+      "variant",
+      "variant"
+     ],
+     "overall": "variant",
+     "criteria": {
+      "targets-add-up": "tie",
+      "baselines-sourced": "tie",
+      "feasible": "variant",
+      "case-studies": "tie",
+      "cost-per-tonne": "tie",
+      "2030-target": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-a-large",
+     "overall": "tie",
+     "criteria": {
+      "targets-add-up": "tie",
+      "baselines-sourced": "tie",
+      "feasible": "tie",
+      "case-studies": "tie",
+      "cost-per-tonne": "tie",
+      "2030-target": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "judge-b-medium",
+     "overall": "best",
+     "criteria": {
+      "targets-add-up": "tie",
+      "baselines-sourced": "tie",
+      "feasible": "tie",
+      "case-studies": "tie",
+      "cost-per-tonne": "tie",
+      "2030-target": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  }
+ ]
+}

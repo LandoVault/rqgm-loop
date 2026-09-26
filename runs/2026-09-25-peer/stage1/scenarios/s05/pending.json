@@ -1,0 +1,112 @@
+{
+ "t": "round",
+ "n": 4,
+ "best": "v1",
+ "t0": null,
+ "t1": null,
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r4-a",
+   "section": "## Comparison with prior work",
+   "words": 2230,
+   "diff": [
+    {
+     "section": "## Comparison with prior work",
+     "old": "This agrees with earlier studies.",
+     "new": "The 0.3 SD effect matches Smith 2021 and is half the size reported by Lee 2019."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "refs-resolve": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-b-large",
+     "orders": [
+      "tie",
+      "tie"
+     ],
+     "overall": "tie",
+     "criteria": {
+      "refs-resolve": "tie",
+      "claims-cited": "tie",
+      "limitations-honest": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-c-large",
+     "overall": "tie",
+     "criteria": {
+      "refs-resolve": "tie",
+      "claims-cited": "tie",
+      "limitations-honest": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "judge-b-medium",
+     "overall": "tie",
+     "criteria": {
+      "refs-resolve": "tie",
+      "claims-cited": "tie",
+      "limitations-honest": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r4-b",
+   "section": "## Summary of findings",
+   "words": 2210,
+   "diff": [
+    {
+     "section": "## Summary of findings",
+     "old": "We found an effect.",
+     "new": "We found an effect."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "refs-resolve": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-b-large",
+     "orders": [
+      "best",
+      "best"
+     ],
+     "overall": "best",
+     "criteria": {
+      "refs-resolve": "tie",
+      "claims-cited": "tie",
+      "limitations-honest": "best"
+     },
+     "confidence": "high",
+     "retries": 0
+    }
+   ]
+  }
+ ]
+}

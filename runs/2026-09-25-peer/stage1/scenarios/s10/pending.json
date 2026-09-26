@@ -1,0 +1,124 @@
+{
+ "t": "round",
+ "n": 9,
+ "best": "v3",
+ "t0": "2026-09-09T15:38:00Z",
+ "t1": "2026-09-09T16:06:00Z",
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r9-a",
+   "section": "## Summary of changes",
+   "words": 961,
+   "diff": [
+    {
+     "section": "## Summary of changes",
+     "old": "We made changes.",
+     "new": "Changes: new 2025 split (R1), stronger baseline (R2), variance over 5 seeds (R3)."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "page-limit": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-a-large",
+     "orders": [
+      "variant",
+      "variant"
+     ],
+     "overall": "variant",
+     "criteria": {
+      "page-limit": "tie",
+      "quotes-accurate": "tie",
+      "addresses-reviewers": "variant"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-b-large",
+     "overall": "variant",
+     "criteria": {
+      "page-limit": "tie",
+      "quotes-accurate": "tie",
+      "addresses-reviewers": "variant"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r9-b",
+   "section": "## Reviewer 1",
+   "words": 979,
+   "diff": [
+    {
+     "section": "## Reviewer 1",
+     "old": "R1 asks for a larger dataset: we added the 2025 split (Table 2).",
+     "new": "R1 asks for more data; see Table 2."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "page-limit": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-a-large",
+     "orders": [
+      "tie",
+      "tie"
+     ],
+     "overall": "tie",
+     "criteria": {
+      "page-limit": "tie",
+      "quotes-accurate": "tie",
+      "addresses-reviewers": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-b-large",
+     "overall": "tie",
+     "criteria": {
+      "page-limit": "tie",
+      "quotes-accurate": "tie",
+      "addresses-reviewers": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "judge-a-medium",
+     "overall": "best",
+     "criteria": {
+      "page-limit": "tie",
+      "quotes-accurate": "tie",
+      "addresses-reviewers": "best"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  }
+ ]
+}

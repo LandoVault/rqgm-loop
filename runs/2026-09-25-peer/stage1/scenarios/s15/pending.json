@@ -1,0 +1,78 @@
+{
+ "t": "round",
+ "n": 4,
+ "best": "v1",
+ "t0": null,
+ "t1": null,
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r4-a",
+   "section": "## Events table",
+   "words": 2739,
+   "diff": [
+    {
+     "section": "## Events table",
+     "old": "Event data.",
+     "new": "events: append-only, one row per tracked action; event_time is UTC."
+    }
+   ],
+   "gates": {
+    "apply": "ERROR",
+    "commands": {},
+    "verifier": null,
+    "screen": null,
+    "retries": 1
+   },
+   "verdicts": []
+  },
+  {
+   "id": "r4-b",
+   "section": "## Glossary",
+   "words": 2755,
+   "diff": [
+    {
+     "section": "## Glossary",
+     "old": "Terms used above.",
+     "new": "\"Active customer\": at least one order in the last 90 days (metrics catalogue)."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "schema-matches": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-c-large",
+     "orders": [
+      "tie",
+      "tie"
+     ],
+     "overall": "tie",
+     "criteria": {
+      "schema-matches": "tie",
+      "definitions-sourced": "tie",
+      "analyst-usable": "tie",
+      "pii-flags": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-a-large",
+     "overall": "ERROR",
+     "criteria": {},
+     "confidence": null,
+     "retries": 1
+    }
+   ]
+  }
+ ]
+}

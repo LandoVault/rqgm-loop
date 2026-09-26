@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r3-a": "kept",
+  "r3-b": "rejected"
+ },
+ "judge_needed": "none",
+ "next": "next_round",
+ "strict": true,
+ "why": "DONE has no judges criterion, so no probe runs and every rung is strict: \"Probe (per rung): judge 1 compares best, both orders, with an identical copy and a copy you (never the generator) seeded with one judges-criterion defect that a Check judge marks. A non-tie, miss or ERROR, or no judges criterion (no probe) -> strict mode, told to the human.\" \"Keep a variant without a veto if >=2 judges prefer it (strict: 3) and none prefers best; or, if shorter, all 3 judges completed without UNKNOWN, none preferring best or rating anything worse. Keep at most one (most support, then shorter, then first); apply exactly the judged text.\" r3-a: 3 of 3 prefer it, none prefers best, no veto -> kept. r3-b: 2 of 3 prefer it (strict needs 3) and it is longer than best (2391 > 2382), so the shorter clause cannot apply -> rejected. Next round. Auditor (--pending): outcomes {\"r3-a\": \"kept\", \"r3-b\": \"rejected\"}, required_keep \"r3-a\", next_due \"round\"; archive audit ok=True, probe mode at E1: strict."
+}

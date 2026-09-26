@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r4-c": "rejected",
+  "r4-d": "rejected"
+ },
+ "judge_needed": "none",
+ "next": "check",
+ "strict": false,
+ "why": "\"Resume if MEMORY holds records (print: pasted back): set aside a torn last line, log resume, rerun an unfinished round\" The torn round-4 line is set aside: its keep of r4-a was never logged whole, no version was written, so best is still v1 and the rerun round 4 replaces it. r4-c: a judge prefers best -> rejected; r4-d: \"The Screen rejects rubric echo, mechanism-free compliance claims, text aimed at judges, inert text, weakened guardrails, and unevidenced [OPEN] removals.\" -> rejected. \"A round keeping nothing is a stall unless every variant ended ERROR (twice in a row -> HALT(ERROR)).\" Stalls since the v1 keep: rounds 2, 3 and the rerun round 4 = 3 -> \"Check after 3 stalls since the last keep, or a DONE claim: each criterion by its check on best (source: pass only if all its claims verify), 3 fresh Check judges marking every judges criterion ({\"<id>\":\"pass|fail|UNKNOWN\"}; majority pass; strict: 3/3); any ERROR: unchecked.\" No Check stands on v1 -> run the Check. Normal mode. Auditor (--pending): outcomes {\"r4-c\": \"rejected\", \"r4-d\": \"rejected\"}, required_keep null, next_due \"check\"; archive audit ok=True, probe mode at E1: normal."
+}

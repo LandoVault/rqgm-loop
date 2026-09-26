@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r5-a": "rejected",
+  "r5-b": "rejected"
+ },
+ "judge_needed": "none",
+ "next": "HALT(STALL)",
+ "strict": false,
+ "why": "r5-a: 1 of 3 prefers it and it is longer than best (3890 > 3884) -> rejected (\"Keep a variant without a veto if >=2 judges prefer it (strict: 3) and none prefers best; or, if shorter, all 3 judges completed without UNKNOWN, none preferring best or rating anything worse. Keep at most one (most support, then shorter, then first); apply exactly the judged text.\"); r5-b: \"A command failing where best passes rejects the variant (shared failures don't).\" -> rejected. Rounds 3, 4, 5 are 3 stalls since the v1 keep -> a Check is due, but a Check on best v1 at E1 already ran (the DONE claim after round 2) with mitigation-concrete fail, and neither best, the rung nor DONE has changed since: \"Results stand until best, the rung or DONE changes. All required pass -> Boundary; else, after 3 stalls, HALT(STALL); else the next round.\" So the standing Check is reused (not re-run): a required criterion fails after 3 stalls -> HALT(STALL). Normal mode. Auditor (--pending): outcomes {\"r5-a\": \"rejected\", \"r5-b\": \"rejected\"}, required_keep null, next_due \"halt:STALL\"; archive audit ok=True, probe mode at E1: normal."
+}

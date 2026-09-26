@@ -1,0 +1,95 @@
+{
+ "t": "round",
+ "n": 4,
+ "best": "v1",
+ "t0": "2026-09-12T16:42:00Z",
+ "t1": "2026-09-12T16:58:00Z",
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r4-a",
+   "section": "## Benchmarks",
+   "words": 903,
+   "diff": [
+    {
+     "section": "## Benchmarks",
+     "old": "It is fast.",
+     "new": "Benchmarks are reported below."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "install-works": "pass"
+    },
+    "verifier": "pass",
+    "screen": "reject: inert text",
+    "retries": 0
+   },
+   "verdicts": []
+  },
+  {
+   "id": "r4-b",
+   "section": "## Usage",
+   "words": 915,
+   "diff": [
+    {
+     "section": "## Usage",
+     "old": "Import the library.",
+     "new": "import fastcsv; rows = fastcsv.read(\"data.csv\") returns a list of dicts in under a second for small files."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "install-works": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-c-large",
+     "orders": [
+      "tie",
+      "tie"
+     ],
+     "overall": "tie",
+     "criteria": {
+      "install-works": "tie",
+      "claims-linked": "tie",
+      "first-run-clear": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-b-large",
+     "overall": "variant",
+     "criteria": {
+      "install-works": "tie",
+      "claims-linked": "tie",
+      "first-run-clear": "variant"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "judge-c-medium",
+     "overall": "tie",
+     "criteria": {
+      "install-works": "tie",
+      "claims-linked": "tie",
+      "first-run-clear": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  }
+ ]
+}

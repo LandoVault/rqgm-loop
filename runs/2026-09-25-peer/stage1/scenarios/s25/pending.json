@@ -1,0 +1,129 @@
+{
+ "t": "round",
+ "n": 2,
+ "best": "v1",
+ "t0": "2026-09-23T10:25:00Z",
+ "t1": "2026-09-23T10:52:00Z",
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r2-a",
+   "section": "## The core idea",
+   "words": 4190,
+   "diff": [
+    {
+     "section": "## The core idea",
+     "old": "We move downhill step by step, following the negative gradient, until the loss stops improving.",
+     "new": "Step downhill along the negative gradient until the loss stops falling."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "code-samples-run": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-a-large",
+     "orders": [
+      "tie",
+      "tie"
+     ],
+     "overall": "tie",
+     "criteria": {
+      "code-samples-run": "tie",
+      "facts-sourced": "tie",
+      "builds-intuition": "tie",
+      "exercise-set": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-c-large",
+     "overall": "tie",
+     "criteria": {
+      "code-samples-run": "tie",
+      "facts-sourced": "tie",
+      "builds-intuition": "tie",
+      "exercise-set": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "judge-a-medium",
+     "overall": "variant",
+     "criteria": {
+      "code-samples-run": "tie",
+      "facts-sourced": "tie",
+      "builds-intuition": "variant",
+      "exercise-set": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r2-b",
+   "section": "## Worked example",
+   "words": 4302,
+   "diff": [
+    {
+     "section": "## Worked example",
+     "old": "Consider a quadratic.",
+     "new": "Take f(x) = (x - 3) squared, start at x = 0 with step 0.25, and watch x reach 2.25, then 2.81, then 2.95."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "code-samples-run": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-a-large",
+     "orders": [
+      "variant",
+      "variant"
+     ],
+     "overall": "variant",
+     "criteria": {
+      "code-samples-run": "tie",
+      "facts-sourced": "tie",
+      "builds-intuition": "variant",
+      "exercise-set": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-c-large",
+     "overall": "variant",
+     "criteria": {
+      "code-samples-run": "tie",
+      "facts-sourced": "tie",
+      "builds-intuition": "variant",
+      "exercise-set": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  }
+ ]
+}

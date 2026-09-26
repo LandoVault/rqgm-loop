@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r4-a": "rejected",
+  "r4-b": "rejected"
+ },
+ "judge_needed": "none",
+ "next": "check",
+ "strict": false,
+ "why": "r4-a: \"The Screen rejects rubric echo, mechanism-free compliance claims, text aimed at judges, inert text, weakened guardrails, and unevidenced [OPEN] removals.\" -> rejected. r4-b: one judge prefers it (need 2) and it is longer than best (915 > 902), so the shorter clause does not apply -> rejected (\"Keep a variant without a veto if >=2 judges prefer it (strict: 3) and none prefers best; or, if shorter, all 3 judges completed without UNKNOWN, none preferring best or rating anything worse. Keep at most one (most support, then shorter, then first); apply exactly the judged text.\"). \"A round keeping nothing is a stall unless every variant ended ERROR (twice in a row -> HALT(ERROR)).\" Rounds 2, 3 and 4 are stalls since the round-1 keep -> \"Check after 3 stalls since the last keep, or a DONE claim: each criterion by its check on best (source: pass only if all its claims verify), 3 fresh Check judges marking every judges criterion ({\"<id>\":\"pass|fail|UNKNOWN\"}; majority pass; strict: 3/3); any ERROR: unchecked.\" No Check stands on best v1 at E1 -> run the Check. Normal mode. Auditor (--pending): outcomes {\"r4-a\": \"rejected\", \"r4-b\": \"rejected\"}, required_keep null, next_due \"check\"; archive audit ok=True, probe mode at E1: normal."
+}

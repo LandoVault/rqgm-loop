@@ -1,0 +1,1 @@
+Round 3 of the user-manual loop has been judged; see pending.json. Variant r3-a: judge 1 tied in both orders, judge 2 tied, and judge 3 tied. Variant r3-b: judge 1 preferred the variant in both orders with high confidence; judges 2 and 3 tied. No DONE claim is being made. Decide each variant's outcome and the next step.

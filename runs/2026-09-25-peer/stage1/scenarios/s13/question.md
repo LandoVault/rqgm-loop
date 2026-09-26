@@ -1,0 +1,1 @@
+Round 4 of the policy-brief loop has been judged; see pending.json. For variant r4-a, judge 1 preferred the variant in both orders, judge 2 preferred the variant and judge 3 tied. For variant r4-b, judge 1 tied in both orders, judge 2 tied and judge 3 preferred the variant. No DONE claim is being made. Decide each variant's outcome and the next step.

@@ -1,0 +1,116 @@
+{
+ "t": "round",
+ "n": 2,
+ "best": "v0",
+ "t0": "2026-09-17T10:12:00Z",
+ "t1": "2026-09-17T10:26:00Z",
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r2-a",
+   "section": "## Quick start",
+   "words": 772,
+   "diff": [
+    {
+     "section": "## Quick start",
+     "old": "Clone the repo and run it.",
+     "new": "Clone the repo, run make example, and open out/report.html; the run takes about two minutes."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "example-runs": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-b-large",
+     "orders": [
+      "variant",
+      "variant"
+     ],
+     "overall": "variant",
+     "criteria": {
+      "example-runs": "tie",
+      "claims-sourced": "tie",
+      "setup-clear": "variant",
+      "license-block": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-a-large",
+     "overall": "variant",
+     "criteria": {
+      "example-runs": "tie",
+      "claims-sourced": "tie",
+      "setup-clear": "variant",
+      "license-block": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r2-b",
+   "section": "## Troubleshooting",
+   "words": 781,
+   "diff": [
+    {
+     "section": "## Troubleshooting",
+     "old": "Check the logs.",
+     "new": "If a stage fails, rerun it alone with make stage NAME=<stage> and read logs/<stage>.log."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "example-runs": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-b-large",
+     "orders": [
+      "best",
+      "best"
+     ],
+     "overall": "best",
+     "criteria": {
+      "example-runs": "tie",
+      "claims-sourced": "tie",
+      "setup-clear": "best",
+      "license-block": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-a-large",
+     "overall": "best",
+     "criteria": {
+      "example-runs": "tie",
+      "claims-sourced": "tie",
+      "setup-clear": "best",
+      "license-block": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  }
+ ]
+}

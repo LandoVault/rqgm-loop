@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r3-a": "rejected",
+  "r3-b": "rejected"
+ },
+ "judge_needed": "none",
+ "next": "next_round",
+ "strict": false,
+ "why": "Judges see GROUNDING, the rubric and A/B, \"rating each criterion and must_not_change id\". \"A veto: a protected item (guardrails, must_not_change, criteria whose last result is pass) rated worse, UNKNOWN or not at all.\" sample-size is a must_not_change id, and judge 2 did not rate it (\"not at all\") -> a veto. \"Keep a variant without a veto if >=2 judges prefer it (strict: 3) and none prefers best; or, if shorter, all 3 judges completed without UNKNOWN, none preferring best or rating anything worse. Keep at most one (most support, then shorter, then first); apply exactly the judged text.\" r3-a has a veto -> not kept -> rejected (judges 1 and 2 prefer the same version, so no judge 3: \"Judge 1 compares in both orders (disagreement = UNKNOWN; confidence: the lower); its veto or high-confidence preference for best rejects the variant. Else judge 2, then judge 3 unless 1 and 2 prefer the same version. Strict mode: all 3, no early rejection.\"). r3-b: \"The Screen rejects rubric echo, mechanism-free compliance claims, text aimed at judges, inert text, weakened guardrails, and unevidenced [OPEN] removals.\" -> rejected. Stall (2nd since the v1 keep) -> next round. Normal mode. Auditor (--pending): outcomes {\"r3-a\": \"rejected\", \"r3-b\": \"rejected\"}, required_keep null, next_due \"round\"; archive audit ok=True, probe mode at E1: normal."
+}

@@ -1,0 +1,98 @@
+{
+ "t": "round",
+ "n": 4,
+ "best": "v1",
+ "t0": "2026-09-19T09:59:00Z",
+ "t1": "2026-09-19T10:18:00Z",
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r4-a",
+   "section": "## Goals and non-goals",
+   "words": 2074,
+   "diff": [
+    {
+     "section": "## Goals and non-goals",
+     "old": "Improve checkout.",
+     "new": "Goal: raise checkout completion from 32% to 45% by Q4. Non-goals: cart redesign, new payment methods."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "ids-unique": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-c-large",
+     "orders": [
+      "variant",
+      "variant"
+     ],
+     "overall": "variant",
+     "criteria": {
+      "ids-unique": "tie",
+      "metrics-sourced": "tie",
+      "scope-clear": "variant",
+      "risks-named": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-b-large",
+     "overall": "tie",
+     "criteria": {
+      "ids-unique": "tie",
+      "metrics-sourced": "tie",
+      "scope-clear": "tie",
+      "risks-named": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "judge-c-medium",
+     "overall": "variant",
+     "criteria": {
+      "ids-unique": "tie",
+      "metrics-sourced": "tie",
+      "scope-clear": "variant",
+      "risks-named": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r4-b",
+   "section": "## Risks",
+   "words": 2069,
+   "diff": [
+    {
+     "section": "## Risks",
+     "old": "There may be risks.",
+     "new": "Risk R9: provider outage; owner: payments team; mitigation: fallback provider."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "ids-unique": "fail"
+    },
+    "verifier": null,
+    "screen": null,
+    "retries": 0
+   },
+   "verdicts": []
+  }
+ ]
+}

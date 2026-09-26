@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r4-a": "dropped",
+  "r4-b": "rejected"
+ },
+ "judge_needed": "none",
+ "next": "next_round",
+ "strict": false,
+ "why": "r4-a: \"A result is a verdict, UNKNOWN or ERROR (timeout, unparsable, unapplied diff, unrunnable or file-editing check); UNKNOWN is never a tie, pass or support. Retry an ERROR once (retries), then drop its variant (not a rejection) or leave its criterion unchecked. Never re-ask a verdict.\" Judge 2 is ERROR after one retry -> r4-a dropped (not rejected). r4-b: \"Judge 1 compares in both orders (disagreement = UNKNOWN; confidence: the lower); its veto or high-confidence preference for best rejects the variant. Else judge 2, then judge 3 unless 1 and 2 prefer the same version. Strict mode: all 3, no early rejection.\" -> rejected by judge 1. \"A round keeping nothing is a stall unless every variant ended ERROR (twice in a row -> HALT(ERROR)).\" r4-b was rejected, so the round is a stall: the 2nd since the round-2 keep (round 3 was the 1st) -> no Check yet -> next round. Budget: 81 of 480 minutes used, longest round 22 min, 4 of 8 rounds (\"Start a round only if one remains and each reported budget covers twice the costliest round; else Check: all required pass -> Boundary, else HALT(BUDGET).\"). Normal mode (E1 probe clean). Auditor (--pending): outcomes {\"r4-a\": \"dropped\", \"r4-b\": \"rejected\"}, required_keep null, next_due \"round\"; archive audit ok=True, probe mode at E1: normal."
+}

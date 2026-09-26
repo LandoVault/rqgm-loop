@@ -1,0 +1,89 @@
+{
+ "t": "round",
+ "n": 3,
+ "best": "v1",
+ "t0": "2026-09-22T09:42:00Z",
+ "t1": "2026-09-22T10:03:00Z",
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r3-a",
+   "section": "src/util.py",
+   "words": 5170,
+   "diff": [
+    {
+     "section": "src/util.py",
+     "old": "def chunks(xs, n):\n    return [xs[i:i+n] for i in range(0, len(xs), n)]",
+     "new": "def chunks(xs, n):\n    \"\"\"Split xs into lists of at most n items.\"\"\"\n    return [xs[i:i + n] for i in range(0, len(xs), n)]"
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "tests": "pass",
+     "lint": "fail"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-a-large",
+     "orders": [
+      "variant",
+      "variant"
+     ],
+     "overall": "variant",
+     "criteria": {
+      "tests": "tie",
+      "lint": "tie",
+      "docs-sourced": "tie",
+      "readable": "variant",
+      "public-api": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-b-large",
+     "overall": "variant",
+     "criteria": {
+      "tests": "tie",
+      "lint": "tie",
+      "docs-sourced": "tie",
+      "readable": "variant",
+      "public-api": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r3-b",
+   "section": "src/core.py",
+   "words": 5190,
+   "diff": [
+    {
+     "section": "src/core.py",
+     "old": "def merge(a, b):\n    return sorted(a + b)",
+     "new": "def merge(a, b):\n    return list(heapq.merge(a, b))"
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "tests": "fail",
+     "lint": "fail"
+    },
+    "verifier": null,
+    "screen": null,
+    "retries": 0
+   },
+   "verdicts": []
+  }
+ ]
+}

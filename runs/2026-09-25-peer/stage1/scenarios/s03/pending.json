@@ -1,0 +1,148 @@
+{
+ "t": "round",
+ "n": 3,
+ "best": "v1",
+ "t0": null,
+ "t1": null,
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r3-a",
+   "section": "## Maintenance",
+   "words": 2531,
+   "diff": [
+    {
+     "section": "## Maintenance",
+     "old": "Clean the unit sometimes.",
+     "new": "Wipe the vents monthly; replace the filter yearly."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "spellcheck": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-c-large",
+     "orders": [
+      "tie",
+      "tie"
+     ],
+     "overall": "tie",
+     "criteria": {
+      "spellcheck": "tie",
+      "specs-sourced": "tie",
+      "task-oriented": "tie",
+      "concise": "tie",
+      "safety-warning": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-a-large",
+     "overall": "tie",
+     "criteria": {
+      "spellcheck": "tie",
+      "specs-sourced": "tie",
+      "task-oriented": "tie",
+      "concise": "tie",
+      "safety-warning": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "judge-c-medium",
+     "overall": "tie",
+     "criteria": {
+      "spellcheck": "tie",
+      "specs-sourced": "tie",
+      "task-oriented": "best",
+      "concise": "variant",
+      "safety-warning": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r3-b",
+   "section": "## Installing the unit",
+   "words": 2595,
+   "diff": [
+    {
+     "section": "## Installing the unit",
+     "old": "Mount the unit on a wall.",
+     "new": "To mount the unit, drill two 6 mm holes 120 mm apart and hang the unit on the supplied screws."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "spellcheck": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-c-large",
+     "orders": [
+      "variant",
+      "variant"
+     ],
+     "overall": "variant",
+     "criteria": {
+      "spellcheck": "tie",
+      "specs-sourced": "tie",
+      "task-oriented": "variant",
+      "concise": "tie",
+      "safety-warning": "tie"
+     },
+     "confidence": "high",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-a-large",
+     "overall": "tie",
+     "criteria": {
+      "spellcheck": "tie",
+      "specs-sourced": "tie",
+      "task-oriented": "tie",
+      "concise": "tie",
+      "safety-warning": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "judge-c-medium",
+     "overall": "tie",
+     "criteria": {
+      "spellcheck": "tie",
+      "specs-sourced": "tie",
+      "task-oriented": "tie",
+      "concise": "tie",
+      "safety-warning": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  }
+ ]
+}

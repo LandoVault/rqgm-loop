@@ -1,0 +1,112 @@
+{
+ "t": "round",
+ "n": 3,
+ "best": "v1",
+ "t0": null,
+ "t1": null,
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r3-a",
+   "section": "## Laptop setup",
+   "words": 1010,
+   "diff": [
+    {
+     "section": "## Laptop setup",
+     "old": "Install the usual tools.",
+     "new": "Run the bootstrap script; it installs Node 22, Python 3.12 and the internal CLI, then prints a check list."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "steps-run": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-c-large",
+     "orders": [
+      "variant",
+      "best"
+     ],
+     "overall": "UNKNOWN",
+     "criteria": {
+      "steps-run": "tie",
+      "versions-cited": "tie",
+      "newcomer-clear": "UNKNOWN"
+     },
+     "confidence": "low",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-a-large",
+     "overall": "UNKNOWN",
+     "criteria": {
+      "steps-run": "tie",
+      "versions-cited": "tie",
+      "newcomer-clear": "UNKNOWN"
+     },
+     "confidence": "low",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r3-b",
+   "section": "## First pull request",
+   "words": 968,
+   "diff": [
+    {
+     "section": "## First pull request",
+     "old": "Make a small change and open a PR.",
+     "new": "Fix a typo in the docs repo and open a PR; CI and one review are required."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "steps-run": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-c-large",
+     "orders": [
+      "tie",
+      "tie"
+     ],
+     "overall": "tie",
+     "criteria": {
+      "steps-run": "tie",
+      "versions-cited": "tie",
+      "newcomer-clear": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-a-large",
+     "overall": "tie",
+     "criteria": {
+      "steps-run": "tie",
+      "versions-cited": "tie",
+      "newcomer-clear": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  }
+ ]
+}

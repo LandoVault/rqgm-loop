@@ -1,0 +1,133 @@
+{
+ "scenario": "s02",
+ "source_key": "c15b",
+ "commands": [
+  "python skills/rqgm-loop/rqgm_check.py audit runs/2026-09-25-peer/stage1/scenarios/s02/archive.jsonl",
+  "python skills/rqgm-loop/rqgm_check.py audit runs/2026-09-25-peer/stage1/scenarios/s02/archive.jsonl --pending runs/2026-09-25-peer/stage1/scenarios/s02/pending.json"
+ ],
+ "archive_audit": {
+  "exit": 0,
+  "ok": true,
+  "violations": [],
+  "unauditable": [],
+  "warnings": [],
+  "set_aside": [],
+  "torn_tail": false,
+  "state": {
+   "best": "v2",
+   "rung": "E3",
+   "final_rung": "E3",
+   "probe_modes": {
+    "E1": "normal",
+    "E2": "normal",
+    "E3": "normal"
+   },
+   "stall": 2,
+   "error_streak": 0,
+   "rounds": 4,
+   "minutes": null,
+   "tokens": null,
+   "standing_checks": [
+    {
+     "version": "v1",
+     "rung": "E1",
+     "epoch": 0
+    },
+    {
+     "version": "v2",
+     "rung": "E2",
+     "epoch": 0
+    }
+   ],
+   "open_required_gaps": [
+    "source for the 2019 transport emissions baseline"
+   ],
+   "heldout": [],
+   "amends": 1,
+   "next_due": "round",
+   "status": "ACTIVE"
+  }
+ },
+ "pending_audit": {
+  "exit": 0,
+  "output": {
+   "required_keep": null,
+   "outcomes": {
+    "r5-a": "rejected",
+    "r5-b": "rejected"
+   },
+   "next_due": "check",
+   "archive_ok": true
+  }
+ },
+ "aux_with_check": {
+  "purpose": "the round logged, then the Check that question.md reports",
+  "check_record": {
+   "t": "check",
+   "version": "v2",
+   "rung": "E3",
+   "trigger": "stall",
+   "models": [
+    "judge-b-large",
+    "judge-a-large",
+    "judge-b-medium"
+   ],
+   "results": {
+    "targets-add-up": {
+     "kind": "command",
+     "value": "pass"
+    },
+    "baselines-sourced": {
+     "kind": "source",
+     "value": "pass"
+    },
+    "feasible": {
+     "kind": "judges",
+     "value": "pass",
+     "votes": [
+      "pass",
+      "pass",
+      "pass"
+     ]
+    },
+    "case-studies": {
+     "kind": "judges",
+     "value": "fail",
+     "votes": [
+      "pass",
+      "fail",
+      "fail"
+     ]
+    },
+    "cost-per-tonne": {
+     "kind": "judges",
+     "value": "pass",
+     "votes": [
+      "pass",
+      "pass",
+      "pass"
+     ]
+    }
+   }
+  },
+  "violations": [],
+  "next_due": "halt:OPEN",
+  "standing_checks": [
+   {
+    "version": "v1",
+    "rung": "E1",
+    "epoch": 0
+   },
+   {
+    "version": "v2",
+    "rung": "E2",
+    "epoch": 0
+   },
+   {
+    "version": "v2",
+    "rung": "E3",
+    "epoch": 1
+   }
+  ]
+ }
+}

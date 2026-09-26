@@ -1,0 +1,1 @@
+Round 2 of the tutorial-chapter loop is judged; see pending.json. Variant r2-a: judge 1 tied in both orders, judge 2 tied, judge 3 preferred the variant. Variant r2-b: judge 1 preferred the variant in both orders and judge 2 preferred the variant. No DONE claim is being made. Decide each variant's outcome and the next step.

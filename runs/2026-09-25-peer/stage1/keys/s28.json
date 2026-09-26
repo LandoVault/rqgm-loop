@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r3-a": "rejected",
+  "r3-b": "dropped"
+ },
+ "judge_needed": "none",
+ "next": "next_round",
+ "strict": false,
+ "why": "r3-a: \"The Screen rejects rubric echo, mechanism-free compliance claims, text aimed at judges, inert text, weakened guardrails, and unevidenced [OPEN] removals.\" -> rejected. r3-b: \"A result is a verdict, UNKNOWN or ERROR (timeout, unparsable, unapplied diff, unrunnable or file-editing check); UNKNOWN is never a tie, pass or support. Retry an ERROR once (retries), then drop its variant (not a rejection) or leave its criterion unchecked. Never re-ask a verdict.\" Judge 3 ended ERROR after its one retry, so r3-b is dropped; an ERROR is not a completed tie, so the prune clause of \"Keep a variant without a veto if >=2 judges prefer it (strict: 3) and none prefers best; or, if shorter, all 3 judges completed without UNKNOWN, none preferring best or rating anything worse. Keep at most one (most support, then shorter, then first); apply exactly the judged text.\" cannot keep it. \"A round keeping nothing is a stall unless every variant ended ERROR (twice in a row -> HALT(ERROR)).\" r3-a was rejected, so this is a stall: the 2nd since the v1 keep (round 2 was the 1st), fewer than 3, so no Check is due (\"Check after 3 stalls since the last keep, or a DONE claim: each criterion by its check on best (source: pass only if all its claims verify), 3 fresh Check judges marking every judges criterion ({\"<id>\":\"pass|fail|UNKNOWN\"}; majority pass; strict: 3/3); any ERROR: unchecked.\") -> next round. Normal mode: the E1 probe gave tie/tie on the identical copy and best/best on the seeded copy (\"Probe (per rung): judge 1 compares best, both orders, with an identical copy and a copy you (never the generator) seeded with one judges-criterion defect that a Check judge marks. A non-tie, miss or ERROR, or no judges criterion (no probe) -> strict mode, told to the human.\"). Auditor (--pending): outcomes {\"r3-a\": \"rejected\", \"r3-b\": \"dropped\"}, required_keep null, next_due \"round\"; archive audit ok=True, probe mode at E1: normal."
+}

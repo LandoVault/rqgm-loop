@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r3-a": "rejected",
+  "r3-b": "rejected"
+ },
+ "judge_needed": "none",
+ "next": "next_round",
+ "strict": false,
+ "why": "\"Keep a variant without a veto if >=2 judges prefer it (strict: 3) and none prefers best; or, if shorter, all 3 judges completed without UNKNOWN, none preferring best or rating anything worse. Keep at most one (most support, then shorter, then first); apply exactly the judged text.\" r3-a is shorter (2531 < 2588) and all 3 judges completed without UNKNOWN, but judge 3 rated task-oriented in favour of best, i.e. \"rating anything worse\" -> the prune clause fails; no judge prefers it overall -> rejected (task-oriented is not protected, so this is not a veto, just no keep). r3-b: 1 of 3 prefer it and it is longer (2595 > 2588) -> rejected. Round keeps nothing -> stall (1st since the v1 keep) -> next round. Normal mode. Auditor (--pending): outcomes {\"r3-a\": \"rejected\", \"r3-b\": \"rejected\"}, required_keep null, next_due \"round\"; archive audit ok=True, probe mode at E1: normal."
+}

@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r3-a": "pending",
+  "r3-b": "rejected"
+ },
+ "judge_needed": "3",
+ "next": "run_judges",
+ "strict": false,
+ "why": "KEY-FROM-PROSE (the auditor's --pending replay recomputes r3-a as not eligible and cannot express \"pending\"; logging r3-a without judge 3 is flagged JUDGE_MISSING, see aux). r3-b: \"A command failing where best passes rejects the variant (shared failures don't).\" -> rejected. r3-a: \"Judge 1 compares in both orders (disagreement = UNKNOWN; confidence: the lower); its veto or high-confidence preference for best rejects the variant. Else judge 2, then judge 3 unless 1 and 2 prefer the same version. Strict mode: all 3, no early rejection.\" Judge 1's orders disagree, so judge 1 is UNKNOWN, and \"A result is a verdict, UNKNOWN or ERROR (timeout, unparsable, unapplied diff, unrunnable or file-editing check); UNKNOWN is never a tie, pass or support.\" So judges 1 and 2 do not \"prefer the same version\": judge 3 must run before r3-a can be decided (with judge 3 = variant it would be kept: 2 prefer it, none prefers best). method-followable is not protected (no Check has passed it), so the UNKNOWN on it is no veto (\"A veto: a protected item (guardrails, must_not_change, criteria whose last result is pass) rated worse, UNKNOWN or not at all.\"). Normal mode. Auditor (--pending): outcomes {\"r3-a\": \"rejected\", \"r3-b\": \"rejected\"}, required_keep null, next_due \"round\"; archive audit ok=True, probe mode at E1: normal."
+}

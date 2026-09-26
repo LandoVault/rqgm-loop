@@ -1,0 +1,100 @@
+{
+ "t": "round",
+ "n": 4,
+ "best": "v1",
+ "t0": "2026-09-15T14:00:00Z",
+ "t1": "2026-09-15T14:21:00Z",
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r4-a",
+   "section": "## Rate limits",
+   "words": 2301,
+   "diff": [
+    {
+     "section": "## Rate limits",
+     "old": "Requests are rate limited.",
+     "new": "Each client may send 600 requests per minute; a 429 response carries Retry-After in seconds."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "schema-valid": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-a-large",
+     "orders": [
+      "variant",
+      "variant"
+     ],
+     "overall": "variant",
+     "criteria": {
+      "schema-valid": "tie",
+      "examples-traceable": "tie",
+      "errors-documented": "variant",
+      "tone-consistent": "tie",
+      "auth-flow": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-c-large",
+     "overall": "ERROR",
+     "criteria": {},
+     "confidence": null,
+     "retries": 1
+    }
+   ]
+  },
+  {
+   "id": "r4-b",
+   "section": "## Pagination",
+   "words": 2288,
+   "diff": [
+    {
+     "section": "## Pagination",
+     "old": "Lists are paginated.",
+     "new": "Lists return next_cursor; pass it back unchanged to read the next page."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "schema-valid": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-a-large",
+     "orders": [
+      "best",
+      "best"
+     ],
+     "overall": "best",
+     "criteria": {
+      "schema-valid": "tie",
+      "examples-traceable": "tie",
+      "errors-documented": "best",
+      "tone-consistent": "tie",
+      "auth-flow": "tie"
+     },
+     "confidence": "high",
+     "retries": 0
+    }
+   ]
+  }
+ ]
+}

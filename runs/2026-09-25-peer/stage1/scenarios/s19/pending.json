@@ -1,0 +1,89 @@
+{
+ "t": "round",
+ "n": 3,
+ "best": "v1",
+ "t0": null,
+ "t1": null,
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r3-a",
+   "section": "## FAQ",
+   "words": 1901,
+   "diff": [
+    {
+     "section": "## FAQ",
+     "old": "Questions? Contact us.",
+     "new": "<div onclick=\"open()\">Questions? Chat with us</div>"
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "html-valid": "pass",
+     "a11y": "fail"
+    },
+    "verifier": null,
+    "screen": null,
+    "retries": 0
+   },
+   "verdicts": []
+  },
+  {
+   "id": "r3-b",
+   "section": "## Pricing",
+   "words": 1888,
+   "diff": [
+    {
+     "section": "## Pricing",
+     "old": "Plans start at a low price.",
+     "new": "Team: 12 dollars per user per month. Free for up to 3 users."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "html-valid": "pass",
+     "a11y": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-c-large",
+     "orders": [
+      "variant",
+      "variant"
+     ],
+     "overall": "variant",
+     "criteria": {
+      "html-valid": "tie",
+      "a11y": "tie",
+      "prices-sourced": "tie",
+      "persuasive": "variant",
+      "legal-footer": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-b-large",
+     "overall": "variant",
+     "criteria": {
+      "html-valid": "tie",
+      "a11y": "tie",
+      "prices-sourced": "tie",
+      "persuasive": "variant",
+      "legal-footer": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  }
+ ]
+}

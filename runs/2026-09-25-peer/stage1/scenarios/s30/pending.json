@@ -1,0 +1,85 @@
+{
+ "t": "round",
+ "n": 3,
+ "best": "v1",
+ "t0": null,
+ "t1": null,
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r3-a",
+   "section": "## Analysis",
+   "words": 3105,
+   "diff": [
+    {
+     "section": "## Analysis",
+     "old": "We fitted regression models.",
+     "new": "We fitted mixed-effects linear models with a random intercept per site and report 95% intervals."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "stats-reproduce": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-a-large",
+     "orders": [
+      "variant",
+      "best"
+     ],
+     "overall": "UNKNOWN",
+     "criteria": {
+      "stats-reproduce": "tie",
+      "numbers-sourced": "tie",
+      "method-followable": "UNKNOWN",
+      "prereg-id": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-b-large",
+     "overall": "variant",
+     "criteria": {
+      "stats-reproduce": "tie",
+      "numbers-sourced": "tie",
+      "method-followable": "variant",
+      "prereg-id": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r3-b",
+   "section": "## Deviations",
+   "words": 3094,
+   "diff": [
+    {
+     "section": "## Deviations",
+     "old": "There were minor deviations from the plan.",
+     "new": "We dropped two outliers, which changed the reported effect size."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "stats-reproduce": "fail"
+    },
+    "verifier": null,
+    "screen": null,
+    "retries": 0
+   },
+   "verdicts": []
+  }
+ ]
+}

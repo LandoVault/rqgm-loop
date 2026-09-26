@@ -1,0 +1,55 @@
+{
+ "scenario": "s13",
+ "source_key": "c04a",
+ "commands": [
+  "python skills/rqgm-loop/rqgm_check.py audit runs/2026-09-25-peer/stage1/scenarios/s13/archive.jsonl",
+  "python skills/rqgm-loop/rqgm_check.py audit runs/2026-09-25-peer/stage1/scenarios/s13/archive.jsonl --pending runs/2026-09-25-peer/stage1/scenarios/s13/pending.json"
+ ],
+ "archive_audit": {
+  "exit": 0,
+  "ok": true,
+  "violations": [],
+  "unauditable": [],
+  "warnings": [],
+  "set_aside": [],
+  "torn_tail": false,
+  "state": {
+   "best": "v2",
+   "rung": "E2",
+   "final_rung": "E2",
+   "probe_modes": {
+    "E1": "normal",
+    "E2": "strict"
+   },
+   "stall": 1,
+   "error_streak": 0,
+   "rounds": 3,
+   "minutes": null,
+   "tokens": null,
+   "standing_checks": [
+    {
+     "version": "v2",
+     "rung": "E1",
+     "epoch": 0
+    }
+   ],
+   "open_required_gaps": [],
+   "heldout": [],
+   "amends": 0,
+   "next_due": "round",
+   "status": "ACTIVE"
+  }
+ },
+ "pending_audit": {
+  "exit": 0,
+  "output": {
+   "required_keep": "r4-b",
+   "outcomes": {
+    "r4-a": "rejected",
+    "r4-b": "kept"
+   },
+   "next_due": "round",
+   "archive_ok": true
+  }
+ }
+}

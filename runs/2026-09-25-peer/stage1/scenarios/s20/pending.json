@@ -1,0 +1,142 @@
+{
+ "t": "round",
+ "n": 2,
+ "best": "v1",
+ "t0": "2026-09-20T11:30:00Z",
+ "t1": "2026-09-20T11:58:00Z",
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r2-a",
+   "section": "## Proposed schema",
+   "words": 3310,
+   "diff": [
+    {
+     "section": "## Proposed schema",
+     "old": "We will split the table into two tables, one for current orders and one for archived orders, and we will move rows between them with a nightly job.",
+     "new": "Split orders into orders_current and orders_archive; a nightly job moves closed orders."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "migrations-apply": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-b-large",
+     "orders": [
+      "tie",
+      "tie"
+     ],
+     "overall": "tie",
+     "criteria": {
+      "migrations-apply": "tie",
+      "benchmarks-sourced": "tie",
+      "tradeoffs-explicit": "tie",
+      "rollback-plan": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-a-large",
+     "overall": "tie",
+     "criteria": {
+      "migrations-apply": "tie",
+      "benchmarks-sourced": "tie",
+      "tradeoffs-explicit": "tie",
+      "rollback-plan": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "judge-b-medium",
+     "overall": "tie",
+     "criteria": {
+      "migrations-apply": "tie",
+      "benchmarks-sourced": "tie",
+      "tradeoffs-explicit": "tie",
+      "rollback-plan": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r2-b",
+   "section": "## Migration steps",
+   "words": 3405,
+   "diff": [
+    {
+     "section": "## Migration steps",
+     "old": "Run the migrations in order.",
+     "new": "Run the migrations in numeric order, pausing after 0041 to verify row counts."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "migrations-apply": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-b-large",
+     "orders": [
+      "tie",
+      "tie"
+     ],
+     "overall": "tie",
+     "criteria": {
+      "migrations-apply": "tie",
+      "benchmarks-sourced": "tie",
+      "tradeoffs-explicit": "tie",
+      "rollback-plan": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-a-large",
+     "overall": "tie",
+     "criteria": {
+      "migrations-apply": "tie",
+      "benchmarks-sourced": "tie",
+      "tradeoffs-explicit": "tie",
+      "rollback-plan": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "judge-b-medium",
+     "overall": "tie",
+     "criteria": {
+      "migrations-apply": "tie",
+      "benchmarks-sourced": "tie",
+      "tradeoffs-explicit": "tie",
+      "rollback-plan": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  }
+ ]
+}

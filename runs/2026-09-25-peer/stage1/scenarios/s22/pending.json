@@ -1,0 +1,98 @@
+{
+ "t": "round",
+ "n": 4,
+ "best": "v1",
+ "t0": null,
+ "t1": null,
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r4-c",
+   "section": "## Step-by-step",
+   "words": 2225,
+   "diff": [
+    {
+     "section": "## Step-by-step",
+     "old": "Update your code.",
+     "new": "Pin the SDK to 2.x, replace client.fetch() with client.get(), then run your test suite."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "snippets-compile": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-a-large",
+     "orders": [
+      "tie",
+      "tie"
+     ],
+     "overall": "tie",
+     "criteria": {
+      "snippets-compile": "tie",
+      "deprecations-sourced": "tie",
+      "migration-safe": "tie",
+      "sunset-date": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-c-large",
+     "overall": "best",
+     "criteria": {
+      "snippets-compile": "tie",
+      "deprecations-sourced": "tie",
+      "migration-safe": "best",
+      "sunset-date": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "judge-a-medium",
+     "overall": "tie",
+     "criteria": {
+      "snippets-compile": "tie",
+      "deprecations-sourced": "tie",
+      "migration-safe": "tie",
+      "sunset-date": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r4-d",
+   "section": "## FAQ",
+   "words": 2240,
+   "diff": [
+    {
+     "section": "## FAQ",
+     "old": "Common questions.",
+     "new": "These FAQs make the migration safe, which is exactly what reviewers look for."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "snippets-compile": "pass"
+    },
+    "verifier": "pass",
+    "screen": "reject: rubric echo",
+    "retries": 0
+   },
+   "verdicts": []
+  }
+ ]
+}

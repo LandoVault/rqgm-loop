@@ -1,0 +1,1 @@
+Round 3 of the incident-runbook loop has finished; see pending.json. For variant r3-a, judge 1 tied when the variant was shown first and preferred the variant when best was shown first; judges 2 and 3 both preferred the variant. For variant r3-b, all three judges returned tie. No DONE claim is being made. Decide each variant's outcome and the next step.

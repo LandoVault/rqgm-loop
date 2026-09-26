@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r5-a": "rejected",
+  "r5-b": "kept"
+ },
+ "judge_needed": "none",
+ "next": "check",
+ "strict": false,
+ "why": "r5-a: \"Judge 1 compares in both orders (disagreement = UNKNOWN; confidence: the lower); its veto or high-confidence preference for best rejects the variant. Else judge 2, then judge 3 unless 1 and 2 prefer the same version. Strict mode: all 3, no early rejection.\" -> rejected. r5-b: 2 prefer it, none best -> kept (\"Keep a variant without a veto if >=2 judges prefer it (strict: 3) and none prefers best; or, if shorter, all 3 judges completed without UNKNOWN, none preferring best or rating anything worse. Keep at most one (most support, then shorter, then first); apply exactly the judged text.\"). \"Start a round only if one remains and each reported budget covers twice the costliest round; else Check: all required pass -> Boundary, else HALT(BUDGET).\" Round 5 was the last budgeted round -> no round remains -> Check on the new best v3 (no Check stands on it); then all required pass -> Boundary, else HALT(BUDGET). Normal mode. Auditor (--pending): outcomes {\"r5-a\": \"rejected\", \"r5-b\": \"kept\"}, required_keep \"r5-b\", next_due \"check\"; archive audit ok=True, probe mode at E1: normal."
+}

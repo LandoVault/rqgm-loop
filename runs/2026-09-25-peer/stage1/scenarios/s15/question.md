@@ -1,0 +1,1 @@
+Round 4 of the data-dictionary loop is done; see pending.json. Variant r4-a's diff would not apply, on the first try or the retry. For variant r4-b, judge 1 tied in both orders; judge 2 timed out, was retried once and timed out again. Round 2 of this loop also ended with both variants ERROR. No DONE claim is being made. Decide each variant's outcome and the next step.

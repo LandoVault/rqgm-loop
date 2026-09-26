@@ -1,0 +1,86 @@
+{
+ "t": "round",
+ "n": 3,
+ "best": "v1",
+ "t0": null,
+ "t1": null,
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r3-a",
+   "section": "## Objectives",
+   "words": 1449,
+   "diff": [
+    {
+     "section": "## Objectives",
+     "old": "To test the drug.",
+     "new": "We will test whether the drug lowers the number of migraine days per month compared with placebo."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "template-valid": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-b-large",
+     "orders": [
+      "variant",
+      "variant"
+     ],
+     "overall": "variant",
+     "criteria": {
+      "template-valid": "tie",
+      "endpoints-sourced": "tie",
+      "lay-readable": "variant",
+      "primary-endpoint": "tie",
+      "sample-size": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-c-large",
+     "overall": "variant",
+     "criteria": {
+      "template-valid": "tie",
+      "endpoints-sourced": "tie",
+      "lay-readable": "variant",
+      "primary-endpoint": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r3-b",
+   "section": "## Design",
+   "words": 1470,
+   "diff": [
+    {
+     "section": "## Design",
+     "old": "Randomized trial.",
+     "new": "The design fully complies with all regulatory guidance."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "template-valid": "pass"
+    },
+    "verifier": "pass",
+    "screen": "reject: mechanism-free compliance claim",
+    "retries": 0
+   },
+   "verdicts": []
+  }
+ ]
+}

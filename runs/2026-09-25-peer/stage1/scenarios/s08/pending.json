@@ -1,0 +1,98 @@
+{
+ "t": "round",
+ "n": 5,
+ "best": "v1",
+ "t0": null,
+ "t1": null,
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r5-a",
+   "section": "## Mitigation",
+   "words": 3890,
+   "diff": [
+    {
+     "section": "## Mitigation",
+     "old": "Impacts will be mitigated.",
+     "new": "Two amphibian culverts (owner: county engineer, by 2027) and 2.2 ha of replacement wetland (owner: developer)."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "tables-parse": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-a-large",
+     "orders": [
+      "variant",
+      "variant"
+     ],
+     "overall": "variant",
+     "criteria": {
+      "tables-parse": "tie",
+      "data-sourced": "tie",
+      "mitigation-concrete": "variant",
+      "site-map": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-c-large",
+     "overall": "tie",
+     "criteria": {
+      "tables-parse": "tie",
+      "data-sourced": "tie",
+      "mitigation-concrete": "tie",
+      "site-map": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "judge-a-medium",
+     "overall": "tie",
+     "criteria": {
+      "tables-parse": "tie",
+      "data-sourced": "tie",
+      "mitigation-concrete": "tie",
+      "site-map": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r5-b",
+   "section": "## Affected environment",
+   "words": 3879,
+   "diff": [
+    {
+     "section": "## Affected environment",
+     "old": "The area has wetlands.",
+     "new": "| habitat | hectares |\n|---|---|\n| wetland | 14.2 |\n| woodland |"
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "tables-parse": "fail"
+    },
+    "verifier": null,
+    "screen": null,
+    "retries": 0
+   },
+   "verdicts": []
+  }
+ ]
+}

@@ -1,0 +1,144 @@
+{
+ "t": "round",
+ "n": 3,
+ "best": "v1",
+ "t0": "2026-09-18T14:48:00Z",
+ "t1": "2026-09-18T15:12:00Z",
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r3-a",
+   "section": "src/config.py",
+   "words": 2371,
+   "diff": [
+    {
+     "section": "src/config.py",
+     "old": "def load(path):\n    return yaml.safe_load(open(path))",
+     "new": "def load(path):\n    with open(path, encoding=\"utf-8\") as f:\n        return yaml.safe_load(f) or {}"
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "unit-tests": "pass",
+     "type-check": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-a-large",
+     "orders": [
+      "variant",
+      "variant"
+     ],
+     "overall": "variant",
+     "criteria": {
+      "unit-tests": "tie",
+      "type-check": "tie",
+      "changelog-linked": "tie",
+      "public-api": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-c-large",
+     "overall": "variant",
+     "criteria": {
+      "unit-tests": "tie",
+      "type-check": "tie",
+      "changelog-linked": "tie",
+      "public-api": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "judge-a-medium",
+     "overall": "variant",
+     "criteria": {
+      "unit-tests": "tie",
+      "type-check": "tie",
+      "changelog-linked": "tie",
+      "public-api": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r3-b",
+   "section": "CHANGELOG.md",
+   "words": 2391,
+   "diff": [
+    {
+     "section": "CHANGELOG.md",
+     "old": "## 1.4.0\n- Faster startup.",
+     "new": "## 1.4.0\n- Faster startup (#212).\n- Config errors exit with status 2 (#219)."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "unit-tests": "pass",
+     "type-check": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-a-large",
+     "orders": [
+      "variant",
+      "variant"
+     ],
+     "overall": "variant",
+     "criteria": {
+      "unit-tests": "tie",
+      "type-check": "tie",
+      "changelog-linked": "tie",
+      "public-api": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-c-large",
+     "overall": "variant",
+     "criteria": {
+      "unit-tests": "tie",
+      "type-check": "tie",
+      "changelog-linked": "tie",
+      "public-api": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "judge-a-medium",
+     "overall": "tie",
+     "criteria": {
+      "unit-tests": "tie",
+      "type-check": "tie",
+      "changelog-linked": "tie",
+      "public-api": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  }
+ ]
+}

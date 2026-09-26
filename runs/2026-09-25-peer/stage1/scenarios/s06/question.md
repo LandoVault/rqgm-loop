@@ -1,0 +1,1 @@
+Round 3 of the study-synopsis loop is back; see pending.json. The Screen turned down variant r3-b. For variant r3-a, judge 1 preferred the variant in both orders and judge 2 preferred the variant. Judge 3 was not asked. No DONE claim is being made. Decide each variant's outcome and the next step.

@@ -1,0 +1,116 @@
+{
+ "t": "round",
+ "n": 2,
+ "best": "v0",
+ "t0": null,
+ "t1": null,
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r2-a",
+   "section": "## Consequences",
+   "words": 1175,
+   "diff": [
+    {
+     "section": "## Consequences",
+     "old": "Operations get easier.",
+     "new": "We stop running our own brokers; we accept vendor lock-in and a 1,900-dollar monthly bill."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "adr-lint": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-b-large",
+     "orders": [
+      "variant",
+      "variant"
+     ],
+     "overall": "variant",
+     "criteria": {
+      "adr-lint": "tie",
+      "costs-sourced": "tie",
+      "decision-justified": "variant",
+      "status-line": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-a-large",
+     "overall": "variant",
+     "criteria": {
+      "adr-lint": "tie",
+      "costs-sourced": "tie",
+      "decision-justified": "variant",
+      "status-line": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r2-b",
+   "section": "## Alternatives considered",
+   "words": 1175,
+   "diff": [
+    {
+     "section": "## Alternatives considered",
+     "old": "We looked at other options.",
+     "new": "Self-hosted RabbitMQ (rejected: two on-call engineers needed) and Kafka (rejected: overkill at 50 msg/s)."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "adr-lint": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-b-large",
+     "orders": [
+      "variant",
+      "variant"
+     ],
+     "overall": "variant",
+     "criteria": {
+      "adr-lint": "tie",
+      "costs-sourced": "tie",
+      "decision-justified": "variant",
+      "status-line": "tie"
+     },
+     "confidence": "high",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-a-large",
+     "overall": "variant",
+     "criteria": {
+      "adr-lint": "tie",
+      "costs-sourced": "tie",
+      "decision-justified": "variant",
+      "status-line": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  }
+ ]
+}

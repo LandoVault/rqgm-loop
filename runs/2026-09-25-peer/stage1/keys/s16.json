@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r3-a": "pending",
+  "r3-b": "pending"
+ },
+ "judge_needed": "3",
+ "next": "run_judges",
+ "strict": false,
+ "why": "KEY-FROM-PROSE (the auditor's --pending replay cannot express \"pending\"; logging either variant without judge 3 is flagged JUDGE_MISSING as a VIOLATION, see aux). \"Judge 1 compares in both orders (disagreement = UNKNOWN; confidence: the lower); its veto or high-confidence preference for best rejects the variant. Else judge 2, then judge 3 unless 1 and 2 prefer the same version. Strict mode: all 3, no early rejection.\" UNKNOWN (r3-a) and tie (r3-b) are not preferences, so for neither variant do judges 1 and 2 \"prefer the same version\": judge 3 must run for both. r3-b is shorter than best (968 < 1004 words), so with a clean judge 3 it could be kept by \"Keep a variant without a veto if >=2 judges prefer it (strict: 3) and none prefers best; or, if shorter, all 3 judges completed without UNKNOWN, none preferring best or rating anything worse. Keep at most one (most support, then shorter, then first); apply exactly the judged text.\" r3-a cannot reach a keep, but the procedure still requires judge 3 before the round is logged. Normal mode. Auditor (--pending): outcomes {\"r3-a\": \"rejected\", \"r3-b\": \"rejected\"}, required_keep null, next_due \"round\"; archive audit ok=True, probe mode at E1: normal."
+}

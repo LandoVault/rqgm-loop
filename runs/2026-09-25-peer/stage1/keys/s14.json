@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r3-a": "kept",
+  "r3-b": "rejected"
+ },
+ "judge_needed": "none",
+ "next": "next_round",
+ "strict": false,
+ "why": "\"A command failing where best passes rejects the variant (shared failures don't).\" r3-a fails lint, but best fails lint too (shared failure) -> no rejection; it passes the tests best passes, then the Verifier and Screen; judges 1 and 2 prefer it, none prefers best, no veto (lint is not protected: its last result is fail) -> \"Keep a variant without a veto if >=2 judges prefer it (strict: 3) and none prefers best; or, if shorter, all 3 judges completed without UNKNOWN, none preferring best or rating anything worse. Keep at most one (most support, then shorter, then first); apply exactly the judged text.\" -> kept. r3-b fails the tests where best passes -> rejected at the gate. Next round. Normal mode. Auditor (--pending): outcomes {\"r3-a\": \"kept\", \"r3-b\": \"rejected\"}, required_keep \"r3-a\", next_due \"round\"; archive audit ok=True, probe mode at E1: normal."
+}

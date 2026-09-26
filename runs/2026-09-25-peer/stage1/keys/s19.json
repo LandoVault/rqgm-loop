@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r3-a": "rejected",
+  "r3-b": "kept"
+ },
+ "judge_needed": "none",
+ "next": "next_round",
+ "strict": false,
+ "why": "\"A command failing where best passes rejects the variant (shared failures don't).\" r3-a fails a11y where best passes -> rejected. r3-b: judges 1 and 2 prefer it, none prefers best, no veto -> \"Keep a variant without a veto if >=2 judges prefer it (strict: 3) and none prefers best; or, if shorter, all 3 judges completed without UNKNOWN, none preferring best or rating anything worse. Keep at most one (most support, then shorter, then first); apply exactly the judged text.\" -> kept. Next round. Normal mode. Auditor (--pending): outcomes {\"r3-a\": \"rejected\", \"r3-b\": \"kept\"}, required_keep \"r3-b\", next_due \"round\"; archive audit ok=True, probe mode at E1: normal."
+}

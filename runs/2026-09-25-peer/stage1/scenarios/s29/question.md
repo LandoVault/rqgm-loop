@@ -1,0 +1,1 @@
+Round 4 of the API-spec loop is done gating and judging; see pending.json. For variant r4-a, judge 1 preferred the variant in both orders; judge 2 timed out, was retried once, and timed out again. For variant r4-b, judge 1 preferred best in both orders with high confidence. No DONE claim is being made. Decide each variant's outcome and the next step.

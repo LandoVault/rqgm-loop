@@ -1,0 +1,148 @@
+{
+ "t": "round",
+ "n": 4,
+ "best": "v2",
+ "t0": null,
+ "t1": null,
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r4-a",
+   "section": "## Options",
+   "words": 1712,
+   "diff": [
+    {
+     "section": "## Options",
+     "old": "Option A caps rent rises; Option B funds 2,000 social homes; Option C changes zoning near transit.",
+     "new": "Option A caps annual rent rises at CPI+1; Option B funds 2,000 social homes over five years; Option C upzones land within 800 m of stations."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "wordcount-ok": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-b-large",
+     "orders": [
+      "variant",
+      "variant"
+     ],
+     "overall": "variant",
+     "criteria": {
+      "wordcount-ok": "tie",
+      "stats-sourced": "tie",
+      "recommendation-actionable": "variant",
+      "balanced": "tie",
+      "exec-summary-lede": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-c-large",
+     "overall": "variant",
+     "criteria": {
+      "wordcount-ok": "tie",
+      "stats-sourced": "tie",
+      "recommendation-actionable": "variant",
+      "balanced": "tie",
+      "exec-summary-lede": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "judge-b-medium",
+     "overall": "tie",
+     "criteria": {
+      "wordcount-ok": "tie",
+      "stats-sourced": "tie",
+      "recommendation-actionable": "tie",
+      "balanced": "tie",
+      "exec-summary-lede": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r4-b",
+   "section": "## Recommendation",
+   "words": 1650,
+   "diff": [
+    {
+     "section": "## Recommendation",
+     "old": "The council should act.",
+     "new": "The housing committee should fund Option B in the April budget and report progress each quarter."
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "wordcount-ok": "pass"
+    },
+    "verifier": "pass",
+    "screen": "pass",
+    "retries": 0
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "judge-b-large",
+     "orders": [
+      "tie",
+      "tie"
+     ],
+     "overall": "tie",
+     "criteria": {
+      "wordcount-ok": "tie",
+      "stats-sourced": "tie",
+      "recommendation-actionable": "tie",
+      "balanced": "tie",
+      "exec-summary-lede": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "judge-c-large",
+     "overall": "tie",
+     "criteria": {
+      "wordcount-ok": "tie",
+      "stats-sourced": "tie",
+      "recommendation-actionable": "tie",
+      "balanced": "tie",
+      "exec-summary-lede": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "judge-b-medium",
+     "overall": "variant",
+     "criteria": {
+      "wordcount-ok": "tie",
+      "stats-sourced": "tie",
+      "recommendation-actionable": "variant",
+      "balanced": "tie",
+      "exec-summary-lede": "tie"
+     },
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  }
+ ]
+}

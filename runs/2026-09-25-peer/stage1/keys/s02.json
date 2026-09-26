@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r5-a": "rejected",
+  "r5-b": "rejected"
+ },
+ "judge_needed": "none",
+ "next": "HALT(OPEN)",
+ "strict": false,
+ "why": "KEY-FROM-PROSE for \"next\" (the Check results are outside --pending, which gives next_due \"check\"; confirmed by auditing the archive with the round and this Check appended). r5-a: \"Judge 1 compares in both orders (disagreement = UNKNOWN; confidence: the lower); its veto or high-confidence preference for best rejects the variant. Else judge 2, then judge 3 unless 1 and 2 prefer the same version. Strict mode: all 3, no early rejection.\" -> rejected; r5-b: a judge prefers best -> rejected. \"E1 fair-critical -> E2 adversarial (reject polish, demand derivations) -> E3 a second, human-added objective.\" The escalation to E3 reset stalls (\"Below the final rung (default E2), pause: the human escalates (log rung and probe, reset stalls) or stops (exit PARTIAL, no held-out). At it, Stop.\"), so rounds 3-5 are the 3 stalls -> Check; case-studies fails but is optional; every required criterion passes -> Boundary; E3 is the final rung -> Stop. \"A required [OPEN] (in best, unwaived, criterion not optional) -> HALT(OPEN): name each gap and owner. Else each held-out judge marks every required criterion pass/fail/UNKNOWN, fresh on best, DONE and GROUNDING; the human reports only the marks (heldout.results; Check rule).\" The transport-baseline gap is on the required criterion baselines-sourced, open and unwaived -> HALT(OPEN), naming it and its owner (city data office); the peer-city gap is on an optional criterion and does not block. Normal mode (clean E3 probe). Auditor (--pending): outcomes {\"r5-a\": \"rejected\", \"r5-b\": \"rejected\"}, required_keep null, next_due \"check\"; archive audit ok=True, probe mode at E3: normal."
+}

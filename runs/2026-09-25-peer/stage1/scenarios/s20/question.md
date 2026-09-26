@@ -1,0 +1,1 @@
+Round 2 of the migration-design loop is judged; see pending.json. For both variants, judge 1 tied in both orders and judges 2 and 3 tied, rating every criterion and must_not_change id tie. No DONE claim is being made. Decide each variant's outcome and the next step.

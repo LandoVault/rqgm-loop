@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r3-a": "kept",
+  "r3-b": "rejected"
+ },
+ "judge_needed": "none",
+ "next": "next_round",
+ "strict": false,
+ "why": "r3-a: \"Judge 1 compares in both orders (disagreement = UNKNOWN; confidence: the lower); its veto or high-confidence preference for best rejects the variant. Else judge 2, then judge 3 unless 1 and 2 prefer the same version. Strict mode: all 3, no early rejection.\" Judge 1 is UNKNOWN (orders disagree), so judge 3 runs; judges 2 and 3 prefer the variant and none prefers best, no protected item is rated worse -> \"Keep a variant without a veto if >=2 judges prefer it (strict: 3) and none prefers best; or, if shorter, all 3 judges completed without UNKNOWN, none preferring best or rating anything worse. Keep at most one (most support, then shorter, then first); apply exactly the judged text.\" -> kept. r3-b is longer than best (1515 > 1500 words) and has no preference, so neither keep clause applies -> rejected. A keep resets the stall count; next round. Normal mode. Auditor (--pending): outcomes {\"r3-a\": \"kept\", \"r3-b\": \"rejected\"}, required_keep \"r3-a\", next_due \"round\"; archive audit ok=True, probe mode at E1: normal."
+}

@@ -1,0 +1,10 @@
+{
+ "outcomes": {
+  "r2-a": "kept",
+  "r2-b": "rejected"
+ },
+ "judge_needed": "none",
+ "next": "next_round",
+ "strict": false,
+ "why": "\"Keep a variant without a veto if >=2 judges prefer it (strict: 3) and none prefers best; or, if shorter, all 3 judges completed without UNKNOWN, none preferring best or rating anything worse. Keep at most one (most support, then shorter, then first); apply exactly the judged text.\" r2-a is shorter than best (3310 < 3400), all 3 judges completed without UNKNOWN, none prefers best or rates anything worse -> kept by the shorter clause. r2-b is longer (3405 > 3400) with no preference -> rejected. Next round. Normal mode. Auditor (--pending): outcomes {\"r2-a\": \"kept\", \"r2-b\": \"rejected\"}, required_keep \"r2-a\", next_due \"round\"; archive audit ok=True, probe mode at E1: normal."
+}

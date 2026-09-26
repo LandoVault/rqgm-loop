@@ -1,0 +1,1 @@
+Round 5 of the board-memo loop is judged; see pending.json. For variant r5-a, judge 1 preferred best in both orders with high confidence. For variant r5-b, judge 1 preferred the variant in both orders, judge 2 tied and judge 3 preferred best. No DONE claim is being made. Decide each variant's outcome and the next step.
