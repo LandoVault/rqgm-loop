@@ -1,0 +1,44 @@
+[
+ {
+  "id": "d1-guardrails",
+  "test": "The binding keeps are preserved or strengthened: the writer never judges (human relay, else HALT(OPEN)); nothing is fabricated ([OPEN] instead); DONE, the rubric and check files are never edited to pass and change only by human amend; only the human escalates, stops, picks, approves restructures, and closes an [OPEN] with Verifier-checked evidence or waives it; the held-out final check stays hidden from loop agents, spares run only on a changed best, and the first result is reported; UNKNOWN and ERROR never count as support or a pass; the loop stays domain-agnostic. A 'worse' from any judge vetoes the variant.",
+  "kind": "judged",
+  "protected": true
+ },
+ {
+  "id": "d2-executable",
+  "test": "Every rule can be decided from the inputs at hand at that step, fails closed, and has a defined next state; no term is undefined. The loop runs from the paste alone in a plain chat (relay, print mode).",
+  "kind": "judged",
+  "protected": false
+ },
+ {
+  "id": "d3-parity",
+  "test": "SKILL.md and the INITIATOR paste state the same rules; no safety rule lives in only one of them or in a sidecar file.",
+  "kind": "judged",
+  "protected": false
+ },
+ {
+  "id": "d4-auditable",
+  "test": "Every keep, drop, Check, halt and exit can be recomputed from the records the prose requires. A new or changed rule names its record fields and the rqgm_check.py rule or fixture that must change, or declares itself unauditable.",
+  "kind": "judged",
+  "protected": false
+ },
+ {
+  "id": "d5-honest",
+  "test": "Output and records keep verified (command or source), preferred (judges, with families), held-out, unchecked and waived results distinct. No evidence label is upgraded, and no validation or superiority claim is made.",
+  "kind": "judged",
+  "protected": false
+ },
+ {
+  "id": "d6-cost",
+  "test": "Same decision quality for fewer or equal model calls per round, probe and Check, and fewer words; no per-run study apparatus.",
+  "kind": "judged",
+  "protected": false
+ },
+ {
+  "id": "d7-caps",
+  "test": "Mechanical hard gate, run before judging by meta_tool.py caps_report (str.split): SKILL.md ≤1000, INITIATOR.md ≤1300, README.md ≤1250, DESIGN.md ≤2200. A variant over any cap, or one that edits tools/caps.json, is rejected without judging.",
+  "kind": "mechanical",
+  "protected": false
+ }
+]

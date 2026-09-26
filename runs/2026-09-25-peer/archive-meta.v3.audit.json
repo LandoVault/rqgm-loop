@@ -1,0 +1,126 @@
+{
+ "ok": false,
+ "state": {
+  "best": "9d07665dde77",
+  "rung": "E2",
+  "final_rung": "E2",
+  "probe_modes": {
+   "E2": "normal"
+  },
+  "stall": 0,
+  "error_streak": 0,
+  "rounds": 10,
+  "minutes": null,
+  "tokens": null,
+  "standing_checks": [
+   {
+    "version": "9d07665dde77",
+    "rung": "E2",
+    "epoch": 0
+   }
+  ],
+  "open_required_gaps": [],
+  "heldout": [],
+  "amends": 0,
+  "next_due": null,
+  "status": "PARTIAL"
+ },
+ "violations": [
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 1,
+   "expected": "setup.budget{rounds,minutes} (finite numbers)",
+   "actual": {
+    "rounds": 10,
+    "minutes": null,
+    "tokens": null
+   }
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 6,
+   "expected": "round.t0/t1",
+   "actual": null
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 7,
+   "expected": "round.t0/t1",
+   "actual": null
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 9,
+   "expected": "round.t0/t1",
+   "actual": null
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 11,
+   "expected": "round.t0/t1",
+   "actual": null
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 13,
+   "expected": "round.t0/t1",
+   "actual": null
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 15,
+   "expected": "round.t0/t1",
+   "actual": null
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 17,
+   "expected": "round.t0/t1",
+   "actual": null
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 19,
+   "expected": "round.t0/t1",
+   "actual": null
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 21,
+   "expected": "round.t0/t1",
+   "actual": null
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 23,
+   "expected": "round.t0/t1",
+   "actual": null
+  }
+ ],
+ "unauditable": [
+  {
+   "rule": "selection",
+   "missing_field": "variants[].words"
+  },
+  {
+   "rule": "check_files",
+   "missing_field": "setup.check_files / DONE command criteria files (none names a file)"
+  }
+ ],
+ "warnings": [],
+ "torn_tail": false,
+ "torn_line": null,
+ "set_aside": [],
+ "integrity": null
+}

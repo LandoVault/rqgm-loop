@@ -49,5 +49,18 @@
   "sealed files have no technical access boundary",
   "S's internal turns are not counted as calls; compare tokens",
   "answer keys and held-out prompts written by the orchestrating Claude session, not a human"
+ ],
+ "amendments": [
+  {
+   "n": 3,
+   "when": "after the V/S/B runs executed (unscored, unread by the oracle) and after the meta-run ended; before any pilot scoring",
+   "P": {
+    "text": "meta-run final best 9d07665dde77 (exit PARTIAL/HALT(BUDGET)); the loop's actual output",
+    "SKILL.md": "d3c77312a3eef215d5a19f5910a12afc0bef2fcc34f25997bdb1510d68b9a426",
+    "INITIATOR.md": "d0bc95fd54d2d433b730c2a31dc724afb744374778be6f1ead6d3883a074186b"
+   },
+   "P2": "declared now: the text after the human-proxy-approved restructure that addresses the meta-run's failing Check reasons (v3.1). Frozen and hashed (amendment 4) before any pilot outcome is scored; run on T1 and T2 with the same cap 49. P and P2 are both reported.",
+   "note": "The meta-run never saw any pilot output. The orchestrator saw V/S/B self-reports in notifications but ran no scorer."
+  }
  ]
 }

@@ -1,0 +1,113 @@
+{
+ "best": "9d07665dde77",
+ "exit": {
+  "status": "PARTIAL",
+  "reason": "BUDGET",
+  "failing": [
+   "d1-guardrails",
+   "d2-executable",
+   "d3-parity",
+   "d4-auditable",
+   "d5-honest"
+  ]
+ },
+ "check": {
+  "t": "check",
+  "version": "9d07665dde77",
+  "rung": "E2",
+  "trigger": "BUDGET",
+  "results": {
+   "d7-caps": {
+    "kind": "command",
+    "value": "pass"
+   },
+   "d1-guardrails": {
+    "kind": "judges",
+    "value": "fail",
+    "votes": [
+     "fail",
+     "fail",
+     "pass"
+    ]
+   },
+   "d2-executable": {
+    "kind": "judges",
+    "value": "fail",
+    "votes": [
+     "fail",
+     "fail",
+     "fail"
+    ]
+   },
+   "d3-parity": {
+    "kind": "judges",
+    "value": "fail",
+    "votes": [
+     "fail",
+     "fail",
+     "fail"
+    ]
+   },
+   "d4-auditable": {
+    "kind": "judges",
+    "value": "fail",
+    "votes": [
+     "fail",
+     "fail",
+     "fail"
+    ]
+   },
+   "d5-honest": {
+    "kind": "judges",
+    "value": "fail",
+    "votes": [
+     "fail",
+     "fail",
+     "pass"
+    ]
+   },
+   "d6-cost": {
+    "kind": "judges",
+    "value": "pass",
+    "votes": [
+     "pass",
+     "pass",
+     "pass"
+    ]
+   }
+  },
+  "failing_reasons": [
+   "d1-guardrails: The held-out check fails open. In both SKILL Stop and the paste's STOP, the human reports 'only majority-failed criteria (heldout.pass{id:false})'; INITIATOR Fill-first says 'report only IDs 2 of 3 fail'. No channel exists for a held-out UNKNOWN or ERROR, so a criterion with 1 fail and 2 UNKNOWN/ERROR, or 3 ERROR, is left out of the report and counts as a held-out pass. COMPLETE can then rest on UNKNOWN or ERROR, against 'UNKNOWN and ERROR never count as support or a pass' and the headline 'When unsure, fail closed'.",
+   "d1-guardrails: The rule that only the human approves restructures is missing from both operational texts. SKILL steps 1 and 5 and paste steps 1 and 5 say only 'an approved restructure', with no approver and no record. The human-only list ('approving a HALT(STALL) restructure', 'changing DONE or BUDGET') sits only in INITIATOR's Fill-first section and README, outside the paste and SKILL, so an orchestrator can self-approve a multi-section change. The protected veto also ignores UNKNOWN: 'none rates a protected item worse' lets a variant be kept while a judge returned UNKNOWN on a guardrail, which contradicts 'When unsure... don't keep'.",
+   "d2-executable: Several steps have no defined next state. (a) Re-entry after a halt the human resolves (HALT(OPEN) gap closed or waived, HALT(OSCILLATION) pick, HALT(STALL) restructure approved) is undefined: Resume covers only 'rerun an unfinished round', and nothing says whether to go to Stop, the held-out check or a round. (b) HALT(OSCILLATION) fires in step 4, before step 5 logs the round, so the triggering round may never be logged. '(nearly) restores' has no threshold. (c) The probe is undefined when DONE has no judges criterion, and a probe ERROR has no rule, since the ERROR rule covers only variants and criteria. (d) The bare held-out fail ('none named: all required') has no stated record shape.",
+   "d2-executable: The paste does not run cleanly in a plain chat. Without subagents only judges are relayed, so the rules never say how the generator, Screen and Verifier are kept separate. The probe's 'a copy you (not the generator) seeded' cannot be satisfied when the orchestrator is also the generator. The paste says 'Never estimate tokens or times' and allows minutes 'only if your host reports them', yet round{t0,t1} and setup.budget.minutes are listed as required fields, so a plain-chat orchestrator must either estimate or leave required fields empty.",
+   "d3-parity: SKILL and the paste state different rules. 'Never estimate tokens or times' is in the paste only; SKILL has no equivalent anti-fabrication rule for spend. The budget rule also differs: SKILL makes minutes mandatory ('max rounds and minutes') and always checks remaining time, while the paste checks 'time and tokens (each if reported)'.",
+   "d3-parity: Several held-out safety rules live outside SKILL. Where to store the held-out judges ('not in TARGET, GROUNDING, MEMORY or the repo'), 'Once used, they are spent on this TARGET' and Retarget ('new held-out judges') appear only in INITIATOR outside the paste, and in DESIGN as a sidecar. The human-only decision list (restructure approval, BUDGET changes) is likewise only in INITIATOR Fill-first and README.",
+   "d4-auditable: Reproduced with a synthetic archive run through rqgm_check.py audit. A bare heldout pass:false, which the prose says makes all required criteria fail best's Check, followed by 3 stall rounds and a prose-correct exit PARTIAL STALL, is reported as VIOLATION STALL_MISCOUNT. The cause: r_heldout sets fails = set() for a boolean pass, so the standing Check stays all-pass. The checker then has no compliant path, because it would expect a second held-out attempt on an unchanged best, which it flags as HELDOUT_REROLL. This rule neither names the r_heldout change or a fixture nor declares itself unauditable. DESIGN row 8 cites r_heldout and result() only for named IDs.",
+   "d4-auditable: Reproduced as well: records that follow the paste in a plain chat (budget.minutes null, round t0 and t1 null under 'Never estimate tokens or times') produce two RECORD_MISSING VIOLATIONs, so the prose and the checker disagree on which fields are required. Other decisions cannot be recomputed from the records: restructure approval has no record field (the checker only gives an advisory MULTI_SECTION); the '(nearly)' oscillation halt is advisory only; check.results.votes carry no model or family, so 'same family = one source' cannot be recomputed; heldout.set has no stated vocabulary although the checker requires 'spare' at attempt 2. None of these is declared unauditable, and DESIGN row 11 still claims the checker 'recomputes every keep, drop, Check, halt and exit'.",
+   "d5-honest: Held-out 'unchecked' cannot be kept apart from held-out 'pass'. heldout.pass carries only failed IDs, so an unassessed criterion (UNKNOWN or ERROR) looks the same as a pass in both the record and Output. Output requires 'judges with model families, same family = one source', but check.results.votes record no model, so preferred results from one family cannot be kept apart in the records.",
+   "d5-honest: Several capability claims go beyond the evidence. README says 'It works on anything you can review' and that rubric-gaming, inert text, weakened guardrails and unverified facts 'never reach a judge', guarantees about an LLM screen with zero task runs, against its own 'not yet run on a task'. DESIGN row 11 says the checker 'recomputes every keep, drop, Check, halt and exit', which the bare pass:false case and the advisory-only oscillation halt contradict.",
+   "d1: Restructure approval is not bound to the human in the operative text. SKILL Propose '(or an approved restructure)' and Log/HALT(STALL) 'approved restructure', and the paste's PROPOSE/LOG, never say who approves. The human-only rule appears only in INITIATOR's 'Only you decide' header outside the paste and in README. No record field logs the approval: rqgm_check.py MULTI_SECTION is advisory, with the comment 'an approved restructure is not recorded'. So an orchestrator can approve and keep its own multi-section rewrite and slip past the one-change-per-section rule.",
+   "d1: An UNKNOWN on a protected criterion does not stop a keep. KEEP vetoes only a protected item 'rated worse', and rqgm_check.py's worse() excludes UNKNOWN. A judge unsure whether a guardrail or must-not-change item regressed lets a 2-judge keep through. This contradicts 'When unsure, fail closed: don't keep' and treats UNKNOWN as passing the no-regression test. Only the pruning keep requires 'without UNKNOWN'.",
+   "d2: The held-out branch 'Fail -> those (none named: all required)' cannot be decided from the records. The only stated shape is heldout.pass{id:false}, so a fail naming no ID looks the same as a pass ({}).",
+   "d2: '(nearly) restores an earlier best's section' has no threshold; the checker uses 0.9 and 0.5 ratios the prose never states. After HALT(OSCILLATION), 'the human picks best', but the prose leaves two things undefined: whether the kept variant is logged as a version before the halt, and what comes after the pick (exit or resume).",
+   "d2: 'A required [OPEN]' is undefined. No rule says when an [OPEN] or substrate is required rather than optional, so HALT(OPEN) vs the held-out check cannot be decided. An orchestrator can mark every gap optional and reach COMPLETE with [OPEN] markers still in best. The checker defaults to required; the prose does not.",
+   "d2: Two more steps have no defined next state: the probe needs 'a named judges criterion', and DONE may have none. 'Criteria best passes' (the protected set) is undefined after a keep with no fresh Check, because Check results lapse when best changes.",
+   "d2: In a plain chat, the relay path covers only judges. The Screen, the Verifier and the probe seeding have no separate-context path, so the writer screens and verifies its own variants despite 'Run roles as separate agents or fresh contexts'. No HALT or other next state is defined for this.",
+   "d3: The budget rule differs. SKILL requires minutes ('max rounds and minutes'; 'remaining time (and reported tokens)'). The paste makes time optional ('remaining time and tokens (each if reported)') and adds 'Never estimate tokens or times', which SKILL lacks. Tested: rqgm_check.py flags a paste-compliant budget {rounds:10,minutes:null} and null round t0/t1 as RECORD_MISSING VIOLATIONs, and 'a violation pauses for the human'.",
+   "d3: The DONE schema ({id,required,kind,guardrail?}, must_not_change {id:text}, final rung default) is in SKILL Setup but only in INITIATOR's slot table outside the paste. A paste run with DONE=none proposes DONE without the guardrail flag that defines the protected set used in KEEP.",
+   "d3: The human-only rules for approving restructures and changing BUDGET appear only in INITIATOR's non-paste header and in README (a sidecar). Neither SKILL.md nor the paste states them.",
+   "d4: DESIGN row 8 cites rqgm_check.py r_heldout and result() for 'majority-failed criteria fail best's Check (none named: all required)'. But r_heldout sets fails=set() for pass:false, so result() leaves every required criterion passing. Tested on a synthetic archive (setup, probe, all-pass Check, held-out fail, 3 stall rounds): with pass:false, next_due is 'heldout', a rerun on the unchanged best that is itself HELDOUT_REROLL. With pass:{\"c1\":false}, next_due is halt:STALL, which is what the prose requires. With pass:{}, it counts as a held-out pass.",
+   "d4: Several human decisions have no record field and are not declared unauditable: restructure approval and the human's OSCILLATION pick. [OPEN] closure 'with Verifier-checked evidence' also has no required evidence field: substrate has none and citation.gap is optional, so status:closed with no citation passes. The checker lists this closure as unauditable ('closure unverified'), but the prose does not declare it. substrate.required is logged, but the rule that sets it is unstated, so HALT(OPEN) cannot be recomputed.",
+   "d5: README states 'It works on anything you can review'. That is a present-tense efficacy claim for a design that has not run on any task.",
+   "d5: README's design bullet says 'Rubric-gaming, inert text, weakened guardrails and unverified facts never reach a judge'. That is an absolute guarantee about an LLM Screen and Verifier, with no evidence and no entry in Non-guarantees or 'Not guaranteed'. DESIGN row 6's 'Run 1's stall was structural' is a causal reading of one n=1 run, filed under 'Measured (v1 run)'.",
+   "d2-executable: In a plain chat the paste has no fallback when roles collapse. The relay covers only judges ('give the human each judge prompt'), so the orchestrator has to act as generator, Screen and Verifier. That breaks 'Run roles as separate agents or fresh contexts'. It also breaks the Screen's isolation ('sees the diff and rubric'), and PROBE's 'a copy you (not the generator) seeded' cannot be met when you are the generator. The paste gives no next state for this: no relay of those roles and no HALT (INITIATOR.md lines 38-45, 63-66).",
+   "d2-executable: The paste defines no prompt or output shape for a Check judge. The only judge schema given is pairwise A/B/tie/UNKNOWN (INITIATOR.md line 44), yet Check (3 fresh judges per judges criterion) and the probe's 'Check judge' must mark pass/fail on a single version. In relay mode the human has no format to give them, and the vote vocabulary for check.results.votes is never stated. It is also unclear whether 3 judges per criterion (3k calls) or 3 judges marking all criteria is meant.",
+   "d2-executable: Resume is undefined in print mode. SETUP resumes only 'If {{MEMORY}} holds records', but with MEMORY='print' nothing tells the human to paste the printed records back, so a new chat after an interruption has no defined resume path. This is the known open issue NEWCOMER-11, still unresolved in the prose.",
+   "d3-parity: The BUDGET rules differ between SKILL and the paste. SKILL requires minutes ('BUDGET: max rounds and minutes (tokens only if reported)') and always applies the time test ('remaining time (and reported tokens)'). The paste makes time optional ('remaining time and tokens (each if reported)'; slot: 'minutes and tokens only if your host reports them'). It also adds 'Never estimate tokens or times', which is absent from SKILL. README says 'max rounds and wall-clock'. The budget-start rule therefore decides differently depending on the file.",
+   "d3-parity: Some held-out and human-authority rules live only in INITIATOR's human-facing preamble, README and DESIGN, not in SKILL.md. These are held-out storage outside TARGET/GROUNDING/MEMORY/repo, 'spent per TARGET', 'Only you decide, in your own messages', and 'changing ... BUDGET' as human-only. A skill user is never told where to store held-out judges or that BUDGET changes are human-only. The print-mode records fallback is also in the paste only.",
+   "d4-auditable: The records the paste requires do not match what rqgm_check.py needs to recompute BUDGET. On a v3 archive the checker treats a missing setup.budget.minutes (r_setup) and null round.t0/t1 (budget()) as RECORD_MISSING VIOLATIONs. The paste allows minutes to be omitted and forbids estimating times, so a compliant plain-chat or print-mode run audits as violations. INITIATOR's 'Optional audit' nevertheless invites pasting printed records into the checker. Neither the prose nor DESIGN names the checker rule or fixture that must change, and the gap is not declared unauditable.",
+   "d4-auditable: A human-approved BUDGET change (listed as human-only in INITIATOR and README) has no record. amend{what,why,done,gap?} carries only DONE, and the checker's budget()/budget_out() read setup.budget alone. After a legitimate budget extension, later rounds show BUDGET_OVERRUN/BUDGET_START, and a HALT(BUDGET) cannot be recomputed against the live budget. No record field or checker rule is named."
+  ]
+ }
+}
