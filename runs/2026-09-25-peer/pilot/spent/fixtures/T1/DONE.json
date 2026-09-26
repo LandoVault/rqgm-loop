@@ -1,0 +1,11 @@
+{
+  "target": "intervals.py",
+  "criteria": [
+    {"id": "t1-public", "required": true, "kind": "command", "check": "python -m unittest test_public  (exit 0 = pass)", "files": ["test_public.py"]},
+    {"id": "t1-spec", "required": true, "kind": "source", "check": "merge() satisfies every numbered rule in spec.md for all inputs (the Verifier may write and run extra tests in a scratch copy; spec.md is the source)"},
+    {"id": "t1-interface", "required": true, "kind": "source", "check": "module intervals still exposes merge(intervals) with the same signature (source: spec.md)"},
+    {"id": "t1-clarity", "required": false, "kind": "judges", "check": "a reviewer can map each spec rule to the code"}
+  ],
+  "must_not_change": ["spec.md", "test_public.py", "the merge(intervals) interface"],
+  "final_rung": "E2"
+}

@@ -1,0 +1,14 @@
+{
+  "target": "report.md",
+  "sources": "corpus/ (the only admissible evidence)",
+  "criteria": [
+    {"id": "t2-numbers", "required": true, "kind": "source", "check": "every number in report.md equals the applicable corpus value or is arithmetic on such values (percent changes to one decimal, ratios to one decimal)"},
+    {"id": "t2-required", "required": true, "kind": "source", "check": "the Visits, Staff (FTE) and Visits per FTE rows are complete for Q2 and Q3, and Change is filled for Visits and Visits per FTE"},
+    {"id": "t2-claims", "required": true, "kind": "source", "check": "every finding F1-F4 is supported by the corpus; no causal claim the corpus does not support"},
+    {"id": "t2-unknowns", "required": true, "kind": "source", "check": "a value the corpus does not contain is marked [OPEN: reason], never estimated"},
+    {"id": "t2-clarity", "required": false, "kind": "judges", "check": "a reader can trace each number to its source"}
+  ],
+  "must_not_change": ["the table's rows, columns and metric labels", "finding IDs F1-F4", "the corpus"],
+  "optional_fields": ["Patient satisfaction Q3 and its Change (fill only if the corpus has it)"],
+  "final_rung": "E2"
+}

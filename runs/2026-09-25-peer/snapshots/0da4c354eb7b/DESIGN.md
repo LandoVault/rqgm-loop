@@ -88,7 +88,7 @@ verdict relabelled ERROR.
 
 - **Pilot** (n=1 per cell, one model family; `runs/2026-09-25-peer/REPORT.md`): on T1 every arm passed; on T2
   a single agent, best-of-24 and v2 were correct, while v3 and v3.1 hit the 49-call cap (PARTIAL). The single
-  agent used ~1/40 the tokens. No false DONE.
+  agent used ~1/40 of the tokens. No false DONE.
 - Sealed held-out judges prefer v3.1 to v2 yet fail d2 and d4; a GPT-family review fails d1–d5.
 
 ## Validation protocol (pre-registered summary)

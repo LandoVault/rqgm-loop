@@ -1,0 +1,6 @@
+{"target": "slug.py", "criteria": [
+  {"id": "t0-public", "required": true, "kind": "command", "command": "python -m unittest test_public", "files": ["test_public.py"]},
+  {"id": "t0-spec", "required": true, "kind": "source", "check": "slugify() satisfies every numbered rule in spec.md"},
+  {"id": "t0-clarity", "required": false, "kind": "judges", "check": "a reviewer can map each spec rule to the code"}],
+ "must_not_change": ["spec.md", "test_public.py", "the slugify(text) interface"], "final_rung": "E2",
+ "note": "T0 is a disposable smoke/cost-calibration task; it is never scored."}

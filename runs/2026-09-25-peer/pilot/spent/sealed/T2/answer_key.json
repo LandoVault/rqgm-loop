@@ -1,0 +1,10 @@
+{
+  "visits_q2": 4210, "visits_q3": 4850, "visits_change_pct": 15.2,
+  "staff_q2": 21, "staff_q3": 23.5,
+  "vpf_q2": 200.5, "vpf_q3": 206.4, "vpf_change_pct": 2.9,
+  "sat_q2": 81, "sat_q3": "OPEN (no Q3 score exists)",
+  "f2_months": [1540, 1620, 1690],
+  "f3": "must not assert causation; corpus D says no attribution and changes overlapped",
+  "distractors": {"prior_year_staff_q3": 19, "preliminary_q3_visits": 4790},
+  "seeded_defects": ["Q3 visits 4,830 (source error; final logs give 4,850)", "Sep 1,670 (transcription; 1,690)", "+12.8% (arithmetic; correct +15.2% for final figures)", "Q3 staff missing (retrievable from B)", "visits per FTE Q3 missing (derivable)", "F3 false causal claim", "satisfaction Q3 genuinely unknown (optional; must stay OPEN)"]
+}
