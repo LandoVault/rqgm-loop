@@ -1,0 +1,992 @@
+{
+  "summary": "Build the v3 candidate: docs (install drafts, DESIGN/README/example per blueprint, 3 reviewers, fixer) and the read-only rqgm_check.py auditor (test-first, adversarial tester, fixer)",
+  "agentCount": 8,
+  "logs": [],
+  "result": {
+    "docs": {
+      "impl": "All five steps are done and every file is within its word cap. Nothing here was run on a task.\n\n**Word counts** (from `meta_tool.py snapshot`, `caps_ok: true`; it wrote snapshot dirs `735614f8f3a2` and `3669f97d8932`):\n\n| File | Words | Cap |\n|---|---|---|\n| `skills/rqgm-loop/SKILL.md` | 996 | 1000 |\n| `INITIATOR.md` | 1295 | 1300 |\n| `README.md` | 1246 | 1250 |\n| `DESIGN.md` | 2191 | 2200 |\n| `examples/worked-example.md` | 648 | 650 (counted separately) |\n\n**What changed**\n1. **SKILL.md and INITIATOR.md** were copied unchanged. Their hashes match the drafts (`94ccc7e0…`, `d778798f…`).\n2. **DESIGN.md** was rewritten per every `design_md_changes` bullet:\n   - The new opening line and the four evidence labels, with a legend.\n   - Rows 1–10 edited and row 11 (enforcement) added.\n   - New sections: Non-guarantees; What was removed (old entries plus all the additions); Deferred, with 8 promotion triggers; Validation status (design review); a Stage 0–6 summary with the pre-registered decision rules and the T2 disclosure; maintainer process rules.\n   - The meta-run's 26 of 32 wins are split by regime: e1–e9 won 16 of 17 (`ledger-e1-9.json`) and e10–e19 won 10 of 15 (`result-e9-19.json`). I counted these from the ledgers myself.\n   - Row 4 records that run 1's screen-rejection count was edited in place from 12 to 11 in c3eebb2. The source is `register.json`.\n   - None of the excluded citations appear: 2512.08296's 17.2x, 2607.27942, or 2606.23075's figures.\n3. **README.md**:\n   - Added the exact status line, and renamed \"Why it works\" to \"Design (unvalidated on tasks)\".\n   - The blockquote now uses the evidence labels instead of the \"backed by evidence\" claim, and \"until it actually holds up\" is gone.\n   - Added the halts including ERROR, the \"Only you decide\" list, the two-line Optional audit note and the one-line non-guarantee.\n   - Slots and loop description use v3 terms.\n   - The repo layout lists `rqgm_check.py`, `tests/checker/` and `runs/`. The first two do not exist yet.\n4. **worked-example.md** is labelled \"illustrative, not a logged run\" and uses v3 terms. The budget is rounds and minutes, with tokens as the host reports them. The walkthrough now shows:\n   - an optional criterion\n   - a shared command failure that does not reject a variant\n   - a judge-1 UNKNOWN\n   - an ERROR round that still counts as a stall\n   - a Check result that still stands when a stall leads to HALT(STALL)\n5. **.gitignore**: added a comment line plus `!runs/**/archive*.jsonl`, keeping the other ignores. The file was CRLF, so I kept it that way. I also converted README, DESIGN and the example to CRLF to match the checkout.\n\n**What I could not implement, and why**\n- **Commits for every tally:** the blueprint wants each tally to cite its record file and commit. Every tally cites its record file. Commits appear only where `register.json` had already verified them (3dd6700, c3eebb2, c237491, ff9eab2); finding the rest would need git, which I was told not to run. The legend says \"plus the commit where a record was later edited or rebuilt\".\n- **Content cut to fit the DESIGN.md cap:**\n  - The Invariants section is gone; its rules are spread across the table rows and Non-guarantees.\n  - The validation summary leaves out the per-fault list for Stage 4, the cross-family uploads, the ~700-call budget and 200-call fallback, and the \"cannot conclude\" list.\n  - Some older supporting numbers and citations are gone: the 0.33 score shift, the identity/placebo tallies, RRSI's 3.80M/2.42M tokens, the 38% early-stop figure, and 2606.09498 / 2602.05125. No evidence label was upgraded.\n- **README evidence table** (mechanism → source) was removed to fit 1250 words. The Sources list now carries the labels and the new paper IDs, and DESIGN.md holds the full mapping.\n- **Worked example DONE:** I changed the `non-goals` test to \"a Non-goals heading exists\", because `grep -A2` cannot check that the section is non-empty.",
+      "reviews": [
+        {
+          "verdict": "No blocking defects, but 8 need fixing: 3 medium, 5 low. I checked every count and figure in DESIGN.md and README.md against its source and all of them match:\n- 16/17 wins in e1–e9 (ledger-e1-9.json) and 10/15 in e10–e19 (result-e9-19.json).\n- 13 substantive screen rejections plus 2 apply errors (e5-A, e18-B) out of 47 variants.\n- e18 had one judged variant; 3/3 held-out preference.\n- 4.52M/75 ≈ 60K tokens; ~6.8 vs ~11 agents per epoch.\n- 10 then 8 dry-run ambiguities (v2-validation.json, v2-revalidation.json).\n- 11 screen rejections in run 1, formerly 12, and the '3dd6700' / 'c3eebb2' / 'c237491' provenance: register.json and v2-validation.json back these.\n- 1.91×, 55.4% AB/BA reversal, TNR under 25%, and \"RQGM uses no majority vote\" (register.json and grounding.md).\n- Every cited arXiv id has a record in research.json or register.json. selftest passes P01–P23 (32 cases). Current word counts: DESIGN 2191/2200, README 1246/1250.\n\nThe defects are overgeneralized or wrongly labelled claims, not invented numbers. Word budget if all fixes are applied: DESIGN +7 (2198/2200), README −11 (1235/1250). Without the README attribution-note fix (−16), README would be 1251, one word over its cap, so apply that fix or trim elsewhere.",
+          "findings": [
+            {
+              "file": "DESIGN.md",
+              "where": "Line 29, row 6 (Search), Evidence cell: \"Both logged stalls were structural and escaped only outside the loop (ff9eab2).\"",
+              "problem": "Two problems with this 'measured (v1 run)' claim.\n1. It overstates the meta-run and names no record file. Only run 1's stall has a logged structural cause (rrsi/log.md Open 1: 'Scalar overall gate ... the cause of this stall'). meta/log.md never names a cause for its stall. The ledger shows the e17–e19 losses were screen rejects, judge losses (0/2), an early exit and an apply error (result-e9-19.json); none cites the 1000-word cap. Calling the meta-run stall 'structural' is an inference labelled as measured.\n2. 'Escaped only outside the loop' contradicts meta/log.md applied-change row e2: 'Progress = dS > δ or a confirmed newly passing criterion ... (fixes last run's stall cause)'. That is a loop run addressing run 1's stall.\nThe legend says each tally names its record file; this one names only a commit.",
+              "fix": "Replace with: \"Run 1's stall was structural (the scalar gate, `rrsi/log.md`); v2 removed it outside any round (ff9eab2).\" (+4 words by str.split)",
+              "severity": "med"
+            },
+            {
+              "file": "README.md",
+              "where": "Lines 12–13: \"LLM reviewers **over-accept polished work**: the RQGM paper reports over-acceptance of AI-generated papers at up to **1.91× the human rate**.\"",
+              "problem": "The 1.91× figure comes from one reviewer. grounding.md verification event: 'The strongest baseline reviewer over-accepts AI-generated papers at up to 1.91x'. register.json: 'the HGM-H reviewer accepts AI-written papers at 1.42-1.91x the human rate'. The README turns this into a general claim about 'LLM reviewers'. It also adds 'polished work', which no source measures: the finding is about AI-generated papers, not polish. This is the headline pitch, so the overclaim is prominent.",
+              "fix": "Replace with: \"LLM reviewers **can over-accept AI-generated work**: the RQGM paper's strongest baseline reviewer over-accepts AI-generated papers at up to **1.91× the human rate**.\" (+2 words)",
+              "severity": "med"
+            },
+            {
+              "file": "DESIGN.md",
+              "where": "Line 25, row 2 (Independence), Evidence cell: \"Literature: RQGM 2606.26294, reviewers over-accept AI-generated papers at up to 1.91× the human rate (`grounding.md`);\"",
+              "problem": "Same overgeneralization in the evidence document. The cited record (grounding.md, 2026-09-23 event) says 'The strongest baseline reviewer', a single reviewer. v2 said 'a baseline reviewer'. v3 widens this to 'reviewers', which claims more than the verification record supports.",
+              "fix": "Replace with: \"Literature: RQGM 2606.26294, its strongest baseline reviewer over-accepts AI-generated papers at up to 1.91× the human rate (`grounding.md`);\" (+3 words)",
+              "severity": "med"
+            },
+            {
+              "file": "README.md",
+              "where": "Line 142, \"[`DESIGN.md`](DESIGN.md) maps each source to the mechanism it bears on, with its label.\", and lines 148–149, Judge methods list",
+              "problem": "The sentence is false for two listed papers: arXiv 2509.20293 and 2609.02942 appear in the README list but are cited nowhere in DESIGN.md, so they have no mapped mechanism or label. It is also false for the Karpathy links, which DESIGN does not map.",
+              "fix": "(a) Change line 142 to \"[`DESIGN.md`](DESIGN.md) maps each paper below to the mechanism it bears on, with its label.\"\n(b) Delete \"2509.20293, \" and \"2609.02942, \" from the Judge methods list.\n(Net −1 word)",
+              "severity": "low"
+            },
+            {
+              "file": "DESIGN.md",
+              "where": "Line 30, row 7 (Selection), Evidence cell: \"Literature: RRSI complexity-aware acceptance (Table 2, `grounding.md`);\"",
+              "problem": "The Table 2 locator points at text that grounding.md itself marks unverified. The Table 2 ablation ('acceptance regularizers matter most') appears only under the heading 'RRSI extraction (generator's notes; verify, do not trust)'. No verification event covers Table 2. What was checked against the primary source is the complexity-aware acceptance rule itself (the Eq. 6 dC definition and the low-gain branch 'accept iff w_s*dS - w_c*dC + w_n*nu > 0'). Citing Table 2 as 'literature' upgrades unverified notes.",
+              "fix": "Replace with: \"Literature: RRSI complexity-aware acceptance (low-gain rule, `grounding.md`);\" (0 words)",
+              "severity": "low"
+            },
+            {
+              "file": "README.md",
+              "where": "Line 151: \"- This repo's runs, [`runs/`](runs/) (measured (v1 run): one run each, under older procedures).\"",
+              "problem": "This labels all of runs/ as measured (v1 run). Other records there are not v1 runs, and DESIGN.md labels them differently:\n- meta/v2-validation.json and v2-revalidation.json, which DESIGN row 11 labels 'measured (text dry-run)'.\n- research.json and 2026-09-25-peer/register.json (literature).\n- The v3 design-review records in 2026-09-25-peer/.",
+              "fix": "Replace with: \"- This repo's records, [`runs/`](runs/): two v1 runs (measured, n = 1 each), v2 text dry-runs, design reviews.\" (+4 words; with the other README fixes, stays under the cap only together with the attribution-note fix below)",
+              "severity": "low"
+            },
+            {
+              "file": "README.md",
+              "where": "Lines 158–159: \"*Attribution note: \"loop engineering\" is a coinage of Cherny/Osmani built around Karpathy's `autoresearch`, not Karpathy's term. This repo cites primary sources only.*\"",
+              "problem": "This is a factual claim about who coined a term. It has no source: no link, no run file, and no register.json or research.json record. So it fails the rule that every factual claim must point to a run file or a verified paper.",
+              "fix": "Replace the note with: \"*This repo cites primary sources only.*\" (−16 words; this frees the budget for the runs/ label fix)",
+              "severity": "low"
+            },
+            {
+              "file": "README.md",
+              "where": "Line 39: \"- **Held-out check.** Judges you write, kept from every loop agent, confirm the result.\"",
+              "problem": "'Confirm' reads as validation. DESIGN.md Non-guarantees says 'No judge PASS establishes truth'. Row 8 says the held-out majority rule is an uncited design choice and the pass/fail check has never run.",
+              "fix": "Replace \"confirm the result.\" with \"check the result.\" (0 words)",
+              "severity": "low"
+            }
+          ]
+        },
+        {
+          "verdict": "The rule text in SKILL.md and the INITIATOR THE LOOP block matches almost exactly. A word-level diff shows only label case, \"a DONE claim\" vs \"when you believe DONE holds\", \"Never estimate tokens\" (INITIATOR only) and the record schemas. Word caps pass today (SKILL 996/1000, INITIATOR 1295/1300, README 1246/1250, DESIGN 2191/2200).\n\nThe v3 candidate is still not consistent, for four reasons:\n1. The paste block never receives the {{EVALUATORS}} or {{BUDGET}} slot.\n2. The record schemas differ between the two files, and both differ from what rqgm_check.py and blueprint.controller.records need. An archive without a \"t\" key gets a vacuous ok=true.\n3. Five prose rules diverge from decision_policy or P01-P23. I replayed prose-literal archives through the current rqgm_check.py (files in C:/Users/wii/AppData/Local/Temp/claude/F--git-rqgm-loop--claude-worktrees-peer-agent-input-review-514dab/3a60f828-5f3b-4323-b9f2-0b1275b1d45f/scratchpad/parity/*.jsonl). Each produces a false VIOLATION: REJECTION_AS_ERROR, MISSED_KEEP, EXIT_UNSUPPORTED, CHECK_MISCOUNT and RECHECK_UNCHANGED. The auditor also crashes on a free-text budget. These false VIOLATIONs would pause honest runs. In the pilot they would trigger the pre-registered checker-mandatory promotion, and `audit --first` would stop at the first false VIOLATION and hide any later real one.\n4. The HALT(STALL) trigger and the re-entry after HALT(OSCILLATION) are underspecified. DESIGN row 6 and the worked example each disagree with the loop in one place.\n\nApplying all high and medium fixes as written was simulated: SKILL goes 996→997 and INITIATOR 1295→1298. The low fixes need the small cuts named in each fix. rqgm_check.py is being edited concurrently, so checker fixes cite function names and code, not line numbers. No git commands were run and no repo files were edited.",
+          "findings": [
+            {
+              "file": "INITIATOR.md",
+              "where": "THE LOOP fenced block (ROLES and SETUP); slots defined only in the table at lines 13 and 15",
+              "problem": "The paste block never contains {{EVALUATORS}} or {{BUDGET}}: grep finds them only in the table and in the 'Only you decide' list, both outside the fence. Users are told to fill six slots and to 'Replace every {{SLOT}} before pasting', yet the judge personas and the budget never reach the pasted model. SKILL has both slots, so this is a parity gap. In paste runs, setup{…,budget} cannot be filled. The STOP rule ('Start a round only if one is left and remaining time … cover twice the costliest round') has no rounds or minutes to compare against, so HALT(BUDGET) is undecidable and P11 (BUDGET_OVERRUN/BUDGET_START) is unauditable. Judges also run without the chosen personas. v2 had the same gap, but v3's budget rule and setup.budget now depend on these values.",
+              "fix": "ROLES: \"Judges use another model family where available, see\" → \"Judges ({{EVALUATORS}}) use another model family where available, see\". SETUP: \"Log setup (loop v3, {{DONE}}, models), draft v0\" → \"Log setup ({{DONE}}, {{BUDGET}}), draft v0\". loop and models stay in the RECORDS setup{loop:\"v3\",done,models,budget} schema. Net −1 word.",
+              "severity": "high"
+            },
+            {
+              "file": "skills/rqgm-loop/SKILL.md",
+              "where": "Each round step 3 ('drop the variant. Else run judge 2'); INITIATOR.md THE LOOP step 3 ('on a protected item, drop the / variant.')",
+              "problem": "When judge 1 prefers *best* (high confidence or on a protected item), the prose says to 'drop' the variant. But Results defines 'drop' as the ERROR path ('drop the variant (not a rejection)'), and the outcome enum is kept|rejected|dropped. decision_policy (3) says this early exit has outcome 'rejected'. A literal orchestrator therefore logs outcome 'dropped'. Replayed through rqgm_check.py, that round gives one REJECTION_AS_ERROR (VIOLATION) per variant (scratchpad a_earlydrop.jsonl). This is the most common early exit. With the in-loop audit it pauses the run every time. In Stage 5 it counts as a decision-changing VIOLATION.",
+              "fix": "SKILL.md: \"drop the variant. Else run judge 2\" → \"reject the variant. Else run judge 2\". INITIATOR.md: \"on a protected item, drop the\\n   variant.\" → \"on a protected item, reject the\\n   variant.\" 0 words; DESIGN and README do not use the word here.",
+              "severity": "high"
+            },
+            {
+              "file": "skills/rqgm-loop/SKILL.md",
+              "where": "## Memory (record list); INITIATOR.md RECORDS ('Append one JSON line per record to {{MEMORY}}'); rqgm_check.py Audit.feed/audit()",
+              "problem": "Both files write records as setup{…}, round{…} but never say how the record name is stored. v2's schema showed {\"t\":…}; v3 deleted that schema. rqgm_check.py reads the record name only from 't' or 'type'. An archive written as {\"setup\":{…}}, {\"round\":{…}}, {\"exit\":{\"status\":\"COMPLETE\"}} audits as ok=true, exit 0, status ACTIVE, with only 'unknown record type' warnings (scratchpad e_notkey.jsonl). The Output field 'whether rqgm_check.py audited it' would then report an audit that checked nothing. Stage 5 would count zero violations for any P archive in that shape.",
+              "fix": "SKILL.md Memory: prefix the list with \"Lines `{\"t\":name,…}`: \" (+2 words). INITIATOR.md: \"Append one JSON line per record to {{MEMORY}}\" → \"Append one JSON line {\\\"t\\\":name,…} per record to {{MEMORY}}\" (+1). rqgm_check.py audit(): if no parsed record has a known t/type, return exit 2 with integrity {'error': 'no RQGM records'} instead of ok=true. This does not affect the P22 v2 fixture, whose records carry 't'.",
+              "severity": "high"
+            },
+            {
+              "file": "skills/rqgm-loop/rqgm_check.py",
+              "where": "Audit.panel(): pbest over `comp` (completed slots); blueprint decision_policy (4) and invariant P03 ('no completed slot')",
+              "problem": "The prose keep rule is fail-closed: 'none rates a protected item worse' (SKILL step 4 = INITIATOR step 4). The blueprint risk note agrees that an explicit 'best' vetoes. decision_policy (4), P03 and the checker apply the protected veto only from completed slots (overall variant|best|tie). So a judge that returns overall UNKNOWN but criteria {protected: best} is ignored. Example: slot 1 variant, slot 2 UNKNOWN with c1=best (c1 passes on best), slot 3 variant. The prose-honest orchestrator keeps nothing, and the checker reports MISSED_KEEP (VIOLATION) (scratchpad h_unknown_protected.jsonl).",
+              "fix": "rqgm_check.py panel(): `pbest = any(slots[s][1].get(c) == 'best' for s in comp for c in prot)` → `pbest = any(slots[s][1].get(c) == 'best' for s in slots for c in prot)`. decision_policy (4): \"no completed slot has a protected criterion = best\" → \"no slot has a protected criterion = best\". P03 rule → \"No keep if any completed slot prefers best overall, or any slot prefers best on a protected criterion\". Add a positive fixture for this case. Prose unchanged.",
+              "severity": "med"
+            },
+            {
+              "file": "skills/rqgm-loop/rqgm_check.py",
+              "where": "Audit.panel(): `if any(x[0] == 'ERROR' …): p['exp'] = 'rejected' if objection else 'dropped'`; P06 negative test; SKILL/INITIATOR Results + step 5",
+              "problem": "The prose says: 'Retry an ERROR once, then drop the variant (not a rejection)'. A round is a stall 'unless every variant ended ERROR (two such in a row → HALT(ERROR))'. The checker (and P06's 'with no completed objection') instead counts a variant as rejected when an earlier slot already preferred *best*. Replay: two rounds where slot 1 = best (med) and slot 2 = ERROR twice, for both variants. The prose run exits HALT(ERROR), and the checker reports REJECTION_AS_ERROR ×4 and EXIT_UNSUPPORTED (VIOLATION, e=0) (scratchpad i_error_after_objection.jsonl). The two sides disagree on both the exit reason and the stall count.",
+              "fix": "Preferred, 0 prose words: in rqgm_check.py panel(), change `p['exp'] = 'rejected' if objection else 'dropped'` to `p['exp'] = 'dropped'`. Delete 'with no completed objection' from P06's negative test. Add to decision_policy (3): 'a slot's second ERROR means dropped, even after an objection'. Alternative, if the checker semantics are wanted instead (+4 words in each file): \"then drop the variant (not a rejection)\" → \"then drop the variant (a rejection if a judge prefers *best*)\".",
+              "severity": "med"
+            },
+            {
+              "file": "skills/rqgm-loop/rqgm_check.py",
+              "where": "Audit.r_check() judges branch; decision_policy (7); SKILL/INITIATOR Results ('…or leave its criterion unchecked')",
+              "problem": "By the prose, a Check judge that still ERRORs after one retry leaves its criterion unchecked. decision_policy (7) and the checker count votes instead ('#pass ≥ 2 … ERROR not pass'). With votes [pass, pass, ERROR], the prose logs 'unchecked' and the checker reports CHECK_MISCOUNT (VIOLATION) (scratchpad c_checkerror.jsonl). The prose is the declared contract (DESIGN row 11).",
+              "fix": "In r_check, replace the three lines `ok = …` / `if (val == 'pass') != ok: …CHECK_MISCOUNT…` / `val = 'pass' if ok else …` with: `ok = sum(x == 'pass' for x in r['votes']) >= (3 if strict else 2)`; `exp = 'unchecked' if 'ERROR' in r['votes'] else 'pass' if ok else 'fail'`; `if val != exp and not (exp == 'fail' and val == 'unchecked'): self.add('CHECK_MISCOUNT', exp, val)`; `val = exp`. decision_policy (7): \"UNKNOWN and ERROR are not pass\" → \"UNKNOWN is not pass; an ERROR vote (after its retry) leaves the criterion unchecked\".",
+              "severity": "med"
+            },
+            {
+              "file": "skills/rqgm-loop/SKILL.md",
+              "where": "Setup ('Else log `setup` (loop v3, `DONE`, models), draft **v0** = *best*, run its commands and Verifier, start at **E1**.'); INITIATOR.md SETUP; both check{} schemas",
+              "problem": "decision_policy (1) takes v0's baseline from check{trigger:setup}, and the checker uses `trigger` both to exempt that baseline from RECHECK_UNCHANGED and to seed the protected set. Neither prose file says to log v0's command/Verifier results, and neither check schema has `trigger`. If the orchestrator logs the setup results as a plain check (the only check shape the prose gives), then the prose-mandated Check at 3 stalls on unchanged v0 is flagged RECHECK_UNCHANGED (VIOLATION) (scratchpad b_setupcheck.jsonl). If it logs nothing, round-1 command regressions and the veto on criteria v0 passes are unauditable.",
+              "fix": "SKILL.md: \"Else log `setup` (loop v3, `DONE`, models), draft **v0** = *best*, run its commands and Verifier, start\\nat **E1**.\" → \"Else log `setup`, draft **v0** = *best*, run its commands and Verifier (`check{trigger:setup}`), start\\nat **E1**.\" (−3; loop, models and budget move into the Memory schema). INITIATOR.md: \"run its commands and Verifier, set\\nrung E1\" → \"run its commands and Verifier (check{trigger:setup}), set\\nrung E1\" (+1). Add `trigger` to both check schemas (0 words, see the schema finding).",
+              "severity": "med"
+            },
+            {
+              "file": "skills/rqgm-loop/SKILL.md",
+              "where": "## Memory record list vs INITIATOR.md RECORDS vs blueprint.controller.records",
+              "problem": "The two schemas differ from each other. SKILL's setup text logs no budget, while INITIATOR's has budget, so P11 is unauditable for SKILL runs. INITIATOR's check has no `votes`, while SKILL's has it, so the P04 Check half is unauditable for paste runs. SKILL's probe lacks `misses`, and SKILL's `gates`, `rung` and `resume` are bare. Both schemas also lack fields that the policy and checker need: variant `diff` (P19 unauditable, and CHECK_FILE_EDIT and oscillation are silently skipped with no unauditable entry, because keep_checks reads the kept variant's diff), verdict `retries` (P06), probe `identity`/`seeded` (probe mode), version `words` (P05 prune), amend `done` (P15) and citation `criterion` (source Check). DESIGN row 11's 'recomputes every keep, drop, Check, halt and exit' is false for prose-shaped archives, and meta-run criterion d4 fails.",
+              "fix": "Each backticked record stays one str.split token, so these swaps cost 0 words. SKILL.md Memory list becomes: \"Lines `{\\\"t\\\":name,…}`: `setup{loop,done,models,budget:{rounds,minutes,tokens}}`, `resume{at_round}`, `version{id,parent,diff,words}`, `round{n,best,t0,t1,tokens,variants[{id,section,words,diff,gates:{apply,commands,verifier,screen},verdicts[{slot,model,orders,overall:variant|best|tie|UNKNOWN|ERROR,criteria,confidence,retries}],outcome:kept|rejected|dropped}],kept}`, `citation{claim,locator,status,criterion}`, `probe{rung,mode,identity,seeded,misses}`, `check{version,rung,trigger,results{id:{kind,value,votes}}}`, `amend{what,why,done}`, `rung{name}`, `substrate{gap,owner,required,status}`, `heldout{attempt,set,version,pass}`, `exit{status,reason}`.\" INITIATOR.md RECORDS gets the same tokens in its own spelling: setup{loop:\"v3\",done,models,budget:{rounds,minutes,tokens}}, version{id,parent,diff,words}, variants:[{id,section,words,diff,gates:{…},verdicts:[{…,confidence,retries}],…}], citation{claim,locator,status,criterion}, probe{rung,mode,identity,seeded,misses}, check{version,rung,trigger,results:{<id>:{kind,value,votes}}}, amend{what,why,done}, heldout{attempt,set,version,pass}. Simulated result together with the t-key fix: SKILL +2, INITIATOR +1.",
+              "severity": "med"
+            },
+            {
+              "file": "skills/rqgm-loop/rqgm_check.py",
+              "where": "Audit.budget() and Audit.budget_out(): `b = (self.setup or {}).get('budget') or {}` then `b.get(...)`",
+              "problem": "Neither prose file gives the shape of the budget value. The slot and the worked example phrase it as free text ('12 rounds, 45 minutes; tokens as your host reports them'). With setup.budget as a string, audit crashes with AttributeError: 'str' object has no attribute 'get' and exits 1, which is the 'violations' exit code (scratchpad d_budgettext.jsonl). With the in-loop audit, that crash pauses the loop. P22 requires a malformed field to be unauditable, never a crash.",
+              "fix": "In both functions, after the `b = …` line add `if not isinstance(b, dict): b = {}`. In budget() also call `self.na('budget', 'setup.budget (object {rounds,minutes,tokens})')`. On the prose side, use the object form budget:{rounds,minutes,tokens} from the schema finding.",
+              "severity": "med"
+            },
+            {
+              "file": "skills/rqgm-loop/SKILL.md",
+              "where": "Each round step 5 ('Failing while stalled → **HALT(STALL)**'); INITIATOR.md step 5; DESIGN.md row 6",
+              "problem": "'While stalled' is undefined. decision_policy (7) and the checker's post_check halt only on a required failure with s ≥ 3. DESIGN row 6 ('A stall with failing criteria is HALT(STALL)') supports the one-stall reading: a claim-triggered Check that fails after 1-2 stall rounds would halt. The checker flags that as STALL_MISCOUNT (VIOLATION). Separately, a required criterion left unchecked at s ≥ 3 neither passes nor fails in prose or checker. The standing Check is never rerun on an unchanged *best*, so the loop can only end at HALT(BUDGET).",
+              "fix": "SKILL.md and INITIATOR.md: \"Failing while stalled →\" → \"Failing after 3 stalls →\" (+1 each). DESIGN.md row 6: \"A stall with failing criteria is HALT(STALL),\" → \"Failing criteria after 3 stall rounds → HALT(STALL),\" (+1). If unchecked should also halt: use \"Failing or unchecked after 3 stalls →\" (+3) and in post_check test `st.get(c) in ('fail', 'unchecked')`.",
+              "severity": "med"
+            },
+            {
+              "file": "skills/rqgm-loop/SKILL.md",
+              "where": "Each round step 4 ('→ **HALT(OSCILLATION)**: the human picks.'); INITIATOR.md step 4; rqgm_check.py r_resume/r_version; decision_policy (12)",
+              "problem": "v2 said 'the human picks one, which becomes best, and the loop resumes'. v3 cut that (CUT-F, described as compression only, which is an unlogged semantic loss). The prose now gives no next state after the pick; README's 'you pick' and INITIATOR's 'Only you decide … the HALT(OSCILLATION) pick' assume one. The checker treats the halted round as unfinished and to be rerun. If the pick is logged as the new version after `resume`, the checker reports VERSION_WITHOUT_KEEP (VIOLATION) plus RESUME_MISMATCH and ROUND_SEQUENCE (scratchpad f_osc_pickvariant.jsonl). Keeping the old *best* gives RESUME_MISMATCH and ROUND_SEQUENCE (g_osc_pickbest.jsonl).",
+              "fix": "SKILL.md: \"**HALT(OSCILLATION)**: the human picks.\" → \"**HALT(OSCILLATION)**: the human picks *best*.\" (+1). INITIATOR.md: \"HALT(OSCILLATION): the human picks.\" → \"HALT(OSCILLATION): the human picks *best*.\" (+1). Re-entry then uses the existing resume rule. Checker: after exit{reason:OSCILLATION} then resume, accept version{id = the pending kept variant, parent = its round.best} as the pick, or no version (best unchanged). Either way, expect the next round at n+1, not a rerun of n. Add the same sentence to decision_policy (12).",
+              "severity": "med"
+            },
+            {
+              "file": "skills/rqgm-loop/SKILL.md",
+              "where": "Stop ('…; else Check, then **HALT(BUDGET)**.') vs step 5 ('All required pass → Boundary'); INITIATOR.md STOP",
+              "problem": "When the budget-triggered Check passes every required criterion, the prose gives two next states: Boundary (and at the final rung, held-out, which costs no round and can reach COMPLETE), or HALT(BUDGET), which is always PARTIAL. decision_policy (7) requires the boundary after an all-pass Check, while (10) allows exit BUDGET. Orchestrators can therefore reach different exit statuses from the same state.",
+              "fix": "SKILL.md and INITIATOR.md: \"else Check, then **HALT(BUDGET)**.\" (INITIATOR spelling: \"else\\nCheck, then HALT(BUDGET).\") → \"else Check; unless all required pass, **HALT(BUDGET)**.\" (+3 each). Fund in SKILL with \"(tokens only if the host reports them)\" → \"(tokens if the host reports them)\" and \"(and tokens, if reported)\" → \"(and reported tokens)\" (−2). Fund in INITIATOR by deleting \"(Python 3)\" in Optional audit (−2) plus the same Stop compression (−1).",
+              "severity": "low"
+            },
+            {
+              "file": "examples/worked-example.md",
+              "where": "Rounds 1, 2 and 4",
+              "problem": "Step 1 of the loop says 'target failing command checks first'. In the example, the non-goals command fails on *best* from round 1, yet no variant targets it until round 4, so the example teaches the opposite. Round 4 also says 'The generator believes DONE holds'. INITIATOR ('when you believe') and SKILL make this the orchestrator's trigger, not the generator's.",
+              "fix": "Round 1 → \"- **Round 1.** Variant A adds a Non-goals section (failing commands first); B cuts the scope to one job.\\n  The `non-goals` command passes on A and fails on B and *best*: a shared failure, not a rejection.\\n  Judges 1 and 2 prefer each variant, so judge 3 is skipped; the tie-break keeps the shorter, **B**.\" Round 2: \"B, never rejected, is re-proposed\" → \"A, never rejected, is re-proposed\". Round 4 first two sentences → \"- **Round 4.** A variant cites three tickets the Verifier finds; **kept**. The orchestrator believes `DONE` holds, so it runs a **Check** on v4:\". Net 0 words (648/650).",
+              "severity": "low"
+            },
+            {
+              "file": "INITIATOR.md",
+              "where": "THE LOOP BOUNDARY ('Below the final rung,')",
+              "problem": "SKILL gives the final-rung default ('the final rung (default **E2**)'). In INITIATOR the default is only in the slot table outside the fence. If DONE omits the final rung, a paste run has no final rung, so Boundary, Stop and COMPLETE are undefined. The checker silently assumes E2.",
+              "fix": "\"BOUNDARY. Below the final rung,\" → \"BOUNDARY. Below the final rung (default E2),\" (+2; INITIATOR reaches 1300 with the high/med fixes, so pair with any −1 cut above if a low fix is also taken).",
+              "severity": "low"
+            },
+            {
+              "file": "skills/rqgm-loop/SKILL.md",
+              "where": "Step 1 ('write `[OPEN: what is needed]`'), Stop; INITIATOR.md step 1",
+              "problem": "The substrate{gap,owner,required,status} record is listed, but neither file says to log one when an [OPEN] is written, closed or waived. P17, OPEN_AT_HELDOUT and OPEN_AT_COMPLETE, and COMPLETE's 'no required open substrate' (policy 11), all rely on that record. A best that still contains an [OPEN] with no logged substrate passes a COMPLETE audit.",
+              "fix": "SKILL.md and INITIATOR.md step 1: \"write `[OPEN: what is needed]`.\" (INITIATOR: \"write [OPEN: what is needed].\") → \"write `[OPEN: what is needed]` and log `substrate`.\" (+3 each; needs a matching cut, since SKILL is at 997 and INITIATOR at 1298 after the high/med fixes).",
+              "severity": "low"
+            },
+            {
+              "file": "examples/worked-example.md",
+              "where": "DONE JSON `must_not_change`; INITIATOR.md DONE slot row; SKILL/INITIATOR step 4 '(guardrails, must-not-change constraints, …)'",
+              "problem": "The protected veto includes must-not-change constraints and guardrails, and policy (1) defines protection by ids (must-not-change ids, criteria with guardrail:true). Judges can only rate criteria by id (\"criteria\":{\"<id>\":…}). The example's constraints are sentences with no id, and no file defines a guardrail flag in DONE. So 'none rates a protected item worse' cannot be expressed for constraints and cannot be audited.",
+              "fix": "Example: `\"must_not_change\": [\"the underlying user problem\", \"the product brief's constraints\"]` → `\"must_not_change\": [\"user-problem: the underlying user problem\", \"brief-limits: the product brief's constraints\"]` (+2 → 650/650). INITIATOR DONE row: \"must-NOT-change constraints;\" → \"must-NOT-change constraints (with ids);\" (+2, outside the paste). Guardrail criteria are covered by DONE's `guardrail` flag, which the checker already reads; document it in the same row if words allow.",
+              "severity": "low"
+            },
+            {
+              "file": "README.md",
+              "where": "'**Halts:**' line: \"`OPEN` (a required gap only you can close)\"",
+              "problem": "SKILL Roles, INITIATOR ROLES and DESIGN row 2 also use HALT(OPEN) when no independent judges are available (no subagents and no human relay). README describes OPEN only as a required gap, so its list of halts does not match the loop.",
+              "fix": "\"`OPEN` (a required gap only you can close)\" → \"`OPEN` (a required gap or judges only you can supply)\" (+2 → 1248/1250).",
+              "severity": "low"
+            },
+            {
+              "file": "INITIATOR.md",
+              "where": "## Optional audit ('`python rqgm_check.py audit archive.jsonl`')",
+              "problem": "INITIATOR is meant to be self-contained, but it never says where rqgm_check.py lives. README gives `skills/rqgm-loop/rqgm_check.py`, so a paste user following INITIATOR alone cannot run the audit.",
+              "fix": "\"`python rqgm_check.py audit archive.jsonl`\" → \"`python skills/rqgm-loop/rqgm_check.py audit archive.jsonl`\" (0 words).",
+              "severity": "low"
+            }
+          ]
+        },
+        {
+          "verdict": "Not ready for a first-time user. I found 21 defects: 3 high, 7 medium and 11 low. I read README.md, INITIATOR.md and SKILL.md, then examples/worked-example.md and rqgm_check.py to check what the docs point to.\n\n**High:**\n1. The record schema never says how a record names its type. The auditor dispatches only on \"t\" or \"type\", so an archive written literally from the prose passes the audit with ok:true and exit 0. I tested this in scratchpad/fu: a1.jsonl passes, while the same lines keyed with \"t\" (a2.jsonl) give 4 VIOLATIONs.\n2. SKILL tells the orchestrator to ask the human for the held-out prompts. The human then pastes them into the loop's own context, so they are no longer held out.\n3. Step 3 says \"drop the variant\" for a judge-1 veto. Everywhere else, \"drop\" means an ERROR, not a rejection. Logging a veto that way gives REJECTION_AS_ERROR VIOLATIONs (tested in a3.jsonl), and in prose it can lead to a wrong HALT(ERROR).\n\n**Medium:**\n- DONE has no field names or criterion ids.\n- \"Guardrails\" is never defined.\n- Must-not-change constraints have no ids, so no judge can rate them.\n- Held-out judges have no stated inputs or voting rule.\n- \"The rung's stance line\" points to the Stance section that v3 deleted.\n- No rule routes the loop to STOP at the final rung.\n- In a plain chat, the generator, Verifier and Screen cannot be separate agents or contexts, and the judge relay never collects the model name.\n- A plain chat has no clock, but t0/t1 and the time budget need one.\n- An \"approved restructure\" has no step that can carry it out.\n\n**Word caps.** Current counts are within caps: SKILL 996/1000, INITIATOR 1295/1300, README 1246/1250, DESIGN 2191/2200, worked example 648/650.\n- In INITIATOR, the high and medium fixes add a net +25 words. Three cuts bring that to +5, which lands exactly on 1300: lines 23–24 \"Without subagents, you also run judges in fresh chats.\" (−9, now said inside the block), \"The loop is domain-agnostic.\" (−4), and \"It changes nothing; nothing depends on it.\" (−7).\n- In SKILL, the high and medium fixes add a net +15 against 4 words of headroom, so about 11 words must be cut. If you defer the SKILL copy of the plain-chat roles fix (skill hosts usually have subagents), SKILL needs +7, still 3 over.\n- The README fix is +2 (1248). The worked-example fix is +2 (650/650).\n- Several fixes cost nothing: the \"t\" key inside records, drop→reject, stance, the schema fields, the audit path and \"ledger\"→\"records\".\n\nI edited no files and ran no git commands.",
+          "findings": [
+            {
+              "file": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/INITIATOR.md",
+              "where": "THE LOOP › RECORDS, line 47; also SKILL.md › Memory, line 91",
+              "problem": "Neither doc says how a record names its type. rqgm_check.py dispatches only on rec['t'] or rec['type'], and every fixture uses \"t\". An archive written literally from the prose ({\"record\":\"setup\",...} or {\"setup\":{...}}) is audited as ok:true with exit 0 and only 'unknown record type' warnings. I tested this: a 3-line archive with a one-judge keep and exit COMPLETE at E1 returned ok:true (scratchpad/fu/a1.jsonl). The same lines with \"t\" returned PROBE_MISSING, KEEP_WITHOUT_SUPPORT, JUDGE_MISSING and FALSE_COMPLETE (a2.jsonl). So 'a violation pauses for the human' never fires, and Output reports the run as audited.",
+              "fix": "INITIATOR line 47: \"Append one JSON line per record to {{MEMORY}}\" -> \"Append one JSON line per record, {\"t\":\"<name>\",...fields}, to {{MEMORY}}\" (+1 word). SKILL line 91: start the list with \"JSONL `{\"t\":<name>,…}`:\" so it reads \"JSONL `{\"t\":<name>,…}`: `setup`, `resume`, ...\" (+2). Optional hardening in rqgm_check.py: report a record with no t/type as a RECORD finding, and return ok:false when no setup record was recognized.",
+              "severity": "high"
+            },
+            {
+              "file": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/skills/rqgm-loop/SKILL.md",
+              "where": "Setup, lines 20-21",
+              "problem": "\"Ask the human for 3 held-out judge prompts plus 3 spares, kept from all loop agents\" tells the orchestrator, itself a loop agent, to request the prompts. A first-time user will paste them into the loop's context, which contaminates the held-out check that gates COMPLETE. INITIATOR says the opposite (store them where no loop agent can read them), and SKILL's own Stop has the human run them, so the orchestrator never needs to see them.",
+              "fix": "\"Ask the human for 3 held-out judge prompts plus 3 spares, kept from all loop agents.\" -> \"Ask the human to write 3 held-out judge prompts plus 3 spares, hidden from all loop agents, you included.\" (+3)",
+              "severity": "high"
+            },
+            {
+              "file": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/INITIATOR.md",
+              "where": "THE LOOP › EACH ROUND step 3, lines 82-83; also SKILL.md step 3, lines 56-57",
+              "problem": "Judge 1's veto says \"drop the variant\", but RESULTS defines drop as the ERROR path ('drop the variant (not a rejection)'), and the records' outcome `dropped` also means ERROR. A literal reader logs the veto as outcome dropped. The auditor then reports REJECTION_AS_ERROR as a VIOLATION, which pauses the loop; I tested two such vetoes in scratchpad/fu/a3.jsonl and got 2 VIOLATIONs. Without the audit, the ledger never counts the veto, and a round where every variant was vetoed reads as 'every variant ended ERROR'. That round is then not a stall, and two in a row give a HALT(ERROR) that reports a merit loss as an infrastructure fault.",
+              "fix": "In step 3 of both files, replace \"drop the variant\" with \"reject the variant\" (0 words).",
+              "severity": "high"
+            },
+            {
+              "file": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/INITIATOR.md",
+              "where": "Fill first › {{DONE}} row, line 12; step 4, lines 85-86; also SKILL.md Setup lines 16-18 and step 4 line 60",
+              "problem": "DONE is the hardest slot to fill, and no shape is given:\n- There are no field names and no per-criterion `id`, although the judge JSON keys criteria by \"<id>\", held-out judges report IDs, and the auditor needs done.criteria[{id,required,kind}].\n- \"no pass fields\" is undefined.\n- INITIATOR never links the only template. That template, the worked example, uses \"check\" where the records use `kind`.\n- \"Guardrails\" (step 4, Screen) is never defined.\n- Must-not-change constraints have no ids, so no judge can return a verdict on them, and the protected-item veto in steps 3 and 4 cannot be applied to them.",
+              "fix": "INITIATOR line 12 cell -> \"JSON like [the example](examples/worked-example.md): atomic `criteria` `{id, required, kind: command|source|judges, command?}` (a command names every file it runs); `must_not_change` guardrails `{id: text}`; `final_rung` (default E2); no pass/fail values\" (-1). INITIATOR step 4: \"(guardrails, must-not-change constraints, criteria *best* passes)\" -> \"(guardrails, criteria *best* passes)\" (-2). SKILL lines 16-17: \"atomic pass/fail criteria, each required or optional, each with a **check**:\" -> \"atomic pass/fail criteria `{id,required,kind}`; **kind**:\" (-6), and \"must-not-change constraints;\" -> \"`must_not_change` guardrails `{id: text}`;\" (+2). SKILL step 4: same edit as INITIATOR (-2). rqgm_check.py's protected() already reads must_not_change keys as ids.",
+              "severity": "med"
+            },
+            {
+              "file": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/INITIATOR.md",
+              "where": "Held-out judges paragraph, lines 17-19 (used by STOP, lines 102-103)",
+              "problem": "The user must write held-out judge prompts but is never told what those judges receive (best? DONE? GROUNDING?) or what \"majority\" means (per criterion, across the 3). The prompts cannot be written with confidence.",
+              "fix": "\"Run them only when asked, each in a fresh context, and report failing criterion IDs only.\" -> \"Run them only when asked, each fresh on *best*, `DONE` and `GROUNDING`; report only IDs 2 of 3 fail.\" (+3)",
+              "severity": "med"
+            },
+            {
+              "file": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/INITIATOR.md",
+              "where": "THE LOOP › SETUP, lines 60-61; also SKILL.md Setup, line 25",
+              "problem": "\"The rubric = DONE + the rung's stance line\" points at nothing. v3 deleted the Stance section (DESIGN.md 'What was removed': 'Stance slogans'), and no text is now called a stance line. Judge prompts may leave out E2's 'reject polish, demand derivations', so escalating would change nothing the judges see.",
+              "fix": "INITIATOR: \"the rung's stance line\" -> \"the rung's stance (BOUNDARY)\". SKILL: \"the rung's stance line\" -> \"the rung's stance (Boundary)\" (0 words).",
+              "severity": "med"
+            },
+            {
+              "file": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/INITIATOR.md",
+              "where": "THE LOOP › BOUNDARY, line 97 (and STOP, line 101); also SKILL.md Boundary, line 73",
+              "problem": "BOUNDARY covers only 'below the final rung'. Nothing sends the loop to STOP when all required criteria pass at the final rung. Because of that, STOP's first rule ('A required [OPEN] -> HALT(OPEN)') reads as global, so the loop could halt as soon as a required [OPEN] is written. The worked example instead continues after round 3.",
+              "fix": "After \"...escalates or stops (PARTIAL).\" add \"At it: STOP.\" in INITIATOR and \"At it: **Stop**.\" in SKILL (+3 each).",
+              "severity": "med"
+            },
+            {
+              "file": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/INITIATOR.md",
+              "where": "THE LOOP › ROLES, lines 39-40 (and PROBE 'you (not the generator)', line 62); also SKILL.md Roles, lines 33-34",
+              "problem": "'Run each role as a separate agent or fresh context', but the no-subagent relay covers only judges. In a plain chat, the generator, Verifier, Screen and probe seeder are unavoidably one context. A literal model will halt, ask the human to relay 3 more roles every round, or quietly break the rule. The relay also never collects the judge's model, yet OUTPUT must report judge model families.",
+              "fix": "INITIATOR: \"Without subagents, give the human each judge prompt to run in a fresh chat and wait for its JSON; if not, HALT(OPEN).\" -> \"Without subagents, you also generate, verify and screen; give the human each judge prompt (probe and Check too) to run in a fresh chat and wait for its JSON and model; if not, HALT(OPEN).\" (+12; offset by deleting lines 23-24 \"Without subagents, you also run judges in fresh chats.\", -9). SKILL: \"(without subagents, the human runs judges in fresh chats; if not, **HALT(OPEN)**)\" -> \"(without subagents, you generate, verify and screen; the human runs judges in fresh chats, naming the model; if not, **HALT(OPEN)**)\" (+8).",
+              "severity": "med"
+            },
+            {
+              "file": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/INITIATOR.md",
+              "where": "{{BUDGET}} row, line 15; SETUP 'Never estimate tokens.', line 61; STOP, lines 104-105; RECORDS round t0/t1",
+              "problem": "A plain chat has no clock. Each round needs t0 and t1, and STOP needs 'remaining time' to cover twice the costliest round. The block forbids estimating tokens but not times, so a chat model will invent timestamps (fabricated records) or silently ignore the time budget.",
+              "fix": "Line 61: \"Never estimate tokens.\" -> \"Never estimate tokens or times: log null.\" (+4). Lines 104-105: \"remaining time (and tokens, if reported)\" -> \"remaining time and tokens (each if reported)\" (0). Line 15: \"max rounds and wall-clock (tokens only if your host reports them)\" -> \"max rounds; wall-clock and tokens only if your host reports them\" (0).",
+              "severity": "med"
+            },
+            {
+              "file": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/INITIATOR.md",
+              "where": "THE LOOP › step 1, line 71 and step 5, line 95; also SKILL.md step 1 line 45 and step 5 line 69",
+              "problem": "HALT(STALL) may name 'an approved restructure', and the human's decisions include approving one. But step 1 allows only 'one change to one section', and nothing says how an approved restructure is proposed or judged. The approval has no step the loop can carry out.",
+              "fix": "Step 1: \"each one change to one section of *best*,\" -> \"each one change to one section of *best* (or one human-approved restructure),\" in both files (+5 each).",
+              "severity": "med"
+            },
+            {
+              "file": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/INITIATOR.md",
+              "where": "SETUP resume, line 56; step 4 OSCILLATION, line 89; {{MEMORY}} row, line 14; also SKILL.md lines 23 and 63",
+              "problem": "Resume is defined only for a paste that finds records. After a HALT, the human's decisions (closing or waiving an [OPEN], approving a restructure, the oscillation pick) have no defined re-entry. The auditor expects a resume record after an exit, otherwise AFTER_EXIT. 'The human picks' does not say what is picked. A print-mode user is never told that resuming in a new chat means pasting the printed records back.",
+              "fix": "Line 56: \"If {{MEMORY}} holds records, resume:\" -> \"If {{MEMORY}} holds records, or the human answers a halt, resume:\" (+6). Line 89: \"the human picks.\" -> \"the human picks which text is *best*.\" (+4). Line 14: '\"print\" in a plain chat' -> '\"print\" in a plain chat (paste them back to resume)' (+5). SKILL line 23: \"Resume from `MEMORY` if present:\" -> \"Resume from `MEMORY` if present or after a human answers a halt:\" (+6). SKILL line 63: same pick edit (+4).",
+              "severity": "low"
+            },
+            {
+              "file": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/INITIATOR.md",
+              "where": "step 1 '[OPEN: what is needed]', line 74; STOP, line 101; also SKILL.md lines 48 and 78",
+              "problem": "The docs never say what makes an [OPEN] 'required', yet that decides HALT(OPEN) and COMPLETE. No rule says to log the substrate record when writing an [OPEN], and that record is the only place required, owner and status are kept.",
+              "fix": "Step 1: \"write [OPEN: what is needed].\" -> \"write [OPEN: what is needed] (log substrate).\" (+2). STOP: \"A required [OPEN] →\" -> \"An [OPEN] a required criterion needs →\" (+3). Make the same edits in SKILL.",
+              "severity": "low"
+            },
+            {
+              "file": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/INITIATOR.md",
+              "where": "THE LOOP › SETUP 'draft v0 = *best*', line 58; also SKILL.md line 24",
+              "problem": "When a TARGET already exists, 'draft v0' reads as 'rewrite it first'. That rewrite passes no Screen and no judge, so 'keep only if judges prefer it' starts from unjudged text.",
+              "fix": "INITIATOR: \"draft v0 = *best*,\" -> \"v0 = {{TARGET}} (draft if absent) = *best*,\" (+4). SKILL: \"draft **v0** = *best*,\" -> \"**v0** = `TARGET` (draft if absent) = *best*,\" (+4).",
+              "severity": "low"
+            },
+            {
+              "file": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/INITIATOR.md",
+              "where": "THE LOOP › RECORDS, lines 48-51; also SKILL.md Memory, lines 91-94",
+              "problem": "The prose schema leaves out fields the auditor needs:\n- INITIATOR's check has no votes (SKILL's does).\n- Both lack verdict retries, variant diff, probe identity/seeded, check trigger, and version round/words.\n- SKILL's setup has no budget.\n- 'orders' is never defined. Logging the labels [\"AB\",\"BA\"] instead of the two verdicts reads as disagreement, giving ORDER_MISMAP and a false KEEP_WITHOUT_SUPPORT.\nThose rules stay 'unauditable' while Output says the run was audited.",
+              "fix": "0 words, since each record is one token. INITIATOR: `version{id,parent,round,diff,words}`; round variants `[{id,section,words,diff,gates:{apply,commands,verifier,screen},verdicts:[{slot,model,orders:[overallAB,overallBA],overall:variant|best|tie|UNKNOWN|ERROR,criteria,confidence,retries}],outcome:kept|rejected|dropped}]`; `probe{rung,mode,identity,seeded,misses}`; `check{version,rung,trigger,results:{<id>:{kind,value,votes}}}`. SKILL: `setup{loop,done,models,budget}`, plus the same version, round, probe and check fields.",
+              "severity": "low"
+            },
+            {
+              "file": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/README.md",
+              "where": "Quickstart block, line 69",
+              "problem": "The one-paste quickstart runs in one chat, so the writer judges its own work. 'Each a SEPARATE pass (never the writer)' cannot be done there, and it contradicts the README's own 'Maker ≠ checker' claim.",
+              "fix": "\"each a SEPARATE pass (never the writer).\" -> \"each a SEPARATE pass (in one chat, still self-review).\" (+2 -> 1248/1250)",
+              "severity": "low"
+            },
+            {
+              "file": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/INITIATOR.md",
+              "where": "{{DONE}} row, line 12 (command check kind)",
+              "problem": "A plain chat cannot run commands. Every command gate is then ERROR, every variant is dropped, and the loop hits HALT(ERROR) after two rounds. The slot table gives no warning when the user picks `command`.",
+              "fix": "In the new DONE cell: \"(a command names every file it runs)\" -> \"(command only where code runs; it names every file it runs)\" (+4).",
+              "severity": "low"
+            },
+            {
+              "file": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/INITIATOR.md",
+              "where": "THE LOOP › PROBE, lines 62-63; also SKILL.md line 29",
+              "problem": "The rule 'seeded with one defect against a named criterion; a Check judge marks it' has three gaps:\n- If the named criterion is a command or source criterion, no Check judge marks it; a command or the Verifier decides those.\n- 'it' is ambiguous.\n- 'Check judge' is used before Check is defined.\nWith no judges criteria in DONE, the probe is undefined.",
+              "fix": "\"against a named criterion; a Check judge marks it.\" -> \"against a named judges criterion (if any); a Check judge marks that copy.\" (+4 in each file)",
+              "severity": "low"
+            },
+            {
+              "file": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/INITIATOR.md",
+              "where": "Optional audit, line 117; THE LOOP › RECORDS, line 53",
+              "problem": "`python rqgm_check.py` gives no location, so a paste-and-go user has no such file in the working directory. The checker also declares Python >= 3.9, not 'Python 3'.",
+              "fix": "Line 117: \"`python rqgm_check.py audit archive.jsonl` (Python 3)\" -> \"`python skills/rqgm-loop/rqgm_check.py audit archive.jsonl` (Python ≥3.9)\" (0). Line 53: \"If rqgm_check.py runs here\" -> \"If skills/rqgm-loop/rqgm_check.py runs here\" (0).",
+              "severity": "low"
+            },
+            {
+              "file": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/INITIATOR.md",
+              "where": "line 32 (above the fence) and SETUP, line 57",
+              "problem": "'A paste with a leftover {{…}} will not run' sits outside the pasted block, so nothing enforces it, and the claim is false. It also conflicts with SETUP's 'if {{DONE}} is empty, propose it': a user who wants DONE proposed cannot tell what to paste.",
+              "fix": "Line 32 -> \"Replace every `{{SLOT}}` before pasting (write `none` to have the loop propose `DONE`).\" (-1). Line 57: \"if {{DONE}} is empty\" -> \"if {{DONE}} is none\" (0).",
+              "severity": "low"
+            },
+            {
+              "file": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/INITIATOR.md",
+              "where": "THE LOOP › step 1, line 72; also SKILL.md step 1, line 46",
+              "problem": "'The ledger' is never defined in INITIATOR or SKILL; only the README mentions 'a ledger of rejections'. In print mode it is unclear what to consult.",
+              "fix": "INITIATOR: \"Skip ideas the ledger shows rejected\" -> \"Skip ideas your records show rejected\". SKILL: \"the ledger shows\" -> \"the records show\" (0 words).",
+              "severity": "low"
+            },
+            {
+              "file": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/examples/worked-example.md",
+              "where": "DONE JSON block, lines 23-31",
+              "problem": "This is the only DONE template users will copy. It keys the check type as \"check\", while the records and rqgm_check.py read `kind`. Its must_not_change entries are prose with no ids, so judges cannot key per-item verdicts on them.",
+              "fix": "Change `\"check\":` to `\"kind\":` on all six criteria (0 words). Replace the must_not_change line with `\"must_not_change\": {\"same-problem\": \"the underlying user problem\", \"brief\": \"the product brief's constraints\"},` (+2 -> 650/650).",
+              "severity": "low"
+            }
+          ]
+        }
+      ],
+      "fix": {
+        "applied": [
+          "EVIDENCE-1 (DESIGN row 6): replaced the overgeneralised stall claim with \"Run 1's stall was structural (the scalar gate, `rrsi/log.md`); v2 removed it outside any round (ff9eab2).\" Checked against rrsi/log.md Open 1 and meta/log.md: the meta log names no cause for its stall, and its e2 row is an in-loop fix.",
+          "EVIDENCE-2 (README pitch): now reads \"LLM reviewers **can over-accept AI-generated work**: the RQGM paper's strongest baseline reviewer over-accepts AI-generated papers at up to 1.91×\". Matches the grounding.md 2026-09-23 verification event.",
+          "EVIDENCE-3 (DESIGN row 2): changed to \"its strongest baseline reviewer over-accepts\", the wording of the grounding.md record.",
+          "EVIDENCE-4 (README Sources): now says 'maps each paper below'. Removed 2509.20293 and 2609.02942, which DESIGN.md never cites (checked with grep).",
+          "EVIDENCE-5 (DESIGN row 7): the 'Table 2' locator became '(low-gain rule, `grounding.md`)'. Table 2 appears only in grounding.md's unverified generator notes; the low-gain branch was verified.",
+          "EVIDENCE-6 (README Sources): runs/ line now reads 'This repo's records: two v1 runs (measured (v1 run), n = 1 each), v2 text dry-runs and design reviews'.",
+          "EVIDENCE-7 (README): removed the unsourced Cherny/Osmani attribution note (no run or register record backs it). Kept '*This repo cites primary sources only.*'",
+          "EVIDENCE-8 (README): the held-out bullet now says 'check the result', not 'confirm'.",
+          "PARITY-1 (INITIATOR paste): the paste now carries {{EVALUATORS}} ('Judges ({{EVALUATORS}}) use...') and {{BUDGET}} ('Log setup ({{DONE}}, {{BUDGET}})').",
+          "PARITY-2 / NEWCOMER-3: judge-1's early exit now says 'reject the variant' in both SKILL and INITIATOR. 'no early drop' became 'no early rejection' in SKILL, INITIATOR and DESIGN row 3, so 'drop' now means only the ERROR path.",
+          "PARITY-3 / NEWCOMER-1 (prose half): records are now written as JSON lines {\"t\":name,…fields}. SKILL Memory starts 'Lines `{\"t\":name,…fields}`:' and INITIATOR says 'Append one JSON line {\"t\":name,…fields} per record'.",
+          "PARITY-7: v0's baseline is now logged as check{trigger:setup} in both files. 'loop v3' and 'models' moved into the setup{loop:\"v3\",done,models,budget:{rounds,minutes,tokens}} schema.",
+          "PARITY-8 / NEWCOMER-14: SKILL and INITIATOR now share one schema, each record kept as a single token (0 words). It covers: version{id,parent,round,diff,words}; variant diff; gates{apply,commands,verifier,screen}; verdict orders:[overallAB,overallBA] and retries; citation.criterion; probe{rung,mode,identity,seeded:{criterion,pair,check},misses}; check trigger:setup|stall|claim|budget with votes; amend.done; rung{name}; heldout.set; resume{at_round}.",
+          "PARITY-10: 'Failing while stalled' became 'Failing after 3 stalls' in SKILL and INITIATOR. DESIGN row 6 now reads 'Failing criteria after 3 stall rounds → HALT(STALL)', and the worked example says 'fails after 3 stalls'.",
+          "PARITY-11 (prose half): now reads 'HALT(OSCILLATION): the human picks *best*' in both files.",
+          "PARITY-12: when the budget runs out, both files now say 'else Check; unless all required pass, HALT(BUDGET)'. DESIGN row 9 says 'else Check, then Boundary or HALT(BUDGET)'.",
+          "PARITY-13: in the worked example, round 1 variant A adds Non-goals ('failing commands first') and B, the shorter, is kept. Round 2 re-proposes A. Round 4 cites the tickets, and 'The orchestrator believes `DONE` holds'.",
+          "PARITY-14: INITIATOR BOUNDARY now reads 'Below the final rung (default E2)'.",
+          "PARITY-15: 'LOG the round and any version and substrate' in both files. I put it at the logging step, not step 1 as proposed, so an [OPEN] in a rejected variant is never logged as a gap, and the Verifier's [OPEN]s are covered too.",
+          "PARITY-16 / NEWCOMER-21: the example's must_not_change is now an object keyed by id: {\"same-problem\": …, \"brief\": …}. The checker's protected() iterates over its keys. The six criteria use \"kind\" instead of \"check\". SKILL and the INITIATOR DONE row show `{id:text}`.",
+          "PARITY-17 (README Halts): OPEN now reads 'a required gap or judges only you can supply'.",
+          "PARITY-18 / NEWCOMER-18: INITIATOR Optional audit now gives `python skills/rqgm-loop/rqgm_check.py audit archive.jsonl` (Python ≥3.9); the checker's docstring says Python >= 3.9.",
+          "NEWCOMER-2 (SKILL Setup): now 'The human writes 3 held-out judge prompts plus 3 spares, hidden from all loop agents, you included.' This makes the guardrail stronger.",
+          "NEWCOMER-4 (partial): DONE now has a shape, criteria `{id,required,kind,guardrail?}` with `kind` command|source|judges, and must_not_change is `{id:text}`. INITIATOR's DONE row links the worked example. `guardrail?` defines what 'guardrails' means.",
+          "NEWCOMER-5 (INITIATOR held-out paragraph): now 'each fresh on *best*, `DONE` and `GROUNDING`; report only IDs 2 of 3 fail.'",
+          "NEWCOMER-6: 'the rung's stance line' now reads 'stance (Boundary)' in SKILL and 'stance (BOUNDARY)' in INITIATOR; the Stance section was deleted in v3.",
+          "NEWCOMER-7: 'at it, **Stop**' now follows the pause rule in both Boundary sections. This restores v2's 'Otherwise go to Stop.', which CUT-E had removed.",
+          "NEWCOMER-9 (INITIATOR): 'Never estimate tokens or times.' BUDGET row: 'max rounds; minutes and tokens only if your host reports them'. STOP: 'remaining time and tokens (each if reported)'.",
+          "NEWCOMER-10: step 1 now says 'one change to one section of *best* (or an approved restructure)' in both files, so an approved HALT(STALL) restructure can actually be proposed.",
+          "NEWCOMER-13: 'v0 = TARGET (draft if absent) = *best*' in both files, so an existing TARGET is never silently redrafted before judging.",
+          "NEWCOMER-15 (README): kept the quickstart prompt as it was. Added after it: 'In one chat, these passes are still self-review. For separate judges, records, budget, escalation and a held-out check, use INITIATOR.md.'",
+          "NEWCOMER-16: the INITIATOR DONE row now says `command` '(only where code runs; naming every file it runs)'.",
+          "NEWCOMER-17 (partial): the probe now seeds against 'a named `judges` criterion' in both files.",
+          "NEWCOMER-19 (INITIATOR): the false claim that a leftover {{…}} will not run became 'Replace every `{{SLOT}}` before pasting (write `none` to have the loop propose `DONE`)'. SETUP now says 'if {{DONE}} is none'.",
+          "NEWCOMER-20: 'the ledger shows' became 'the records show' in SKILL and 'your records show' in INITIATOR.",
+          "Cuts that pay for these (no guardrail touched):\n- SKILL: '(tokens only if reported)', '(and reported tokens)', 'a copy you' in place of 'with a copy you', '(pass/fail by majority)', 'E3 a second, human-added objective (`amend`)', 'mechanism-free compliance claims' and 'unevidenced `[OPEN]` removals' (DESIGN's wording), 'log `rung`', '; **kind**:'.\n- INITIATOR: the same in-paste cuts, plus three outside the paste: the duplicate 'Without subagents, you also run judges in fresh chats.' (the paste already says it), 'The loop is domain-agnostic.', and 'Read-only; nothing depends on it.'\n- DESIGN: 'Caching judges' prefix'.\n- Worked example: 'ties too' became 'ties'.\n- All five files keep CRLF line endings, and long INITIATOR paste lines were rewrapped."
+        ],
+        "skipped": [
+          "PARITY-3 checker half (return exit 2 when no record has a t/type): rqgm_check.py belongs to the process editing it concurrently. Only the prose half was applied.",
+          "PARITY-4 (checker panel(): take pbest over every slot, not only completed ones, and update decision_policy (4) and P03): a checker-only change. The prose keep rule already fails closed.",
+          "PARITY-5 (ERROR after an objection): the reviewer preferred a checker-only fix (panel sets exp='dropped'; drop 'with no completed objection' from P06). The prose stays the contract; I did not apply the +4-word alternative wording.",
+          "PARITY-6 (an ERROR Check vote leaves the criterion unchecked): checker-only. The prose already says 'leave its criterion unchecked'; r_check and decision_policy (7) need to match it.",
+          "PARITY-9 checker half: the checker already guards a non-dict budget (bud() returns {} for a string). The prose now gives the object form budget:{rounds,minutes,tokens}.",
+          "PARITY-10 optional extension ('Failing or unchecked after 3 stalls'): skipped. It changes checker semantics and costs +3 words in each capped file. An unchecked required criterion still ends at a fail-closed PARTIAL (HALT(BUDGET)).",
+          "PARITY-11 checker half (accept the oscillation pick as a version after resume, and expect round n+1): checker-only.",
+          "PARITY-12 suggested funding ('tokens only if' → 'tokens if'): rejected. SKILL has no 'Never estimate tokens' line, so 'only' carries the no-estimation rule. I funded the change elsewhere.",
+          "NEWCOMER-4: dropping 'must-not-change constraints' from the protected-item list was not applied. It would read as weakening the veto. The ids were added instead.",
+          "NEWCOMER-8 (in a plain chat the orchestrator also generates, verifies and screens; relay the judge's model): not applied. Allowing one context to generate, verify and screen relaxes role separation, and blueprint PC09 settles the no-subagent case as human relay or HALT(OPEN). The model-name part was skipped too: both files sit at their caps and parity would need it in both. Output can report the family as unknown.",
+          "NEWCOMER-11 (re-entry after a halt; 'paste them back to resume' in print mode): skipped. It costs about 15 words across files at their caps. PARITY-11 already covers the oscillation pick. Resume after a HALT and print-mode paste-back remain open.",
+          "NEWCOMER-12 ('An [OPEN] a required criterion needs' as the definition of a required gap): skipped for budget. substrate{required} carries it, and substrate logging was added (PARITY-15).",
+          "NEWCOMER-17 second half ('a Check judge marks that copy'): skipped for budget; 'it' can only refer to the seeded copy."
+        ],
+        "words": "Final `meta_tool.py snapshot` (hash e62daa30b117) reports caps_ok true, with nothing over. The fixes in skills/rqgm-loop/SKILL.md, INITIATOR.md, README.md, DESIGN.md and examples/worked-example.md are applied.\n\n| File | Words | Cap |\n|---|---|---|\n| skills/rqgm-loop/SKILL.md | 1000 | 1000 |\n| INITIATOR.md | 1300 | 1300 |\n| README.md | 1248 | 1250 |\n| DESIGN.md | 2200 | 2200 |\n| examples/worked-example.md | 650 | 650 (blueprint size_cap) |\n\nSKILL.md, INITIATOR.md and DESIGN.md are exactly at their caps, so any further addition needs a matching cut.\n\nSKILL and the INITIATOR paste are in parity on every rule. Two differences remain:\n- INITIATOR has 'Never estimate tokens or times' and its STOP says 'time and tokens (each if reported)', because a plain chat has no clock. SKILL says '(and reported tokens)'.\n- The default final rung is given in SKILL's Setup and in INITIATOR's BOUNDARY line.\n\nNo git commands were run, rqgm_check.py was not touched, and no evidence or labels were added. Original copies are backed up in the scratchpad `orig/` folder.\n\nFor the rqgm_check.py owner:\n- Five checker fixes are still open: PARITY-3's no-records exit 2, PARITY-4's protected veto from all slots, PARITY-5's `exp='dropped'`, PARITY-6's unchecked Check vote and PARITY-11's oscillation re-entry.\n- The prose now uses these field spellings: `t`, `check.trigger`, `verdicts[].retries`, `orders:[overallAB,overallBA]`, `must_not_change` as an `{id:text}` object (protected() reads its keys), and `budget:{rounds,minutes,tokens}`."
+      }
+    },
+    "checker": {
+      "impl": "Selftest and unittest both pass (exit 0). The checker is exactly 600 lines: that meets your ≤600 target but not the blueprint's file_plan cap of ≤450.\n\n**Final outputs**\n\n`python skills/rqgm-loop/rqgm_check.py selftest` → exit 0\n```\n{\n \"ok\": true,\n \"cases\": 33,\n \"failed\": []\n}\n```\n`python -m unittest discover -s tests/checker -v` → exit 0\n```\ntest_hash_matches_hashlib ... ok\ntest_selftest_passes ... ok\ntest_suite_covers_every_invariant_and_positives ... ok\nRan 3 tests in 0.349s\nOK\n```\nLine counts: `rqgm_check.py` 600, `test_selftest.py` 38. There are 30 fixtures (the cap), the largest 30 lines, and 33 cases in `expected.json`.\n\n**Files** (under `F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/`)\n- `skills/rqgm-loop/rqgm_check.py`: `audit` (with `--done`, `--target`, `--pending`, `--first`), `selftest [DIR]` and `hash FILE... [--lf]`. Stdlib only, never writes a file.\n- `tests/checker/fixtures/`: `p01`–`p17`, `p19`–`p21`, `p18_torn_tail`, `p18_integrity`, `p22_v2_format`, and seven `p23_*` files (six positive traces plus `p23_first`). Helper files: `p15_done.json`, `p16_target/test_public.py`, `p23_pending_r2.json`.\n- `tests/checker/expected.json` and `tests/checker/test_selftest.py`.\n\n**How I checked it**\n- **Mutation tests:** 52 deliberate bugs, 50 caught by selftest. The two that survive cannot change any result:\n  - the rung condition in COMPLETE only matters if a run escalates past its final rung, which the prose never allows;\n  - the recheck guard on the setup Check never fires, because a setup Check never counts as a standing Check.\n- **Crash fuzz:** 3000 randomly corrupted archives, 0 crashes. Before I fixed this there were 14 kinds of crash. A crash is serious here because Python exits 1 on an uncaught error, which reads as \"violations\". Now a malformed field makes only that record unauditable, and anything unexpected exits 2.\n- **Windows line endings:** selftest also passes on a copy with CRLF line endings.\n- **Python 3.9:** checked by parsing with 3.9 syntax rules. There is no 3.9 interpreter on this machine, so it has only run on 3.13.\n- **Exercised codes:** 50 codes appear in the fixtures. Not exercised by any fixture: the token-budget rule, ISO timestamps, a command returning ERROR, and JUDGE_MISSING in its RECORD class.\n\n**Where I went beyond the blueprint's negative tests**\n- Several fixtures carry extra codes within their invariant's theme, so that my additional codes are tested too (for example P12 also checks BOUNDARY_MISSED and PROBE_MODE_WRONG; P17 checks OPEN_AT_HELDOUT). Every negative case pins its record line numbers.\n- The P07 shared-failure positive is round 1 of `p23_imperfect_v0`, and the P17 optional-gap positive is inside `p23_complete_spare`, to stay within 30 fixtures.\n- The \"line complete but missing its newline\" case is a selftest option (`strip_final_newline`) that trims `p02` in memory rather than a separate file.\n\n**Ambiguous rules (from the SKILL.md draft unless noted)**\n1. \"none rates a **protected** item worse (… criteria *best* passes)\": does a pass carry across keeps? I carry the latest value forward along the lineage.\n2. \"(disagreement = UNKNOWN)\" versus \"Retry an ERROR once, then drop\": if one of judge 1's two orders is ERROR, I treat the slot as ERROR.\n3. \"then judge 3 unless judges 1 and 2 prefer the same version\": this still requires judge 3 when judge 1 already prefers *best*. A missing judge 3 there is JUDGE_MISSING class RECORD, and VIOLATION only if the outcome was still open or the variant was kept.\n4. The blueprint is inconsistent: P01 expects `KEEP_WITHOUT_SUPPORT + JUDGE_MISSING`, but P05 expects only `PRUNE_INCOMPLETE` for the same missing judge 3. I suppress JUDGE_MISSING when PRUNE_INCOMPLETE fires.\n5. \"set aside a torn last line, log `resume`, rerun an unfinished round\": an unparsable line directly followed by a resume is treated as set aside. A kept round whose version line is torn is discarded on resume and rerun with the same round number.\n6. \"**Check** after 3 stall rounds\" versus \"A Check … stands until *best*, the rung or `DONE` changes\": at 3 or more stall rounds I reuse the standing Check. The stall count is not reset by a held-out failure.\n7. \"Failing while stalled → **HALT(STALL)**\" versus \"else Check, then **HALT(BUDGET)**\": I accept a BUDGET exit instead only when the budget is really exhausted.\n8. \"A shorter variant is also kept if all 3 judges completed …\" is not changed by \"(strict: 3)\", so pruning is allowed in strict mode.\n9. \"(two such in a row → **HALT(ERROR)**)\": the halt becomes due once, at the second all-ERROR round.\n10. \"reporting failing criterion IDs only\": a held-out pass means no required criterion reported false.\n11. \"Below the final rung, **pause**\": any exit satisfies the pause; its status is then judged, so COMPLETE at E1 is FALSE_COMPLETE.\n12. \"if not, **HALT(OPEN)**\" (no independent judges) can't be recorded, so an OPEN exit without an open gap is accepted.\n13. Round start and end times have no stated unit: I read numbers as minutes or ISO-8601 strings, and the first round is unconstrained.\n14. The v3 schema never names the record-type key; I read `t` (the v2 convention) or `type`.\n15. `hash --lf` exists but the setup record doesn't say which form was stored, so I accept either hash.\n\n**Schema gaps the prose writers should know about (records defined in SKILL.md and in INITIATOR.md's paste block)**\n- SKILL's `check{...}` has no `trigger`. Without a fallback, v0's setup run would count as a real Check and a later stall Check would be falsely flagged. I added a fallback (a Check with no trigger, before any round, is v0's baseline) and `p23_partial_stall` tests it.\n- INITIATOR's `check` has no `votes`, and its `probe` has no identity or seeded-defect results. Paste-driven runs therefore can't have their judges-criterion Checks or probe mode audited. SKILL.md does record votes, so the two files disagree.\n- SKILL's `setup` has no budget, verdicts have no `retries`, and `version` has no `words`, so budget, retry and v0 pruning rules are unauditable for those runs. Likewise `amend` doesn't carry the new DONE and `citation` has no criterion, so DONE drift after any amend and the source-pass rule are unauditable.\n\n**Housekeeping**\n- Running the tests without `-B` creates `tests/checker/__pycache__`. `.gitignore` doesn't exclude `__pycache__`, so I deleted the caches my runs made; adding `__pycache__/` to it is worth considering.\n- `p16_target/test_public.py` is a trivial passing test file; pytest run from the repo root would pick it up, harmlessly.\n- I ran no git commands and didn't touch any word-capped prose file.\n\nThe fixture generator (`gen_fixtures.py`), mutation script (`mutate.py`) and fuzz script (`fuzz.py`) are in `C:/Users/wii/AppData/Local/Temp/claude/F--git-rqgm-loop--claude-worktrees-peer-agent-input-review-514dab/3a60f828-5f3b-4323-b9f2-0b1275b1d45f/scratchpad/checker/`, not in the repo.",
+      "attack": {
+        "verdict": "The checker can be broken in both directions, and five malformed inputs crash it. I did not edit the checker and ran no git commands. `rqgm_check.py selftest` still passes 33/33.\n\nEverything is in F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/. `gen_attacks.py` rebuilds every archive and audits it; run `python gen_attacks.py` for a summary or add `--json` for the full output. There are 34 fn* archives, 15 fp* archives (fp05b is a no-BOM control), 5 cr* archives and 21 ctl_* archives. Each ctl_* archive logs the same violation without the evasion. All 21 are flagged, so each fn* break is a specific bypass, not a missing rule.\n\n**False negatives.** All 34 fn* archives give exit 0 and ok=true. 22 are clear-cut; the other 12 are plausible, or are rules the checker does not implement. Root causes:\n1. **Panel slots.** `panel()` keys verdicts by slot number. A re-asked slot overwrites the earlier verdict, and any slot number above 3 still counts as support (fn01-03).\n2. **Probe.** A second probe on the same rung overwrites the first, and a probe with empty comparison lists counts as normal mode (fn04-05).\n3. **Setup-trigger Check.** `check{trigger:setup}` is accepted at any time and on any version. It skips the CHECK_NOT_BEST and RECHECK_UNCHANGED tests, still overwrites `rs['latest']`, and never becomes the standing Check. That hides a command regression (fn06) and a due HALT(STALL) (fn07).\n4. **Gates fail open.** A command missing from `gates.commands`, or a missing screen result, passes the gate and is not listed as unauditable (fn08-09).\n5. **Protected items.** The protected-criterion veto only reads slots with a completed overall value, so an UNKNOWN slot rating a protected criterion worse is ignored (fn10).\n6. **Stall count.** Re-logging the current rung resets the stall count and clears a due Check (fn11).\n7. **Check votes.** The number of votes is never capped at 3, so extra votes can outvote the fails (fn12-13).\n8. **Amends.** Any amend, even one leaving DONE identical, starts a new epoch and clears every due halt (fn14-15). Held-out passes are not tied to the epoch or rung, so one from before a DONE change still counts (fn16).\n9. **Trusted identifiers.** The checker trusts logged version ids, round numbers and timestamps. That hides a changed text reusing an old id, budget overruns and a second keep in one round (fn17-20).\n10. **Loose value tests.** `is not False` and `== 'open'` let a held-out value of \"fail\" and a gap status of \"OPEN\" through. A gap can be marked waived without an amend, or closed without evidence (fn21-23, fn34).\n11. **Final rung.** The top-level `setup.final_rung` silently overrides `done.final_rung` (fn24).\n12. **Empty diff.** A variant with an empty diff that self-reports fewer words is kept as a prune, letting the spare held-out run on unchanged text (fn27).\n13. **Check-file paths.** The comparison is case-sensitive on Windows (fn28).\n\n**False positives.** 14 fp* archives are flagged; the BOM case exits 2 and fp13 is advisory only.\n- The checker's meaning of 'dropped' contradicts SKILL.md: \"Retry an ERROR once, then drop the variant (not a rejection)\", and the step-3 early drop also says \"drop\" (fp02-03).\n- The SKILL and blueprint amend record is `{what,why}` with no DONE payload, so a legitimate amend is invisible and an honest COMPLETE is reported as FALSE_COMPLETE (fp04).\n- A UTF-8 BOM makes line 1 an integrity error (fp05).\n- A malformed field aborts the record partway and produces a VIOLATION, although the checker's own contract says malformed or missing fields are unauditable, never violated (fp09-10).\n- There is no record type for the human's pick after HALT(OSCILLATION) (fp11a/b).\n- Two small edits to one section raise the oscillation advisory (fp13), and an extra `file` key in a version diff is KEPT_TEXT_MISMATCH (fp14).\n- Plausible only: fp01, fp06-08, fp12.\n\n**Crashes.** The CLI catches every exception, so there is no traceback, just `{\"ok\": false, \"error\": ...}` and exit 2. Called through `audit()`, they raise at:\n- `state()` line 503: `rs` is None after a v2 unfinished round is resumed.\n- `budget_out()` line 128: a second setup record sets `start` to None.\n- `check_target()` line 481: a non-string entry in `check_files`.\n- `parse()` line 46: a RecursionError that is not caught, so a deeply nested torn tail crashes instead of being set aside.\n- `replay()` line 530: a `--pending` file that is not a JSON object.",
+        "breaks": [
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn01_duplicate_slot_reask.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], state.status=PARTIAL, best=v1. Control ctl_fn01 (same round without the re-asked second slot-2 entry): KEEP_VETOED + JUDGE_MISSING (VIOLATION), exit 1.",
+            "rule": "[CONFIRMED] SKILL.md 'Never re-ask a returned verdict.' and 'Keep a variant if ≥2 judges prefer it (strict: 3), none prefers *best*'. Slot 2 returned best, then a second slot-2 verdict (variant) is logged and the variant is kept. panel() puts verdicts in a dict keyed by slot, so the later entry silently overwrites the objection."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn02_fourth_judge_support.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[]. Control ctl_fn02 (slot 4 removed): KEEP_WITHOUT_SUPPORT (VIOLATION).",
+            "rule": "[CONFIRMED] 'EVALUATORS: 3 judge personas.' / 'Keep a variant if ≥2 judges prefer it' / 'UNKNOWN is never a tie, pass or support.' Slot 1's orders disagree (UNKNOWN), slot 2 says variant and slot 3 says tie, so there is 1 support among the 3 panel judges. A slot 4 'variant' raises the count to 2 because comp/nvar count every slot key."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn03_strict_fourth_judge.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[]. Control ctl_fn03 (slot 4 removed): STRICT_KEEP (VIOLATION).",
+            "rule": "[CONFIRMED] 'Strict mode: all 3, no early drop.' / 'Keep a variant if ≥2 judges prefer it (strict: 3)'. The strict probe gives slots 1-3 = variant, variant, tie, and a 4th slot supplies the third 'variant', so a strict keep on 2/3 passes."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn04_probe_reroll.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[]. Control ctl_fn04 (the second, clean probe removed): STRICT_KEEP + JUDGE_MISSING (VIOLATION).",
+            "rule": "[CONFIRMED] 'A non-tie on the identical copy or a missed defect → **strict mode**' and 'Never re-ask a returned verdict.' The E1 probe returned identity [variant, tie] (strict), was re-run until [tie, tie], and the round keeps on 2/2. r_probe overwrites probes[rung], so the loop can re-probe until it gets normal mode."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn05_probe_empty.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], unauditable=[check_source] only (probe_mode not listed).",
+            "rule": "[PLAUSIBLE] 'judge 1 compares *best*, in both orders, with an identical copy and with a copy ... seeded with one defect' and 'When unsure, fail closed'. A probe with identity=[] and seeded.pair=[] is accepted as normal mode, because any() over an empty list is False, and it is not listed as unauditable."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn06_setup_check_launders_regression.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], best=v2. Control ctl_fn06 (the mid-run setup check removed): REGRESSION_KEPT (VIOLATION).",
+            "rule": "[CONFIRMED] 'Failing a command *best* passes rejects the variant; a failure *best* shares does not.' After v1 is kept (it passes c1), a check{version:v0, trigger:setup, c1:fail} is logged. r_check skips CHECK_NOT_BEST and RECHECK_UNCHANGED for trigger 'setup' at any time, yet still overwrites rs['latest'], so r2-a failing c1 looks like a shared failure and is kept."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn07_setup_check_evades_stall.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], rounds=4. Control ctl_fn07 (same Check with trigger 'stall'): STALL_HALT_MISSED (VIOLATION).",
+            "rule": "[CONFIRMED] '**Check** after 3 stall rounds since the last keep ... Failing while stalled → **HALT(STALL)**'. After 3 stalls, the Check on best v0 fails required c2 but is logged with trigger 'setup'. pre() clears the due Check, the Check never becomes standing, and round 4 runs instead of HALT(STALL)."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn08_command_not_run.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], unauditable=[check_source] only.",
+            "rule": "[CONFIRMED] 'Apply the diff to a fresh copy ...; run every command there yourself'. The kept variant has gates.commands={}, so c1 (which best passes) never ran. gate() only iterates the commands present; nothing is flagged or listed as unauditable, and rs['latest'] still says c1 passes for the new best."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn09_screen_missing.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], unauditable=[check_source] only.",
+            "rule": "[CONFIRMED against the checker's own contract] '**Gate**, in order. ... The **Screen** rejects rubric echo, ...', and the checker docstring says 'A rule whose inputs are missing is listed as unauditable'. With no gates.screen key, str(None) does not start with 'reject', so gate() returns 'ok' and the variant is kept with the screen never run."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn10_unknown_slot_rates_protected_worse.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[]. Control ctl_fn10 (slot 2 overall 'tie' with the same criteria): KEEP_VETOED (VIOLATION).",
+            "rule": "[CONFIRMED] 'none rates a **protected** item worse (guardrails, must-not-change constraints, criteria *best* passes)'. Slot 2 returns overall UNKNOWN with criteria {c2: best}, and c2 passed at setup. pbest only scans completed slots (variant|best|tie), so this per-criterion objection is dropped and the variant is kept on slots 1 and 3."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn11_same_rung_resets_stall.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], rounds=9, best=v0 (nothing kept). Control ctl_fn11 (rung records removed): 6x MISSED_CHECK (VIOLATION).",
+            "rule": "[CONFIRMED] 'On escalation: log the rung, rerun the probe, reset the stall count.' and '**Check** after 3 stall rounds since the last keep'. rung{name:E1} is logged while already at E1, which is not an escalation. r_rung resets the stall count s for any rung record, and pre() discards the due Check because the next record is not a round. 9 stall rounds pass with no Check."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn12_check_extra_votes.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], state.status=COMPLETE. Control ctl_fn12 (votes [fail,fail,pass]): CHECK_MISCOUNT + HELDOUT_UNCHECKED + FALSE_COMPLETE.",
+            "rule": "[CONFIRMED] 'with 3 fresh judges per `judges` criterion (majority; strict: 3/3)'. c3 votes [fail,fail,fail,pass,pass] are logged as pass. r_check tests count(pass) >= 2 without bounding len(votes), so extra votes turn a 3-2 fail into a pass and the run completes."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn13_strict_check_extra_votes.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], state.status=COMPLETE.",
+            "rule": "[CONFIRMED] 'with 3 fresh judges per `judges` criterion (majority; strict: 3/3)'. In strict mode, c3 votes [pass,pass,pass,fail] are logged as pass. 3 >= 3 is accepted although one of the 4 judges asked failed it."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn14_noop_amend_rerolls_check.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], state.status=COMPLETE. Control ctl_fn14 (amend removed): RECHECK_UNCHANGED + HELDOUT_UNCHECKED + FALSE_COMPLETE.",
+            "rule": "[CONFIRMED] 'A Check or held-out result stands until *best*, the rung or `DONE` changes.' A failing Check on v1/E1 is followed by an amend whose done equals setup.done byte for byte, then a second, passing Check on v1/E1. r_amend increments the epoch for any amend, so the re-roll is accepted."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn15_noop_amend_cancels_halt_error.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], rounds=3. Control ctl_fn15 (amend removed): ERROR_HALT_MISSED (VIOLATION).",
+            "rule": "[CONFIRMED] 'A round keeping nothing is a **stall** unless every variant ended ERROR (two such in a row → **HALT(ERROR)**).' Two all-ERROR rounds are followed by a DONE-identical amend, then round 3 runs. r_amend clears every due obligation except version, including halt:ERROR."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn16_heldout_survives_done_change.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], state.status=COMPLETE.",
+            "rule": "[CONFIRMED] 'A Check or held-out result stands until *best*, the rung or `DONE` changes.' and Output 'COMPLETE (final rung, held-out pass)'. The only held-out pass on v1 comes before an amend that adds required criterion c4. complete_conds() accepts any held-out pass on best, because held-out results are not keyed by epoch or rung."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn17_version_id_reuse.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], state.status=COMPLETE, rounds=2. Control ctl_fn17 (new version id v2): FALSE_COMPLETE (VIOLATION).",
+            "rule": "[CONFIRMED] Memory 'version{id,parent,diff}' and 'Count from records, never recollection.' After a Check and held-out pass on v1, round 2 keeps new text but logs it as version id v1 with parent v1. The old Check and held-out pass are credited to the changed text. Version-id uniqueness is never checked, and a round logged after all COMPLETE conditions hold is not flagged."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn18_round_number_reuse_hides_budget.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[[ROUND_SEQUENCE, RECORD, 11, 4, 1]], state.rounds=3 although 6 round records exist. Control ctl_fn18 (rounds numbered 1-6): 3x BUDGET_OVERRUN (VIOLATION).",
+            "rule": "[CONFIRMED] 'Start a round only if one is left' and 'Count from records, never recollection.' budget.rounds=3 but 6 round records are logged as n=1,2,3,1,2,3. r_round sets rs['n'] from the logged n, so budget() never sees n > 3. Only a RECORD-class finding is raised and exit is 0."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn19_second_keep_in_round_2.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[[ROUND_SEQUENCE, RECORD, 9, 3, 2]].",
+            "rule": "[CONFIRMED] 'Keep at most one (most support, then shorter, then first)'. Round 2 is logged twice with no resume between them, each keeping a variant (v2, then v3). MULTI_KEEP only looks inside one round record, so two keeps in round 2 give only a RECORD finding."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn20_clock_restart_hides_time_budget.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], rounds=7. Control ctl_fn20 (monotone times): 2x BUDGET_START (VIOLATION).",
+            "rule": "[CONFIRMED] 'Start a round only if one is left and remaining time ... cover twice the costliest round so far'. The budget is 60 minutes. Round t0 restarts at 0 after a resume, so 7 rounds of 10 minutes (70 or more) are accepted. Elapsed time is computed as t0 minus start, with no check that t0 increases."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn21_heldout_nonbool_counts_as_pass.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], state.status=COMPLETE. Control ctl_fn21 (pass {c3:false}): FALSE_COMPLETE (VIOLATION).",
+            "rule": "[CONFIRMED] 'the human runs the held-out judges (same pass/fail check, majority)' and '**When unsure, fail closed**'. heldout.pass={\"c3\":\"fail\"} is counted as a pass because r_heldout tests `is not False`. Values such as 0, null and 'fail' all pass, and the run completes."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn22_gap_waived_without_amend.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], state.status=COMPLETE. Control ctl_fn22 (gap left open): OPEN_AT_HELDOUT + OPEN_AT_COMPLETE.",
+            "rule": "[CONFIRMED] 'A required `[OPEN]` → **HALT(OPEN)** ... the human closes it with evidence the Verifier checks, or waives it by `amend`.' A required gap is re-logged with status 'waived' and no amend exists. Waivers are never tied to an amend."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn34_gap_closed_without_evidence.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], state.status=COMPLETE.",
+            "rule": "[PLAUSIBLE] 'the human closes it with evidence the Verifier checks'. A required gap is re-logged as 'closed' with no evidence field and no verified citation. The checker accepts any status other than 'open'."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn23_gap_status_case.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], state.status=COMPLETE. Control ctl_fn23 (status 'open'): OPEN_AT_HELDOUT + OPEN_AT_COMPLETE.",
+            "rule": "[PLAUSIBLE, malformed input fails open] 'A required `[OPEN]` → **HALT(OPEN)**' and 'When unsure, fail closed'. A required gap with status 'OPEN' (upper case) or a missing status is treated as closed, because open_required() compares with == 'open'."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn24_final_rung_conflict.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], state.status=COMPLETE at rung E1. Control ctl_fn24 (top-level final_rung removed, so DONE's E3 applies): BOUNDARY_MISSED + HELDOUT_UNCHECKED + FALSE_COMPLETE.",
+            "rule": "[PLAUSIBLE] Setup: '`DONE` ...: atomic pass/fail criteria ...; the final rung (default **E2**)'. setup.done.final_rung is E3 but top-level setup.final_rung is E1. r_setup lets the top-level field override DONE silently, with no RECORD or AMBIGUOUS finding, so a COMPLETE below DONE's final rung passes."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn27_empty_diff_prune_launders_spare.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], state.status=COMPLETE, best=v2.",
+            "rule": "[CONFIRMED] 'each **one change to one section** of *best*' and 'the spares run only once a changed *best* passes Check'. Held-out attempt 1 fails on v1. r2-a has diff=[] and self-reports 99 < 100 words, and three ties make it a prune keep. v2 is v1 verbatim, yet the spare held-out runs and passes on it. The checker never checks for an empty diff or that words match the diff."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn28_check_file_path_case.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[]. Control ctl_fn28 (file 'tests/test_public.py'): CHECK_FILE_EDIT (VIOLATION).",
+            "rule": "[CONFIRMED on win32] 'Never add, edit or delete check files'. The kept diff edits 'Tests/Test_Public.py', which is setup.check_files 'tests/test_public.py' on a case-insensitive filesystem. keep_checks() compares os.path.normpath strings with no case folding."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn25_escalation_without_boundary.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], state.status=COMPLETE.",
+            "rule": "[PLAUSIBLE] 'All required pass → Boundary.' and 'Below the final rung, **pause**: the human escalates or stops'. The E1 Check fails c3, so no boundary is reached, yet rung E2 is logged and the run completes at E2. r_rung only validates E3 against amends."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn26_spare_set_first.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], state.status=COMPLETE.",
+            "rule": "[PLAUSIBLE] 'the spares run only once a changed *best* passes Check'. Held-out attempt 1 uses set 'spare' and passes; the primary set never runs. The set field is only checked on attempt 2."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn29_six_variants_two_sections.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], nothing listed as unauditable for the rule.",
+            "rule": "[RULE NOT IMPLEMENTED] '**Propose** 2 variants, each **one change to one section** of *best*'. One round has 6 variants, and the kept one's diff touches sections Intro and Method. The checker never counts variants or sections."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn30_rejected_idea_reproposed.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[].",
+            "rule": "[RULE NOT IMPLEMENTED] 'Skip ideas the ledger shows rejected by ≥2 judges or twice by the screen, absent new evidence.' Round 2 re-proposes round 1's identical diff, which 2 judges rejected, carries no new evidence, and is kept."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn31_slot1_three_orders.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], unauditable=[check_source, order].",
+            "rule": "[PLAUSIBLE] 'Judge 1 compares in both orders (disagreement = UNKNOWN)' and 'Never re-ask a returned verdict.' Slot 1 logs orders [best, variant, variant]: the first two disagree, so the result is UNKNOWN, and the third is a re-ask. Because len != 2, the checker marks 'order' unauditable and still counts slot 1's 'variant' as support toward the keep."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn32_budget_rounds_float.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], rounds=5, and 'budget' is not listed as unauditable. Control ctl_fn32 (rounds=3): 2x BUDGET_OVERRUN.",
+            "rule": "[PLAUSIBLE, malformed input fails silently] 'Start a round only if one is left'. With budget.rounds=3.0, the isinstance(int) guard skips the rule without listing it as unauditable."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fn33_stall_with_unchecked_runs_on.jsonl",
+            "direction": "false-negative",
+            "checker_output": "exit 0, ok=true, violations=[], rounds=9. This pairs with fp01, where halting instead is flagged.",
+            "rule": "[PLAUSIBLE] 'All required pass → Boundary. Failing while stalled → **HALT(STALL)**' and 'When unsure, fail closed'. The stall Check leaves required c3 'unchecked' (judge ERRORs), which is not a pass. post_check() only halts on a literal 'fail', so rounds 4-9 run with no finding."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fp03_error_after_objection_halt_error.jsonl",
+            "direction": "false-positive",
+            "checker_output": "exit 1: 4x [REJECTION_AS_ERROR, VIOLATION, expected 'rejected', actual 'dropped'], 4x JUDGE_MISSING RECORD, and [EXIT_UNSUPPORTED, VIOLATION, 'two all-ERROR rounds', 'e=0'].",
+            "rule": "[CONFIRMED] 'Retry an ERROR once, then drop the variant (not a rejection)' and '(two such in a row → **HALT(ERROR)**)'. The blueprint policy agrees: 'a second ERROR means dropped'. Every variant gets judge 1 'best' (med) and then judge 2 ERROR after 1 retry, so it is logged 'dropped', and after two such rounds HALT(ERROR) follows. panel() expects 'rejected' whenever any completed slot objects, so it counts stalls, not ERRORs."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fp02_early_drop_logged_dropped.jsonl",
+            "direction": "false-positive",
+            "checker_output": "exit 1: [REJECTION_AS_ERROR, VIOLATION, record 5, expected 'rejected', actual 'dropped'].",
+            "rule": "[CONFIRMED prose/checker mismatch] Step 3: 'if it prefers *best* with high confidence or on a protected item, drop the variant.' The loop logs the judge-1 early drop as outcome 'dropped', literally as step 3 says; the checker (and blueprint policy 3) require 'rejected'. Either the SKILL wording or the checker must change."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fp04_skill_schema_amend.jsonl",
+            "direction": "false-positive",
+            "checker_output": "exit 1: [HELDOUT_UNCHECKED, VIOLATION, 10, 'best with an all-pass Check at E1'] and [FALSE_COMPLETE, VIOLATION, 11, 'no all-pass Check on best at the final rung'].",
+            "rule": "[CONFIRMED] 'only a human-approved `amend{what,why}` changes either.' Memory schema: `amend{what,why}`; the blueprint record is amend{what, why, by}. A schema-conformant amend makes c3 optional, but it carries no machine-readable done, so set_done never runs and c3 stays required. The honest COMPLETE (c1 and c2 pass, optional c3 fails, held-out passes) is flagged. It should be unauditable."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fp05_utf8_bom.jsonl",
+            "direction": "false-positive",
+            "checker_output": "exit 2, ok=false, integrity={line:1, error:'unparsable interior line'}, state.status=ACTIVE, nothing audited. fp05b_same_without_bom (identical records, no BOM): exit 0, ok=true, COMPLETE.",
+            "rule": "[CONFIRMED] 'MEMORY: append-only `archive.jsonl`.' The only difference is a UTF-8 BOM, which some Windows tools write, and it makes the whole archive an integrity error. load() decodes with 'utf-8', not 'utf-8-sig', and json.loads rejects the BOM."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fp09_malformed_retries_string.jsonl",
+            "direction": "false-positive",
+            "checker_output": "exit 1: [VERSION_WITHOUT_KEEP, VIOLATION, 6, 'a kept round before a version', 'v1'] and [ROUND_SEQUENCE, RECORD, 7, 1, 2]; unauditable includes 'record'.",
+            "rule": "[CONFIRMED against the checker contract] Blueprint P22: 'Missing fields make a rule unauditable, never violated'; checker docstring: 'a malformed field: that record is unauditable'. One verdict has retries:\"0\" (a string). The TypeError aborts r_round partway, before rs['n'], pend and due are set. The following valid version record is then a VIOLATION, and the round counter drifts."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fp10_selection_missing_words.jsonl",
+            "direction": "false-positive",
+            "checker_output": "exit 1: [WRONG_SELECTION, VIOLATION, 5, expected 'r1-a', actual 'r1-b'].",
+            "rule": "[CONFIRMED against the checker contract] 'Keep at most one (most support, then shorter, then first)'. Two variants are equally supported; r1-a has no 'words' and r1-b has 80, and r1-b is kept. The selection key uses `words or 0`, so the missing value wins as 'shortest' and a possibly correct keep is a VIOLATION. It should be unauditable."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fp11a_oscillation_human_picks_old_best.jsonl",
+            "direction": "false-positive",
+            "checker_output": "exit 1: [STALE_PARENT, VIOLATION, 11, expected 'v2', actual 'v1'].",
+            "rule": "[CONFIRMED schema gap] 'If it (nearly) restores an earlier *best*'s section → **HALT(OSCILLATION)**: the human picks.' After HALT(OSCILLATION) the human picks v1 over v2, and the next round starts from v1. No record type carries the human's pick, so any honest log of it is a VIOLATION."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fp11b_oscillation_human_picks_variant.jsonl",
+            "direction": "false-positive",
+            "checker_output": "exit 1: [RESUME_MISMATCH, RECORD, 9, 2, 3], [VERSION_WITHOUT_KEEP, VIOLATION, 10], [ROUND_SEQUENCE, RECORD, 11, 2, 3].",
+            "rule": "[CONFIRMED schema gap] '... → **HALT(OSCILLATION)**: the human picks.' HALT(OSCILLATION) comes before the version is written, and the human picks the variant. r_resume treats the round as unfinished, rolls state back and expects round 2 to be re-judged, so the version applying the human's choice is VERSION_WITHOUT_KEEP."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fp14_version_diff_adds_file_key.jsonl",
+            "direction": "false-positive",
+            "checker_output": "exit 1: [KEPT_TEXT_MISMATCH, VIOLATION, 6]. The expected diff lacks 'file'; the actual diff is identical plus file:'proposal.md'.",
+            "rule": "[CONFIRMED, low severity] 'apply exactly the judged text'; the blueprint schema allows diff:[{file?, section, old, new}]. The version's section/old/new text equals the judged text, but diffs are compared as exact dicts, so an optional metadata key is reported as a text mismatch."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fp13_two_small_edits_as_oscillation.jsonl",
+            "direction": "false-positive",
+            "checker_output": "exit 0, ok=true, [OSCILLATION_MISSED, AMBIGUOUS, 7]. Before the exit record was appended, state.next_due was 'halt:OSCILLATION', which is what --pending would return as the answer key.",
+            "rule": "[CONFIRMED, advisory class only] 'If it (nearly) restores an earlier *best*'s section → **HALT(OSCILLATION)**'. Two keeps change different phrases of one paragraph ('grant'→'research', 'ten'→'twelve'); nothing is restored. keep_checks compares the new text with every older text of the section, and any two small edits to a long section score ≥ 0.9 against the text two versions back."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fp01_halt_stall_on_unchecked.jsonl",
+            "direction": "false-positive",
+            "checker_output": "exit 1: [STALL_MISCOUNT, VIOLATION, 9, 's >= 3 and a required failure in the standing Check', 's=3'].",
+            "rule": "[PLAUSIBLE] 'Retry an ERROR once, then ... leave its criterion unchecked.' and 'Failing while stalled → **HALT(STALL)**, naming what each failing criterion needs'. After 3 stalls, the Check leaves required c3 unchecked (votes pass, ERROR, ERROR) and the loop halts honestly. The checker only accepts a literal 'fail' (see fn33 for the converse)."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fp06_voluntary_strict.jsonl",
+            "direction": "false-positive",
+            "checker_output": "exit 1: [PROBE_MODE_WRONG, VIOLATION, 4, 'normal', 'strict'] and [MISSED_KEEP, VIOLATION, 5, 'r1-a', null].",
+            "rule": "[PLAUSIBLE] '**When unsure, fail closed**: don't keep, don't pass'. The loop runs E1 in strict mode although the probe was clean (fail-closed, or at the human's request) and declines a 2/3 keep. The checker forces normal mode and reports the conservative non-keep as a violation."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fp07_human_pause_counts_as_budget.jsonl",
+            "direction": "false-positive",
+            "checker_output": "exit 1: [BUDGET_START, VIOLATION, 10, '>= 10 minutes left', -125.0].",
+            "rule": "[PLAUSIBLE] 'Below the final rung, **pause**: the human escalates or stops' and 'BUDGET: max rounds and time'. Loop work so far is 5 of 600 minutes, but the human takes about 12 hours to escalate at the boundary. Wall-clock time counted from the first t0 charges the human's pause to the loop budget."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fp08_citation_mixed_criterion_field.jsonl",
+            "direction": "false-positive",
+            "checker_output": "exit 1: [CHECK_MISCOUNT, VIOLATION, 9, 'a verified citation for c2', 'none'].",
+            "rule": "[PLAUSIBLE] 'contradicted → strip' and Memory 'citation{claim,locator,status}' (no criterion field). A contradicted claim's citation carries an extra criterion:c2 and was stripped; c2's verified citations follow the SKILL schema without that field. Because one citation has a criterion field, the checker requires criterion ids on all of them and fails c2."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/fp12_e3_amend_after_rung.jsonl",
+            "direction": "false-positive",
+            "checker_output": "exit 1: [E3_WITHOUT_AMEND, VIOLATION, 11, 'an earlier amend', 'none'].",
+            "rule": "[PLAUSIBLE] '**E3** a second objective the human adds by `amend`. On escalation: log the rung, rerun the probe, reset the stall count.' The sequence rung{E3}, then the amend adding the objective, then probe{E3} follows the prose order, but the checker requires the amend before the rung record."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/cr01_v2_resume_unfinished.jsonl",
+            "direction": "crash",
+            "checker_output": "CLI: {\"ok\": false, \"error\": \"TypeError(\\\"'NoneType' object is not subscriptable\\\")\"}, exit 2. audit() raises at state() line 503: r_resume sets self.rs = self.snap = None, because a v2 variant{kept:true} set the version obligation and no v3 round ever took a snapshot.",
+            "rule": "Blueprint P22: v2 archives are 'unauditable, never violated, never a crash'. Records: version v0, variant{round 1, kept:true}, resume."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/cr02_second_setup_record.jsonl",
+            "direction": "crash",
+            "checker_output": "CLI: {\"ok\": false, \"error\": \"TypeError(\\\"unsupported operand type(s) for -: 'float' and 'NoneType'\\\")\"}, exit 2. audit() raises at state() line 508, then next_due line 495, then budget_out line 128: a second setup record without t0 resets self.start to None after a timed round set self.now. The call runs outside feed()'s try block.",
+            "rule": "'Resume from `MEMORY` if present: ... log `resume`'. A second setup record is wrong, but it should produce a finding or be unauditable, not crash."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/cr03_target_nonstring_check_file.jsonl",
+            "direction": "crash",
+            "checker_output": "CLI (audit --target DIR): {\"ok\": false, \"error\": \"TypeError(\\\"join() argument must be str, bytes, or os.PathLike object, not 'list'\\\")\"}, exit 2. audit() raises at check_target line 481, outside feed()'s try block.",
+            "rule": "Checker contract: malformed fields make a rule unauditable. setup.check_files=[[\"tests\",\"t.py\"]]. Without --target the same field inside keep_checks is swallowed mid-record instead (see fp09's partial-state effect)."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/cr04_deep_nesting_torn_tail.jsonl",
+            "direction": "crash",
+            "checker_output": "CLI: {\"ok\": false, \"error\": \"RecursionError('maximum recursion depth exceeded while decoding a JSON array from a unicode string')\"}, exit 2. audit() raises at load line 60, then parse line 46: parse() catches only ValueError.",
+            "rule": "'set aside a torn last line'. The last line is unparsable garbage (200000 '[' characters); it should be reported as torn_tail. The same applies to an interior line, which should be an integrity error."
+          },
+          {
+            "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/cr05_pending_not_object.jsonl",
+            "direction": "crash",
+            "checker_output": "CLI (audit --pending cr05_pending.json, a JSON list): {\"ok\": false, \"error\": \"ValueError('dictionary update sequence element #0 has length 1; 2 is required')\"}, exit 2. audit() raises at replay line 530.",
+            "rule": "Checker docstring: '--pending ROUND.json' audits a not-yet-logged round. A non-object pending file should give a usage message; this is low severity."
+          }
+        ]
+      },
+      "fix": {
+        "fixed": [
+          "Checker: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/skills/rqgm-loop/rqgm_check.py (692 lines; still read-only, stdlib only, no clock). Fixtures: 54 attack archives copied verbatim into tests/checker/fixtures/, plus cr05_pending.json. Their cases are in tests/checker/expected.json, each with source and ruling fields and labelled with an existing P-id, so the test's P01-P23 set check is unchanged. Every expectation was written by hand, and the build script (scratchpad/build_fixtures.py) aborted on any difference from the checker's actual output.",
+          "fn01/fn02/fn03: panel() keeps the first verdict per slot and ignores re-asked slots and any slot outside 1-3, reporting EXTRA_VERDICT (RECORD). Results: fn01 KEEP_VETOED+JUDGE_MISSING, fn02 KEEP_WITHOUT_SUPPORT, fn03 STRICT_KEEP.",
+          "fn31: slot-1 orders longer than 2 use the first two (EXTRA_VERDICT). Result: ORDER_MISMAP+KEEP_WITHOUT_SUPPORT+JUDGE_MISSING.",
+          "fn04: a second probe on the same rung gives PROBE_REROLL (RECORD); strict mode stays strict. Result: STRICT_KEEP+JUDGE_MISSING.",
+          "fn05: a probe must have 2 identity orders and a 2-item seeded pair; otherwise probe_mode is listed unauditable.",
+          "fn06/fn07: check{trigger:setup} counts as the baseline only on v0 before any round. Later it is an ordinary Check, reported as SETUP_CHECK_LATE (RECORD). Results: fn06 CHECK_NOT_BEST+REGRESSION_KEPT, fn07 STALL_HALT_MISSED.",
+          "fn08/fn09: a DONE command missing from gates.commands, or a missing gates.screen, makes the gate unauditable ('gates') instead of passing it. A kept variant's unrun commands are removed from the new best's latest values.",
+          "fn10: the protected-item veto now reads the per-criterion values of every slot, including UNKNOWN ones. Result: KEEP_VETOED.",
+          "fn11: re-logging the current rung gives RUNG_REPEATED (RECORD) and neither resets the stall count nor clears a due Check. Result: 6x MISSED_CHECK.",
+          "fn12/fn13: extra Check votes count against a pass (majority of all votes, strict needs all of them), plus EXTRA_VERDICT. Result: CHECK_MISCOUNT+HELDOUT_UNCHECKED+FALSE_COMPLETE.",
+          "fn14/fn15: an amend whose done equals the current DONE changes nothing. A real DONE change clears only a due boundary, HALT(STALL) or HALT(OVERFIT), never HALT(ERROR), a due Check or a pending version. Results: fn14 RECHECK_UNCHANGED+HELDOUT_UNCHECKED+FALSE_COMPLETE, fn15 ERROR_HALT_MISSED.",
+          "fn16: held-out results carry the epoch and count only while DONE is unchanged. Result: FALSE_COMPLETE.",
+          "fn17: a reused version id gives VERSION_ID_REUSED (RECORD), and nothing recorded for the old text stands. Result: FALSE_COMPLETE.",
+          "fn18/fn32: the budget counts round records, not the logged n, and a numeric rounds value such as 3.0 is accepted (a non-numeric one is unauditable). Results: fn18 3x BUDGET_OVERRUN, fn32 2x BUDGET_OVERRUN.",
+          "fn20: loop time continues from the last round end when a clock goes backwards. Result: 2x BUDGET_START.",
+          "fp07: gaps after rung, amend, held-out, exit or resume records (waits for the human) are not counted as loop time. The checker now reads the time budget this way; SKILL.md does not say so (see NOTE on budget).",
+          "fn21: a held-out value counts as a pass only if it is literally true. Result: FALSE_COMPLETE.",
+          "fn22/fn23: a required gap is open unless its status is closed, or waived with an amend logged after it opened. Result for both: OPEN_AT_HELDOUT+OPEN_AT_COMPLETE.",
+          "fn34 (partial): a closure with no evidence field is listed unauditable ('substrate'), not open, because SKILL.md's substrate{gap,owner,required,status} has no evidence field.",
+          "fn24: when setup.done.final_rung and setup.final_rung disagree, DONE's value applies and FINAL_RUNG_CONFLICT (RECORD) is reported. Result: BOUNDARY_MISSED+HELDOUT_UNCHECKED+FALSE_COMPLETE.",
+          "fn26: held-out attempt 1 on the spare set is HELDOUT_REROLL, and a rerolled pass no longer counts toward COMPLETE. Result: HELDOUT_REROLL+FALSE_COMPLETE.",
+          "fn27: a variant with diff [] is neither shorter nor keepable. Result: KEEP_WITHOUT_SUPPORT. The later spare run on the unchanged text is not flagged separately.",
+          "fn28: check-file paths are compared after normalizing slashes and case. Result: CHECK_FILE_EDIT.",
+          "fn29: more than 2 variants gives VARIANT_COUNT, a VIOLATION if a variant beyond the first 2 is kept, else RECORD. A kept diff touching several sections gives MULTI_SECTION (AMBIGUOUS, because an approved restructure is not recorded).",
+          "fn30: an identical diff re-proposed after rejection by 2 or more judges, or twice by the screen, with no citation logged since, gives REJECTED_IDEA (AMBIGUOUS, because 'absent new evidence' is a judgment).",
+          "fn33/fp01: a required criterion that is not 'pass' ('fail' or 'unchecked') triggers HALT(STALL) after 3 stalls. Results: fn33 7x STALL_HALT_MISSED; fp01 clean.",
+          "fp03: a judge ERROR after one retry means the variant is dropped even if another judge objected, per SKILL.md: 'Retry an ERROR once, then drop the variant (not a rejection)'. Result: clean, HALT(ERROR) supported.",
+          "fp04: an amend without done makes DONE unknown. DONE-dependent rules are listed unauditable ('required'), not violated.",
+          "fp05: a leading UTF-8 BOM is stripped.",
+          "fp06: a probe logged strict when normal was computed is accepted, since strict only makes keeps and passes harder. Only a logged mode that is neither computed nor strict is PROBE_MODE_WRONG.",
+          "fp08: if any verified citation lacks a criterion field, a source pass is unauditable, not failed.",
+          "fp09: a non-numeric retries value is unauditable ('retry'). judge_variant is now wrapped per variant, so one malformed variant no longer aborts round bookkeeping.",
+          "fp10: when a tie-break needs words and a tied candidate has none, selection is unauditable. MISSED_KEEP still fires if nothing eligible is kept.",
+          "fp11a/fp11b: after exit OSCILLATION, the next round may name any earlier version as best (the human's pick), with that version's protected values restored. A resume does not roll back a pending version, so the human can apply the variant.",
+          "fp12: E3 needs an amend before the E3 probe or first E3 round, not before the rung record. P12 still reports this at the rung record.",
+          "fp13: a keep counts toward oscillation only if the new text is closer to an earlier text than the current text is. Result: clean.",
+          "fp14: kept text is compared on section, old and new, plus file only when both sides name one.",
+          "cr01: resume rolls back only when a snapshot exists. Result: exit 0, keep and setup listed unauditable.",
+          "cr02: a second setup record is ignored and reported as SETUP_REPEATED (RECORD), or UNRECORDED_AMEND if its DONE differs.",
+          "cr03: non-string check_files entries are unauditable, and --done/--target errors are caught.",
+          "cr04: parse() also catches RecursionError. Result: torn_tail, exit 0.",
+          "cr05: a --pending file that is not a JSON object, or an unauditable pending round, gives {ok:false, error:'usage: ...'} with exit 2. The selftest pending branch now compares the exit code.",
+          "Existing fixtures whose expectations changed: p06 gains VARIANT_COUNT (RECORD), because its round has 3 variants and none is kept. p10 gains RECHECK_UNCHANGED at record 13, because the record-12 amend leaves DONE byte-identical (the fn14 ruling). Both notes were updated; no existing fixture file was edited.",
+          "NOTE (blueprint deviations): the controller's 'amend-epoch' is now effectively a DONE-epoch, since only an amend that changes done, or omits it, opens a new epoch. Blueprint P06's 'with no completed objection' carve-out is dropped per SKILL's literal Results rule. The fixture count (84 fixture files plus the p16_target folder; 87 cases) exceeds file_plan's 30, and 692 lines exceeds file_plan's 450 (the task cap of 700 holds).",
+          "NOTE (prose owner): SKILL.md line 26 says amend{what,why}, but its Memory schema (line 97) says amend{what,why,done}. The substrate schema has no evidence field although Stop requires 'evidence the Verifier checks'. The checker now counts loop time without human waits; SKILL does not say this. I edited no prose file."
+        ],
+        "rejected": [
+          "fp02 (attacker misread): current SKILL.md step 3 (lines 57-59) and INITIATOR.md (lines 84-86) say 'reject the variant' and 'no early rejection'. The attack quoted older 'drop' wording, so logging an early rejection as 'dropped' is still REJECTION_AS_ERROR. Added as a pinned fixture with ruling 'not a checker defect'.",
+          "fn19 (not a checker defect): the second round record numbered 2 has a new best (v2) and a new variant, and each record keeps one variant on valid 2/2 support. It is a separate round with a wrong number, so it is ROUND_SEQUENCE (RECORD), not MULTI_KEEP. The fn18 fix now counts it against the round budget. Pinned as a fixture.",
+          "fn25 (attacker misread): escalation is the human's decision. The 'Only you decide' list (INITIATOR.md line 21) says 'escalating, or stopping below the final rung', and the rung record says by:human. Boundary describes when the loop pauses, not when the human may escalate. COMPLETE still required an all-pass E2 Check and a held-out pass. Pinned as a positive fixture.",
+          "Only partly adopted: fn34 is listed unauditable instead of being treated as open, because SKILL's substrate schema has no evidence field and requiring one would flag honest runs. fn30 and fn29's two-section edit are advisory (AMBIGUOUS), not VIOLATION. fn27's spare run on unchanged text is not flagged separately; the root empty-diff keep is the VIOLATION."
+        ],
+        "selftest_output": "$ python skills/rqgm-loop/rqgm_check.py selftest   (exit 0)\n{\n \"ok\": true,\n \"cases\": 87,\n \"failed\": []\n}",
+        "unittest_output": "$ python -m unittest discover -s tests/checker -v   (exit 0)\ntest_hash_matches_hashlib (test_selftest.CheckerSelfTest.test_hash_matches_hashlib) ... ok\ntest_selftest_passes (test_selftest.CheckerSelfTest.test_selftest_passes) ... ok\ntest_suite_covers_every_invariant_and_positives (test_selftest.CheckerSelfTest.test_suite_covers_every_invariant_and_positives) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.272s\n\nOK",
+        "lines": 692
+      }
+    }
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Docs"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 2,
+      "title": "Checker"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "docs:implement",
+      "phaseIndex": 1,
+      "phaseTitle": "Docs",
+      "agentId": "a94ec9331ffaaf192",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790398028358,
+      "queuedAt": 1790398028354,
+      "attempt": 1,
+      "lastToolName": "Bash",
+      "lastToolSummary": "cd \"F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-rev…",
+      "promptPreview": "Repo: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab (branch claude/peer-agent-input-review-514dab; the current files are RQGM v2). Blueprint for v3: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/blueprint.json (read the parts relevant to you: file_plan, prose_changes, controller, design_md_changes, validation, rejected, risks, decision_l…",
+      "promptFramed": true,
+      "lastProgressAt": 1790399579048,
+      "tokens": 279500,
+      "toolCalls": 119,
+      "durationMs": 1550685,
+      "resultPreview": "All five steps are done and every file is within its word cap. Nothing here was run on a task.\n\n**Word counts** (from `meta_tool.py snapshot`, `caps_ok: true`; it wrote snapshot dirs `735614f8f3a2` and `3669f97d8932`):\n\n| File | Words | Cap |\n|---|---|---|\n| `skills/rqgm-loop/SKILL.md` | 996 | 1000 |\n| `INITIATOR.md` | 1295 | 1300 |\n| `README.md` | 1246 | 1250 |\n| `DESIGN.md` | 2191 | 2200 |\n| `ex…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "checker:implement",
+      "phaseIndex": 2,
+      "phaseTitle": "Checker",
+      "agentId": "af922507450e8ed75",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790398028362,
+      "queuedAt": 1790398028355,
+      "attempt": 1,
+      "lastToolName": "Bash",
+      "lastToolSummary": "cd \"F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-rev…",
+      "promptPreview": "Repo: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab (branch claude/peer-agent-input-review-514dab; the current files are RQGM v2). Blueprint for v3: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/blueprint.json (read the parts relevant to you: file_plan, prose_changes, controller, design_md_changes, validation, rejected, risks, decision_l…",
+      "promptFramed": true,
+      "lastProgressAt": 1790400866761,
+      "tokens": 431961,
+      "toolCalls": 71,
+      "durationMs": 2837284,
+      "resultPreview": "Selftest and unittest both pass (exit 0). The checker is exactly 600 lines: that meets your ≤600 target but not the blueprint's file_plan cap of ≤450.\n\n**Final outputs**\n\n`python skills/rqgm-loop/rqgm_check.py selftest` → exit 0\n```\n{\n \"ok\": true,\n \"cases\": 33,\n \"failed\": []\n}\n```\n`python -m unittest discover -s tests/checker -v` → exit 0\n```\ntest_hash_matches_hashlib ... ok\ntest_selftest_passes .…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 3,
+      "label": "docs:review:evidence",
+      "phaseIndex": 1,
+      "phaseTitle": "Docs",
+      "agentId": "a374f8169ff137461",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790399582207,
+      "queuedAt": 1790399582064,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "No blocking defects, but 8 need fixing: 3 medium, 5 low. I …",
+      "promptPreview": "Repo: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab (branch claude/peer-agent-input-review-514dab; the current files are RQGM v2). Blueprint for v3: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/blueprint.json (read the parts relevant to you: file_plan, prose_changes, controller, design_md_changes, validation, rejected, risks, decision_l…",
+      "promptFramed": true,
+      "lastProgressAt": 1790400167160,
+      "tokens": 192067,
+      "toolCalls": 33,
+      "durationMs": 584905,
+      "resultPreview": "{\"verdict\":\"No blocking defects, but 8 need fixing: 3 medium, 5 low. I checked every count and figure in DESIGN.md and README.md against its source and all of them match:\\n- 16/17 wins in e1–e9 (ledger-e1-9.json) and 10/15 in e10–e19 (result-e9-19.json).\\n- 13 substantive screen rejections plus 2 apply errors (e5-A, e18-B) out of 47 variants.\\n- e18 had one judged variant; 3/3 held-out preference.…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 4,
+      "label": "docs:review:parity",
+      "phaseIndex": 1,
+      "phaseTitle": "Docs",
+      "agentId": "a45ba8f9ac030dc45",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790399582231,
+      "queuedAt": 1790399582066,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "The rule text in SKILL.md and the INITIATOR THE LOOP block …",
+      "promptPreview": "Repo: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab (branch claude/peer-agent-input-review-514dab; the current files are RQGM v2). Blueprint for v3: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/blueprint.json (read the parts relevant to you: file_plan, prose_changes, controller, design_md_changes, validation, rejected, risks, decision_l…",
+      "promptFramed": true,
+      "lastProgressAt": 1790400622767,
+      "tokens": 234819,
+      "toolCalls": 31,
+      "durationMs": 1038758,
+      "resultPreview": "{\"verdict\":\"The rule text in SKILL.md and the INITIATOR THE LOOP block matches almost exactly. A word-level diff shows only label case, \\\"a DONE claim\\\" vs \\\"when you believe DONE holds\\\", \\\"Never estimate tokens\\\" (INITIATOR only) and the record schemas. Word caps pass today (SKILL 996/1000, INITIATOR 1295/1300, README 1246/1250, DESIGN 2191/2200).\\n\\nThe v3 candidate is still not consistent, for…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 5,
+      "label": "docs:review:newcomer",
+      "phaseIndex": 1,
+      "phaseTitle": "Docs",
+      "agentId": "a9acba77c384acabf",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790399582253,
+      "queuedAt": 1790399582066,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "Not ready for a first-time user. I found 21 defects: 3 high…",
+      "promptPreview": "Repo: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab (branch claude/peer-agent-input-review-514dab; the current files are RQGM v2). Blueprint for v3: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/blueprint.json (read the parts relevant to you: file_plan, prose_changes, controller, design_md_changes, validation, rejected, risks, decision_l…",
+      "promptFramed": true,
+      "lastProgressAt": 1790400434418,
+      "tokens": 152905,
+      "toolCalls": 20,
+      "durationMs": 850408,
+      "resultPreview": "{\"verdict\":\"Not ready for a first-time user. I found 21 defects: 3 high, 7 medium and 11 low. I read README.md, INITIATOR.md and SKILL.md, then examples/worked-example.md and rqgm_check.py to check what the docs point to.\\n\\n**High:**\\n1. The record schema never says how a record names its type. The auditor dispatches only on \\\"t\\\" or \\\"type\\\", so an archive written literally from the prose passes…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 6,
+      "label": "docs:fix",
+      "phaseIndex": 1,
+      "phaseTitle": "Docs",
+      "agentId": "a9c83b06bc6c8ed29",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790400624841,
+      "queuedAt": 1790400624813,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "Final `meta_tool.py snapshot` (hash e62daa30b117) reports c…",
+      "promptPreview": "Repo: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab (branch claude/peer-agent-input-review-514dab; the current files are RQGM v2). Blueprint for v3: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/blueprint.json (read the parts relevant to you: file_plan, prose_changes, controller, design_md_changes, validation, rejected, risks, decision_l…",
+      "promptFramed": true,
+      "lastProgressAt": 1790401421017,
+      "tokens": 229008,
+      "toolCalls": 44,
+      "durationMs": 796174,
+      "resultPreview": "{\"applied\":[\"EVIDENCE-1 (DESIGN row 6): replaced the overgeneralised stall claim with \\\"Run 1's stall was structural (the scalar gate, `rrsi/log.md`); v2 removed it outside any round (ff9eab2).\\\" Checked against rrsi/log.md Open 1 and meta/log.md: the meta log names no cause for its stall, and its e2 row is an in-loop fix.\",\"EVIDENCE-2 (README pitch): now reads \\\"LLM reviewers **can over-accept AI…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 7,
+      "label": "checker:attack",
+      "phaseIndex": 2,
+      "phaseTitle": "Checker",
+      "agentId": "aad962d05000d66e1",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790400871417,
+      "queuedAt": 1790400871365,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "The checker can be broken in both directions, and five malf…",
+      "promptPreview": "Repo: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab (branch claude/peer-agent-input-review-514dab; the current files are RQGM v2). Blueprint for v3: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/blueprint.json (read the parts relevant to you: file_plan, prose_changes, controller, design_md_changes, validation, rejected, risks, decision_l…",
+      "promptFramed": true,
+      "lastProgressAt": 1790402186249,
+      "tokens": 248226,
+      "toolCalls": 26,
+      "durationMs": 1314831,
+      "resultPreview": "{\"verdict\":\"The checker can be broken in both directions, and five malformed inputs crash it. I did not edit the checker and ran no git commands. `rqgm_check.py selftest` still passes 33/33.\\n\\nEverything is in F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/. `gen_attacks.py` rebuilds every archive and audits it; run `python gen_attacks.py` fo…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 8,
+      "label": "checker:fix",
+      "phaseIndex": 2,
+      "phaseTitle": "Checker",
+      "agentId": "acf0d8e24f42de0cb",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790402190253,
+      "queuedAt": 1790402189336,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "$ python skills/rqgm-loop/rqgm_check.py selftest (exit 0) {…",
+      "promptPreview": "Repo: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab (branch claude/peer-agent-input-review-514dab; the current files are RQGM v2). Blueprint for v3: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/blueprint.json (read the parts relevant to you: file_plan, prose_changes, controller, design_md_changes, validation, rejected, risks, decision_l…",
+      "promptFramed": true,
+      "lastProgressAt": 1790403894910,
+      "tokens": 351405,
+      "toolCalls": 50,
+      "durationMs": 1704655,
+      "resultPreview": "{\"fixed\":[\"Checker: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/skills/rqgm-loop/rqgm_check.py (692 lines; still read-only, stdlib only, no clock). Fixtures: 54 attack archives copied verbatim into tests/checker/fixtures/, plus cr05_pending.json. Their cases are in tests/checker/expected.json, each with source and ruling fields and labelled with an existing P-id, so the test'…"
+    }
+  ],
+  "totalTokens": 2119891,
+  "totalToolCalls": 394
+}

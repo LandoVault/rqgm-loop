@@ -1,0 +1,13 @@
+{"t": "version", "id": "v0", "parent": null, "change": "initial draft"}
+{"t": "probe", "mode": "normal"}
+{"t": "variant", "round": 1, "id": "r1-a", "section": "Intro", "hypothesis": "moves c2 because the aim is vague", "screen": "pass", "verdicts": ["B/high", "A/med", "B/med"], "kept": true}
+{"t": "variant", "round": 1, "id": "r1-b", "section": "Method", "hypothesis": "moves c3", "screen": "reject: rubric echo", "verdicts": [], "kept": false}
+{"t": "version", "id": "v1", "parent": "v0", "change": "sharper aim"}
+{"t": "citation", "claim": "n=40", "source": "grounding.md", "status": "verified"}
+{"t": "check", "rung": "E1", "pass": {"c1": true, "c2": true}}
+{"t": "rung", "name": "E2"}
+{"t": "check", "rung": "E2", "pass": {"c1": true, "c2": false}}
+{"t": "substrate", "gap": "budget table", "owner": "PI", "status": "open"}
+{"t": "substrate", "gap": ["letters", "quotes"], "owner": "PI", "status": "open"}
+{"t": "heldout", "attempt": 1}
+{"t": "halt", "reason": "OPEN"}

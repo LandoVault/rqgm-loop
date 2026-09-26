@@ -14,3 +14,12 @@ cb86b4b8eecca901a8d12328e71f0d20b7e8bd136d98611383375a5c1908f6c2 *sealed/T1/test
 a0d8042665083493d0c58702710a1ca7783d4cd8f9810c981d12cddad7bf3c1f *sealed/T2/answer_key.json
 229ae37ce7c894ed9f332c1e7492c9c8b98bfb198b7eee5e8c7b6b55050b127f *sealed/heldout-judges.md
 844c046abdd750d2843f73ccc3ed3e27da0df0bcfa70ffc6a11fa4f4ff4a8cb3 *sealed/score.py
+# amendment 1 (before any scored call): per-task held-out prompts, human-proxy script, T0 smoke toy
+36c53f96dee7efa460494f1b92b25f8ad17568fdef88ec6f0a900773b52a2eb5 *sealed/pilot-heldout-and-proxy.md
+a4780e8c52f0d899a044a31066b5ee581140f1dcd1a622d0f7d6750a2f790fb5 *fixtures/T0/DONE.json
+b789b57de212810ed2217dadf9a216cfd6609048d525ebfe4ddbd5e87419c55e *fixtures/T0/slug.py
+b7db2a5e2dc3878a982236d5d0915d1d8878da58811d505671f20af072755c13 *fixtures/T0/spec.md
+a3fc37a62885ae3baf3cda8a2d7a41dd5d2e932bfaf8b0c7b8edf621021a7dad *fixtures/T0/test_public.py
+# amendment 2 (before any scored call): T1/T2 DONE.json re-expressed with required/optional and command|source|judges kinds (same criteria ids and tests)
+fecf86f3405e3d47f3b6e99e6fed356ed0a22e41bc093f76105e1b3d3009a765 *fixtures/T1/DONE.json
+a7c63bcea83c0923df851810a35601b070b5ed169e06692981ae778331d7abbe *fixtures/T2/DONE.json

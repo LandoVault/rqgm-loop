@@ -1,0 +1,21 @@
+{
+ "criteria": [
+  {
+   "id": "c1",
+   "required": true,
+   "kind": "command",
+   "command": "pytest -q"
+  },
+  {
+   "id": "c2",
+   "required": false,
+   "kind": "source"
+  },
+  {
+   "id": "c3",
+   "required": true,
+   "kind": "judges"
+  }
+ ],
+ "must_not_change": []
+}

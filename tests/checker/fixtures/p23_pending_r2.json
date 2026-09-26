@@ -1,0 +1,102 @@
+{
+ "t": "round",
+ "n": 2,
+ "best": "v1",
+ "t0": 10,
+ "t1": 15,
+ "tokens": null,
+ "variants": [
+  {
+   "id": "r2-a",
+   "section": "S-r2-a",
+   "words": 95,
+   "diff": [
+    {
+     "section": "S-r2-a",
+     "old": "old text of r2-a",
+     "new": "new text of r2-a"
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "c1": "pass"
+    },
+    "verifier": [],
+    "screen": "pass"
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "m-j",
+     "orders": [
+      "variant",
+      "variant"
+     ],
+     "overall": "variant",
+     "criteria": {},
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "m-j",
+     "overall": "tie",
+     "criteria": {},
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 3,
+     "model": "m-j",
+     "overall": "variant",
+     "criteria": {},
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  },
+  {
+   "id": "r2-b",
+   "section": "S-r2-b",
+   "words": 85,
+   "diff": [
+    {
+     "section": "S-r2-b",
+     "old": "old text of r2-b",
+     "new": "new text of r2-b"
+    }
+   ],
+   "gates": {
+    "apply": "ok",
+    "commands": {
+     "c1": "pass"
+    },
+    "verifier": [],
+    "screen": "pass"
+   },
+   "verdicts": [
+    {
+     "slot": 1,
+     "model": "m-j",
+     "orders": [
+      "variant",
+      "variant"
+     ],
+     "overall": "variant",
+     "criteria": {},
+     "confidence": "med",
+     "retries": 0
+    },
+    {
+     "slot": 2,
+     "model": "m-j",
+     "overall": "variant",
+     "criteria": {},
+     "confidence": "med",
+     "retries": 0
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,1660 @@
+{
+ "about": "rqgm_check.py selftest: each case runs 'audit' on one fixture and must match exactly. codes = [code, class] multiset of all findings; [] = no findings of any class. Cases with a source field are archives from runs/2026-09-25-peer/checker-attack/ (copied verbatim); ruling says whether the checker was changed for them or the break was ruled not a checker defect.",
+ "cases": [
+  {
+   "invariant": "P01",
+   "fixture": "p01_unknown_support.jsonl",
+   "codes": [
+    [
+     "KEEP_WITHOUT_SUPPORT",
+     "VIOLATION"
+    ],
+    [
+     "JUDGE_MISSING",
+     "VIOLATION"
+    ],
+    [
+     "JUDGE_MISSING",
+     "VIOLATION"
+    ],
+    [
+     "ORDER_MISMAP",
+     "RECORD"
+    ]
+   ],
+   "note": "r1: slot-1 orders disagree (UNKNOWN), slot 2 variant, slot 3 skipped, kept. r2: UNKNOWN/UNKNOWN skips slot 3; r2-b logs slot 1 'variant' for orders [variant, tie] (recomputed UNKNOWN; still 2 of 3, kept)",
+   "record_indexes": [
+    5,
+    5,
+    7,
+    7
+   ]
+  },
+  {
+   "invariant": "P02",
+   "fixture": "p02_multi_keep.jsonl",
+   "codes": [
+    [
+     "MULTI_KEEP",
+     "VIOLATION"
+    ]
+   ],
+   "note": "two variants with outcome kept in one round",
+   "record_indexes": [
+    5
+   ]
+  },
+  {
+   "invariant": "P03",
+   "fixture": "p03_keep_vetoed.jsonl",
+   "codes": [
+    [
+     "KEEP_VETOED",
+     "VIOLATION"
+    ],
+    [
+     "KEEP_VETOED",
+     "VIOLATION"
+    ]
+   ],
+   "note": "r1: slot 2 rates protected c2 (passed at setup) best; r2: slots variant, variant, best",
+   "record_indexes": [
+    5,
+    7
+   ]
+  },
+  {
+   "invariant": "P04",
+   "fixture": "p04_strict_mode.jsonl",
+   "codes": [
+    [
+     "STRICT_KEEP",
+     "VIOLATION"
+    ],
+    [
+     "CHECK_MISCOUNT",
+     "VIOLATION"
+    ],
+    [
+     "CHECK_MISCOUNT",
+     "VIOLATION"
+    ]
+   ],
+   "note": "strict probe; keep on 2 variant + 1 tie; strict Check votes pass,pass,fail logged pass; source c2 logged pass while its only citation is contradicted",
+   "record_indexes": [
+    5,
+    8,
+    8
+   ]
+  },
+  {
+   "invariant": "P05",
+   "fixture": "p05_prune_incomplete.jsonl",
+   "codes": [
+    [
+     "PRUNE_INCOMPLETE",
+     "VIOLATION"
+    ],
+    [
+     "PRUNE_INCOMPLETE",
+     "VIOLATION"
+    ],
+    [
+     "JUDGE_MISSING",
+     "VIOLATION"
+    ]
+   ],
+   "note": "shorter variant kept on tie,tie with no slot 3; then on 3 ties with a slot-3 per-criterion UNKNOWN; r3: tie,tie never skips judge 3 (a shorter variant could have been pruned)",
+   "record_indexes": [
+    5,
+    7,
+    9
+   ]
+  },
+  {
+   "invariant": "P06",
+   "fixture": "p06_retry_error.jsonl",
+   "codes": [
+    [
+     "RETRY_EXCEEDED",
+     "VIOLATION"
+    ],
+    [
+     "ERROR_AS_REJECTION",
+     "VIOLATION"
+    ],
+    [
+     "RETRY_EXCEEDED",
+     "VIOLATION"
+    ],
+    [
+     "EXIT_UNSUPPORTED",
+     "VIOLATION"
+    ],
+    [
+     "VARIANT_COUNT",
+     "RECORD"
+    ]
+   ],
+   "note": "slot 1 retried twice; slot 2 ERROR after one retry with no completed objection logged as rejected; a gate retried twice; HALT(ERROR) after a single all-ERROR round; the round proposes 3 variants (VARIANT_COUNT, RECORD: none kept)",
+   "record_indexes": [
+    5,
+    5,
+    5,
+    5,
+    6
+   ]
+  },
+  {
+   "invariant": "P07",
+   "fixture": "p07_regression_kept.jsonl",
+   "codes": [
+    [
+     "REGRESSION_KEPT",
+     "VIOLATION"
+    ],
+    [
+     "JUDGED_AFTER_GATE",
+     "RECORD"
+    ],
+    [
+     "REJECTION_AS_ERROR",
+     "VIOLATION"
+    ],
+    [
+     "GATE_KEPT",
+     "VIOLATION"
+    ]
+   ],
+   "note": "best passes c1 (setup check), variant fails c1, judged and kept (paired positive: p23_imperfect_v0 r1); screen-rejected variants: judged anyway, logged dropped, kept",
+   "record_indexes": [
+    5,
+    7,
+    7,
+    8
+   ]
+  },
+  {
+   "invariant": "P08",
+   "fixture": "p08_stale_parent.jsonl",
+   "codes": [
+    [
+     "STALE_PARENT",
+     "VIOLATION"
+    ],
+    [
+     "KEPT_ID_MISMATCH",
+     "RECORD"
+    ],
+    [
+     "VERSION_MISSING",
+     "RECORD"
+    ],
+    [
+     "ROUND_SEQUENCE",
+     "RECORD"
+    ],
+    [
+     "VERSION_WITHOUT_KEEP",
+     "VIOLATION"
+    ]
+   ],
+   "note": "v2.parent = v0 while v1 was kept; r3 keeps with round.kept null and logs no version; next round is n=5; a version follows a round that kept nothing",
+   "record_indexes": [
+    8,
+    9,
+    10,
+    10,
+    11
+   ]
+  },
+  {
+   "invariant": "P09",
+   "fixture": "p09_stall_error.jsonl",
+   "codes": [
+    [
+     "ERROR_HALT_MISSED",
+     "VIOLATION"
+    ],
+    [
+     "STALL_MISCOUNT",
+     "VIOLATION"
+    ],
+    [
+     "RESUME_MISMATCH",
+     "RECORD"
+    ],
+    [
+     "MISSED_CHECK",
+     "VIOLATION"
+    ],
+    [
+     "STALL_HALT_MISSED",
+     "VIOLATION"
+    ]
+   ],
+   "note": "r1-3 all dropped (r3 logged instead of HALT(ERROR)); exit STALL at s=0; resume names round 5; s reaches 3 and r7 runs with no Check; the Check fails at s=4 and r8 runs instead of HALT(STALL)",
+   "record_indexes": [
+    7,
+    8,
+    9,
+    13,
+    15
+   ]
+  },
+  {
+   "invariant": "P10",
+   "fixture": "p10_recheck.jsonl",
+   "codes": [
+    [
+     "RECHECK_UNCHANGED",
+     "VIOLATION"
+    ],
+    [
+     "CHECK_NOT_BEST",
+     "VIOLATION"
+    ],
+    [
+     "STALL_MISCOUNT",
+     "VIOLATION"
+    ],
+    [
+     "RECHECK_UNCHANGED",
+     "VIOLATION"
+    ]
+   ],
+   "note": "second Check on v1/E1 with no version, rung or amend between; a Check on v0 while v1 is best; exit STALL on the standing failing Check at s=0; the record-12 amend leaves DONE byte-identical, so the record-13 Check is still a re-roll (checker-attack fn14; a DONE-changing amend reopens it, fn16)",
+   "record_indexes": [
+    8,
+    9,
+    10,
+    13
+   ]
+  },
+  {
+   "invariant": "P11",
+   "fixture": "p11_budget.jsonl",
+   "codes": [
+    [
+     "BUDGET_OVERRUN",
+     "VIOLATION"
+    ],
+    [
+     "BUDGET_START",
+     "VIOLATION"
+    ],
+    [
+     "UNCHECKED_BUDGET_EXIT",
+     "VIOLATION"
+    ]
+   ],
+   "note": "rounds=5, round 6 starts with 10 of 70 minutes left (longest round 10); exit BUDGET with no standing Check",
+   "record_indexes": [
+    15,
+    15,
+    17
+   ]
+  },
+  {
+   "invariant": "P12",
+   "fixture": "p12_escalation.jsonl",
+   "codes": [
+    [
+     "BOUNDARY_MISSED",
+     "VIOLATION"
+    ],
+    [
+     "PROBE_MISSING",
+     "VIOLATION"
+    ],
+    [
+     "E3_WITHOUT_AMEND",
+     "VIOLATION"
+    ],
+    [
+     "PROBE_MODE_WRONG",
+     "VIOLATION"
+    ]
+   ],
+   "note": "a round after an all-pass Check below the final rung; rung E2 then a round with no probe{rung:E2}; rung E3 with no earlier amend; the E3 probe misses the seeded defect but is logged normal",
+   "record_indexes": [
+    8,
+    12,
+    15,
+    16
+   ]
+  },
+  {
+   "invariant": "P13",
+   "fixture": "p13_false_complete.jsonl",
+   "codes": [
+    [
+     "FALSE_COMPLETE",
+     "VIOLATION"
+    ],
+    [
+     "HELDOUT_UNCHECKED",
+     "VIOLATION"
+    ],
+    [
+     "FALSE_COMPLETE",
+     "VIOLATION"
+    ],
+    [
+     "MISLABEL",
+     "RECORD"
+    ],
+    [
+     "AFTER_EXIT",
+     "RECORD"
+    ]
+   ],
+   "note": "COMPLETE at E1 with final_rung E2; held-out run at E2 before any E2 Check; COMPLETE reusing the E1 pass; after the E2 Check every COMPLETE condition holds but PARTIAL is logged; a record after exit without resume",
+   "record_indexes": [
+    8,
+    12,
+    13,
+    16,
+    17
+   ]
+  },
+  {
+   "invariant": "P14",
+   "fixture": "p14_heldout_reroll.jsonl",
+   "codes": [
+    [
+     "HELDOUT_REROLL",
+     "VIOLATION"
+    ],
+    [
+     "OVERFIT_HALT_MISSED",
+     "VIOLATION"
+    ]
+   ],
+   "note": "held-out attempt 2 on the same version as failed attempt 1; it fails and a round runs instead of HALT(OVERFIT)",
+   "record_indexes": [
+    9,
+    10
+   ]
+  },
+  {
+   "invariant": "P15",
+   "fixture": "p15_unrecorded_amend.jsonl",
+   "codes": [
+    [
+     "UNRECORDED_AMEND",
+     "VIOLATION"
+    ]
+   ],
+   "note": "--done file makes c2 optional; no amend record",
+   "record_indexes": [
+    1
+   ],
+   "args": {
+    "done": "p15_done.json"
+   }
+  },
+  {
+   "invariant": "P16",
+   "fixture": "p16_check_files.jsonl",
+   "codes": [
+    [
+     "CHECK_FILE_EDIT",
+     "VIOLATION"
+    ],
+    [
+     "CHECK_FILE_DRIFT",
+     "VIOLATION"
+    ]
+   ],
+   "note": "kept diff edits check file test_public.py; --target hash differs from setup.check_hashes",
+   "record_indexes": [
+    1,
+    5
+   ],
+   "args": {
+    "target": "p16_target"
+   }
+  },
+  {
+   "invariant": "P17",
+   "fixture": "p17_open_complete.jsonl",
+   "codes": [
+    [
+     "OPEN_AT_HELDOUT",
+     "VIOLATION"
+    ],
+    [
+     "OPEN_AT_COMPLETE",
+     "VIOLATION"
+    ]
+   ],
+   "note": "held-out run and exit COMPLETE while a required substrate is open; the optional-gap positive is in p23_complete_spare",
+   "record_indexes": [
+    9,
+    10
+   ]
+  },
+  {
+   "invariant": "P18",
+   "fixture": "p18_torn_tail.jsonl",
+   "codes": [],
+   "note": "final version line cut mid-JSON: excluded, best stays v1",
+   "exit": 0,
+   "torn_tail": true,
+   "state": {
+    "best": "v1"
+   }
+  },
+  {
+   "invariant": "P18",
+   "fixture": "p02_multi_keep.jsonl",
+   "codes": [
+    [
+     "MULTI_KEEP",
+     "VIOLATION"
+    ]
+   ],
+   "note": "complete final line without its newline (read in memory): excluded as torn, so v1 never becomes best",
+   "strip_final_newline": true,
+   "torn_tail": true,
+   "state": {
+    "best": "v0"
+   }
+  },
+  {
+   "invariant": "P18",
+   "fixture": "p18_integrity.jsonl",
+   "codes": [],
+   "note": "line 7 of 20 corrupt: integrity error, nothing after it audited",
+   "exit": 2,
+   "integrity": 7
+  },
+  {
+   "invariant": "P19",
+   "fixture": "p19_kept_text.jsonl",
+   "codes": [
+    [
+     "KEPT_TEXT_MISMATCH",
+     "VIOLATION"
+    ]
+   ],
+   "note": "version.diff differs from the judged diff",
+   "record_indexes": [
+    6
+   ]
+  },
+  {
+   "invariant": "P20",
+   "fixture": "p20_selection.jsonl",
+   "codes": [
+    [
+     "WRONG_SELECTION",
+     "VIOLATION"
+    ],
+    [
+     "MISSED_KEEP",
+     "VIOLATION"
+    ]
+   ],
+   "note": "two eligible variants, equal support and words, the second kept; then two eligible variants and none kept",
+   "record_indexes": [
+    5,
+    7
+   ]
+  },
+  {
+   "invariant": "P21",
+   "fixture": "p21_oscillation.jsonl",
+   "codes": [
+    [
+     "OSCILLATION_MISSED",
+     "AMBIGUOUS"
+    ],
+    [
+     "OSCILLATION_UNSUPPORTED",
+     "AMBIGUOUS"
+    ]
+   ],
+   "note": "r2 restores r1's old text of S1 and r3 runs with no HALT(OSCILLATION); a later HALT(OSCILLATION) on unrelated text. Advisory only: exit 0",
+   "record_indexes": [
+    7,
+    12
+   ],
+   "exit": 0,
+   "ok": true
+  },
+  {
+   "invariant": "P22",
+   "fixture": "p22_v2_format.jsonl",
+   "codes": [],
+   "note": "v2 records (string verdicts, no gates, check{rung,pass}, halt) and one malformed field (a list as a gap key): rules are unauditable, never violated, never a crash",
+   "exit": 0,
+   "ok": true,
+   "unauditable_includes": [
+    "setup",
+    "keep",
+    "check",
+    "heldout",
+    "exit",
+    "record"
+   ]
+  },
+  {
+   "invariant": "P23",
+   "fixture": "p23_imperfect_v0.jsonl",
+   "codes": [],
+   "note": "v0 fails c1; a shared c1 failure is kept (P07 paired positive); then c1 fixed; human stops at E1",
+   "exit": 0,
+   "state": {
+    "best": "v2",
+    "status": "PARTIAL"
+   }
+  },
+  {
+   "invariant": "P23",
+   "fixture": "p23_prune.jsonl",
+   "codes": [],
+   "note": "valid prune: shorter, 3 completed slots, none best or UNKNOWN",
+   "exit": 0,
+   "state": {
+    "best": "v1",
+    "next_due": "round"
+   }
+  },
+  {
+   "invariant": "P23",
+   "fixture": "p23_prune.jsonl",
+   "codes": [],
+   "note": "--pending answer key: equal support, fewer words wins",
+   "pending": "p23_pending_r2.json",
+   "required_keep": "r2-b",
+   "outcomes": {
+    "r2-a": "rejected",
+    "r2-b": "kept"
+   },
+   "next_due": "round"
+  },
+  {
+   "invariant": "P23",
+   "fixture": "p23_partial_stall.jsonl",
+   "codes": [],
+   "note": "honest HALT(STALL) twice (v0's setup Check logged without a trigger, as SKILL.md's schema allows): three merit stalls and a failing stall Check; then, after a keep, a held-out failure on an unchanged best that stalls for three rounds",
+   "exit": 0,
+   "state": {
+    "stall": 3,
+    "status": "PARTIAL",
+    "best": "v1"
+   }
+  },
+  {
+   "invariant": "P23",
+   "fixture": "p23_halt_error.jsonl",
+   "codes": [],
+   "note": "two all-ERROR rounds then HALT(ERROR); ERROR rounds are not stalls",
+   "exit": 0,
+   "state": {
+    "stall": 0,
+    "error_streak": 2
+   }
+  },
+  {
+   "invariant": "P23",
+   "fixture": "p23_complete_spare.jsonl",
+   "codes": [],
+   "note": "held-out fails on v1, v2 kept and Checked at E2, spare passes, COMPLETE; optional gap open (P17 positive)",
+   "exit": 0,
+   "state": {
+    "best": "v2",
+    "status": "COMPLETE"
+   }
+  },
+  {
+   "invariant": "P23",
+   "fixture": "p23_torn_resume.jsonl",
+   "codes": [],
+   "note": "torn version line set aside, resume, round 2 rerun from v1",
+   "exit": 0,
+   "set_aside": [
+    8
+   ],
+   "state": {
+    "best": "v2"
+   }
+  },
+  {
+   "invariant": "P23",
+   "fixture": "p23_first.jsonl",
+   "codes": [
+    [
+     "STALE_PARENT",
+     "VIOLATION"
+    ],
+    [
+     "KEPT_TEXT_MISMATCH",
+     "VIOLATION"
+    ]
+   ],
+   "note": "without --first both violations (records 12 and 30) are reported",
+   "record_indexes": [
+    12,
+    30
+   ]
+  },
+  {
+   "invariant": "P23",
+   "fixture": "p23_first.jsonl",
+   "codes": [
+    [
+     "STALE_PARENT",
+     "VIOLATION"
+    ]
+   ],
+   "note": "--first stops at record 12 and evaluates nothing later",
+   "args": {
+    "first": true
+   },
+   "record_indexes": [
+    12
+   ]
+  },
+  {
+   "invariant": "P03",
+   "fixture": "fn01_duplicate_slot_reask.jsonl",
+   "codes": [
+    [
+     "EXTRA_VERDICT",
+     "RECORD"
+    ],
+    [
+     "KEEP_VETOED",
+     "VIOLATION"
+    ],
+    [
+     "JUDGE_MISSING",
+     "VIOLATION"
+    ]
+   ],
+   "note": "slot 2 returned best, then a second slot-2 verdict (variant) is logged and the variant kept: the first verdict per slot stands",
+   "source": "runs/2026-09-25-peer/checker-attack/fn01_duplicate_slot_reask.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    5,
+    5,
+    5
+   ]
+  },
+  {
+   "invariant": "P01",
+   "fixture": "fn02_fourth_judge_support.jsonl",
+   "codes": [
+    [
+     "EXTRA_VERDICT",
+     "RECORD"
+    ],
+    [
+     "KEEP_WITHOUT_SUPPORT",
+     "VIOLATION"
+    ]
+   ],
+   "note": "slot 1 UNKNOWN, slot 2 variant, slot 3 tie; a slot-4 variant verdict is ignored, so support is 1",
+   "source": "runs/2026-09-25-peer/checker-attack/fn02_fourth_judge_support.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    5,
+    5
+   ]
+  },
+  {
+   "invariant": "P04",
+   "fixture": "fn03_strict_fourth_judge.jsonl",
+   "codes": [
+    [
+     "EXTRA_VERDICT",
+     "RECORD"
+    ],
+    [
+     "STRICT_KEEP",
+     "VIOLATION"
+    ]
+   ],
+   "note": "strict: slots 1-3 variant, variant, tie; a slot-4 variant verdict cannot supply the third vote",
+   "source": "runs/2026-09-25-peer/checker-attack/fn03_strict_fourth_judge.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    5,
+    5
+   ]
+  },
+  {
+   "invariant": "P04",
+   "fixture": "fn04_probe_reroll.jsonl",
+   "codes": [
+    [
+     "PROBE_REROLL",
+     "RECORD"
+    ],
+    [
+     "STRICT_KEEP",
+     "VIOLATION"
+    ],
+    [
+     "JUDGE_MISSING",
+     "VIOLATION"
+    ]
+   ],
+   "note": "the E1 probe is strict; a second, clean E1 probe cannot relax it; the 2/2 keep is a strict-mode violation",
+   "source": "runs/2026-09-25-peer/checker-attack/fn04_probe_reroll.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    5,
+    6,
+    6
+   ]
+  },
+  {
+   "invariant": "P22",
+   "fixture": "fn05_probe_empty.jsonl",
+   "codes": [],
+   "note": "probe with identity [] and seeded.pair []: the mode cannot be recomputed, so it is listed unauditable",
+   "source": "runs/2026-09-25-peer/checker-attack/fn05_probe_empty.jsonl",
+   "ruling": "fixed",
+   "exit": 0,
+   "unauditable_includes": [
+    "probe_mode"
+   ]
+  },
+  {
+   "invariant": "P07",
+   "fixture": "fn06_setup_check_launders_regression.jsonl",
+   "codes": [
+    [
+     "SETUP_CHECK_LATE",
+     "RECORD"
+    ],
+    [
+     "CHECK_NOT_BEST",
+     "VIOLATION"
+    ],
+    [
+     "REGRESSION_KEPT",
+     "VIOLATION"
+    ]
+   ],
+   "note": "a check{trigger:setup} on v0 after round 1 is an ordinary Check (on a non-best version), so c1 stays pass for best and r2-a failing c1 is a regression",
+   "source": "runs/2026-09-25-peer/checker-attack/fn06_setup_check_launders_regression.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    7,
+    7,
+    8
+   ]
+  },
+  {
+   "invariant": "P09",
+   "fixture": "fn07_setup_check_evades_stall.jsonl",
+   "codes": [
+    [
+     "SETUP_CHECK_LATE",
+     "RECORD"
+    ],
+    [
+     "STALL_HALT_MISSED",
+     "VIOLATION"
+    ]
+   ],
+   "note": "the stall Check on best v0 is logged with trigger setup after 3 rounds; it still stands, fails c2, and round 4 runs instead of HALT(STALL)",
+   "source": "runs/2026-09-25-peer/checker-attack/fn07_setup_check_evades_stall.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    8,
+    9
+   ]
+  },
+  {
+   "invariant": "P22",
+   "fixture": "fn08_command_not_run.jsonl",
+   "codes": [],
+   "note": "kept variant has gates.commands {} while c1 is a DONE command: its gate is unauditable (and c1 is no longer known for the new best)",
+   "source": "runs/2026-09-25-peer/checker-attack/fn08_command_not_run.jsonl",
+   "ruling": "fixed",
+   "exit": 0,
+   "unauditable_includes": [
+    "gates"
+   ]
+  },
+  {
+   "invariant": "P22",
+   "fixture": "fn09_screen_missing.jsonl",
+   "codes": [],
+   "note": "kept variant has no gates.screen: its gate is unauditable, not ok",
+   "source": "runs/2026-09-25-peer/checker-attack/fn09_screen_missing.jsonl",
+   "ruling": "fixed",
+   "exit": 0,
+   "unauditable_includes": [
+    "gates"
+   ]
+  },
+  {
+   "invariant": "P03",
+   "fixture": "fn10_unknown_slot_rates_protected_worse.jsonl",
+   "codes": [
+    [
+     "KEEP_VETOED",
+     "VIOLATION"
+    ]
+   ],
+   "note": "slot 2 overall UNKNOWN with criteria {c2: best} (c2 passed at setup): a per-criterion veto counts whatever the overall",
+   "source": "runs/2026-09-25-peer/checker-attack/fn10_unknown_slot_rates_protected_worse.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    5
+   ]
+  },
+  {
+   "invariant": "P12",
+   "fixture": "fn11_same_rung_resets_stall.jsonl",
+   "codes": [
+    [
+     "RUNG_REPEATED",
+     "RECORD"
+    ],
+    [
+     "MISSED_CHECK",
+     "VIOLATION"
+    ],
+    [
+     "MISSED_CHECK",
+     "VIOLATION"
+    ],
+    [
+     "MISSED_CHECK",
+     "VIOLATION"
+    ],
+    [
+     "RUNG_REPEATED",
+     "RECORD"
+    ],
+    [
+     "MISSED_CHECK",
+     "VIOLATION"
+    ],
+    [
+     "MISSED_CHECK",
+     "VIOLATION"
+    ],
+    [
+     "MISSED_CHECK",
+     "VIOLATION"
+    ]
+   ],
+   "note": "rung{E1} re-logged at E1 is not an escalation: it neither resets the stall count nor clears the due Check",
+   "source": "runs/2026-09-25-peer/checker-attack/fn11_same_rung_resets_stall.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ]
+  },
+  {
+   "invariant": "P04",
+   "fixture": "fn12_check_extra_votes.jsonl",
+   "codes": [
+    [
+     "EXTRA_VERDICT",
+     "RECORD"
+    ],
+    [
+     "CHECK_MISCOUNT",
+     "VIOLATION"
+    ],
+    [
+     "HELDOUT_UNCHECKED",
+     "VIOLATION"
+    ],
+    [
+     "FALSE_COMPLETE",
+     "VIOLATION"
+    ]
+   ],
+   "note": "c3 votes [fail,fail,fail,pass,pass] logged pass: extra votes count against a pass (majority of all asked)",
+   "source": "runs/2026-09-25-peer/checker-attack/fn12_check_extra_votes.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    7,
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "invariant": "P04",
+   "fixture": "fn13_strict_check_extra_votes.jsonl",
+   "codes": [
+    [
+     "EXTRA_VERDICT",
+     "RECORD"
+    ],
+    [
+     "CHECK_MISCOUNT",
+     "VIOLATION"
+    ],
+    [
+     "HELDOUT_UNCHECKED",
+     "VIOLATION"
+    ],
+    [
+     "FALSE_COMPLETE",
+     "VIOLATION"
+    ]
+   ],
+   "note": "strict: c3 votes [pass,pass,pass,fail] logged pass: strict needs every judge asked",
+   "source": "runs/2026-09-25-peer/checker-attack/fn13_strict_check_extra_votes.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    7,
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "invariant": "P10",
+   "fixture": "fn14_noop_amend_rerolls_check.jsonl",
+   "codes": [
+    [
+     "RECHECK_UNCHANGED",
+     "VIOLATION"
+    ],
+    [
+     "HELDOUT_UNCHECKED",
+     "VIOLATION"
+    ],
+    [
+     "FALSE_COMPLETE",
+     "VIOLATION"
+    ]
+   ],
+   "note": "an amend whose done equals the current DONE changes nothing: the failing Check on v1/E1 stands",
+   "source": "runs/2026-09-25-peer/checker-attack/fn14_noop_amend_rerolls_check.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "invariant": "P09",
+   "fixture": "fn15_noop_amend_cancels_halt_error.jsonl",
+   "codes": [
+    [
+     "ERROR_HALT_MISSED",
+     "VIOLATION"
+    ]
+   ],
+   "note": "two all-ERROR rounds, a DONE-identical amend, then round 3: HALT(ERROR) was due (an amend never clears it)",
+   "source": "runs/2026-09-25-peer/checker-attack/fn15_noop_amend_cancels_halt_error.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    8
+   ]
+  },
+  {
+   "invariant": "P10",
+   "fixture": "fn16_heldout_survives_done_change.jsonl",
+   "codes": [
+    [
+     "FALSE_COMPLETE",
+     "VIOLATION"
+    ]
+   ],
+   "note": "the only held-out pass predates an amend adding required c4: held-out results stand only until DONE changes",
+   "source": "runs/2026-09-25-peer/checker-attack/fn16_heldout_survives_done_change.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    14
+   ]
+  },
+  {
+   "invariant": "P08",
+   "fixture": "fn17_version_id_reuse.jsonl",
+   "codes": [
+    [
+     "VERSION_ID_REUSED",
+     "RECORD"
+    ],
+    [
+     "FALSE_COMPLETE",
+     "VIOLATION"
+    ]
+   ],
+   "note": "round 2 keeps new text under the old id v1: no Check or held-out result recorded before it stands",
+   "source": "runs/2026-09-25-peer/checker-attack/fn17_version_id_reuse.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    10,
+    11
+   ]
+  },
+  {
+   "invariant": "P11",
+   "fixture": "fn18_round_number_reuse_hides_budget.jsonl",
+   "codes": [
+    [
+     "ROUND_SEQUENCE",
+     "RECORD"
+    ],
+    [
+     "BUDGET_OVERRUN",
+     "VIOLATION"
+    ],
+    [
+     "BUDGET_OVERRUN",
+     "VIOLATION"
+    ],
+    [
+     "BUDGET_OVERRUN",
+     "VIOLATION"
+    ]
+   ],
+   "note": "6 round records logged n=1,2,3,1,2,3 under budget.rounds=3: rounds are counted from records",
+   "source": "runs/2026-09-25-peer/checker-attack/fn18_round_number_reuse_hides_budget.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    11,
+    11,
+    13,
+    15
+   ]
+  },
+  {
+   "invariant": "P02",
+   "fixture": "fn19_second_keep_in_round_2.jsonl",
+   "codes": [
+    [
+     "ROUND_SEQUENCE",
+     "RECORD"
+    ]
+   ],
+   "note": "ruling: a second round record numbered 2 is a separate round (new best v2, new variant) with a wrong number; each keeps one variant on valid support and the budget counts it, so only ROUND_SEQUENCE (RECORD)",
+   "source": "runs/2026-09-25-peer/checker-attack/fn19_second_keep_in_round_2.jsonl",
+   "ruling": "not a checker defect",
+   "record_indexes": [
+    9
+   ],
+   "exit": 0
+  },
+  {
+   "invariant": "P11",
+   "fixture": "fn20_clock_restart_hides_time_budget.jsonl",
+   "codes": [
+    [
+     "BUDGET_START",
+     "VIOLATION"
+    ],
+    [
+     "BUDGET_START",
+     "VIOLATION"
+    ]
+   ],
+   "note": "round clocks restart at 0 after a resume: loop time continues from the last round end, so rounds 6 and 7 start with < 2x the longest round left",
+   "source": "runs/2026-09-25-peer/checker-attack/fn20_clock_restart_hides_time_budget.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    17,
+    19
+   ]
+  },
+  {
+   "invariant": "P13",
+   "fixture": "fn21_heldout_nonbool_counts_as_pass.jsonl",
+   "codes": [
+    [
+     "FALSE_COMPLETE",
+     "VIOLATION"
+    ]
+   ],
+   "note": "heldout.pass {c3: \"fail\"}: any value other than true fails closed",
+   "source": "runs/2026-09-25-peer/checker-attack/fn21_heldout_nonbool_counts_as_pass.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    9
+   ]
+  },
+  {
+   "invariant": "P17",
+   "fixture": "fn22_gap_waived_without_amend.jsonl",
+   "codes": [
+    [
+     "OPEN_AT_HELDOUT",
+     "VIOLATION"
+    ],
+    [
+     "OPEN_AT_COMPLETE",
+     "VIOLATION"
+    ]
+   ],
+   "note": "a required gap re-logged waived with no amend after it opened stays open",
+   "source": "runs/2026-09-25-peer/checker-attack/fn22_gap_waived_without_amend.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    10,
+    11
+   ]
+  },
+  {
+   "invariant": "P17",
+   "fixture": "fn23_gap_status_case.jsonl",
+   "codes": [
+    [
+     "OPEN_AT_HELDOUT",
+     "VIOLATION"
+    ],
+    [
+     "OPEN_AT_COMPLETE",
+     "VIOLATION"
+    ]
+   ],
+   "note": "required gap with status \"OPEN\": any status other than closed or waived is open",
+   "source": "runs/2026-09-25-peer/checker-attack/fn23_gap_status_case.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    9,
+    10
+   ]
+  },
+  {
+   "invariant": "P13",
+   "fixture": "fn24_final_rung_conflict.jsonl",
+   "codes": [
+    [
+     "FINAL_RUNG_CONFLICT",
+     "RECORD"
+    ],
+    [
+     "BOUNDARY_MISSED",
+     "VIOLATION"
+    ],
+    [
+     "HELDOUT_UNCHECKED",
+     "VIOLATION"
+    ],
+    [
+     "FALSE_COMPLETE",
+     "VIOLATION"
+    ]
+   ],
+   "note": "setup.done.final_rung E3 vs top-level setup.final_rung E1: DONE applies and the conflict is reported",
+   "source": "runs/2026-09-25-peer/checker-attack/fn24_final_rung_conflict.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    1,
+    8,
+    8,
+    9
+   ]
+  },
+  {
+   "invariant": "P12",
+   "fixture": "fn25_escalation_without_boundary.jsonl",
+   "codes": [],
+   "note": "ruling: escalation is the human's decision (rung{name, by:human}); the prose restricts when the loop pauses, not when the human may escalate, and COMPLETE rests on an all-pass E2 Check and a held-out pass",
+   "source": "runs/2026-09-25-peer/checker-attack/fn25_escalation_without_boundary.jsonl",
+   "ruling": "not a checker defect",
+   "exit": 0,
+   "state": {
+    "status": "COMPLETE"
+   }
+  },
+  {
+   "invariant": "P14",
+   "fixture": "fn26_spare_set_first.jsonl",
+   "codes": [
+    [
+     "HELDOUT_REROLL",
+     "VIOLATION"
+    ],
+    [
+     "FALSE_COMPLETE",
+     "VIOLATION"
+    ]
+   ],
+   "note": "held-out attempt 1 on the spare set: flagged, and its pass does not count toward COMPLETE",
+   "source": "runs/2026-09-25-peer/checker-attack/fn26_spare_set_first.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    8,
+    9
+   ]
+  },
+  {
+   "invariant": "P05",
+   "fixture": "fn27_empty_diff_prune_launders_spare.jsonl",
+   "codes": [
+    [
+     "KEEP_WITHOUT_SUPPORT",
+     "VIOLATION"
+    ]
+   ],
+   "note": "r2-a has diff [] yet claims 99 < 100 words: an empty diff changes nothing, so it is neither shorter nor keepable",
+   "source": "runs/2026-09-25-peer/checker-attack/fn27_empty_diff_prune_launders_spare.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    9
+   ]
+  },
+  {
+   "invariant": "P16",
+   "fixture": "fn28_check_file_path_case.jsonl",
+   "codes": [
+    [
+     "CHECK_FILE_EDIT",
+     "VIOLATION"
+    ]
+   ],
+   "note": "kept diff edits Tests/Test_Public.py; check file tests/test_public.py: paths compare case-insensitively",
+   "source": "runs/2026-09-25-peer/checker-attack/fn28_check_file_path_case.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    5
+   ]
+  },
+  {
+   "invariant": "P02",
+   "fixture": "fn29_six_variants_two_sections.jsonl",
+   "codes": [
+    [
+     "VARIANT_COUNT",
+     "VIOLATION"
+    ],
+    [
+     "MULTI_SECTION",
+     "AMBIGUOUS"
+    ]
+   ],
+   "note": "six variants in one round, the sixth kept (VIOLATION; extra proposals kept nothing would be RECORD); its diff edits two sections (advisory: an approved restructure is not recorded)",
+   "source": "runs/2026-09-25-peer/checker-attack/fn29_six_variants_two_sections.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    5,
+    5
+   ]
+  },
+  {
+   "invariant": "P21",
+   "fixture": "fn30_rejected_idea_reproposed.jsonl",
+   "codes": [
+    [
+     "REJECTED_IDEA",
+     "AMBIGUOUS"
+    ]
+   ],
+   "note": "round 2 re-proposes round 1's exact diff, rejected by 2 judges, with no citation logged since: advisory, because \"absent new evidence\" is a judgment",
+   "source": "runs/2026-09-25-peer/checker-attack/fn30_rejected_idea_reproposed.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    6
+   ],
+   "exit": 0
+  },
+  {
+   "invariant": "P01",
+   "fixture": "fn31_slot1_three_orders.jsonl",
+   "codes": [
+    [
+     "EXTRA_VERDICT",
+     "RECORD"
+    ],
+    [
+     "ORDER_MISMAP",
+     "RECORD"
+    ],
+    [
+     "KEEP_WITHOUT_SUPPORT",
+     "VIOLATION"
+    ],
+    [
+     "JUDGE_MISSING",
+     "VIOLATION"
+    ]
+   ],
+   "note": "slot 1 orders [best, variant, variant]: the first two stand (UNKNOWN), so slot 1 is no support",
+   "source": "runs/2026-09-25-peer/checker-attack/fn31_slot1_three_orders.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    5,
+    5,
+    5,
+    5
+   ]
+  },
+  {
+   "invariant": "P11",
+   "fixture": "fn32_budget_rounds_float.jsonl",
+   "codes": [
+    [
+     "BUDGET_OVERRUN",
+     "VIOLATION"
+    ],
+    [
+     "BUDGET_OVERRUN",
+     "VIOLATION"
+    ]
+   ],
+   "note": "budget.rounds 3.0 is a number: rounds 4 and 5 overrun",
+   "source": "runs/2026-09-25-peer/checker-attack/fn32_budget_rounds_float.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    11,
+    13
+   ]
+  },
+  {
+   "invariant": "P09",
+   "fixture": "fn33_stall_with_unchecked_runs_on.jsonl",
+   "codes": [
+    [
+     "STALL_HALT_MISSED",
+     "VIOLATION"
+    ],
+    [
+     "STALL_HALT_MISSED",
+     "VIOLATION"
+    ],
+    [
+     "STALL_HALT_MISSED",
+     "VIOLATION"
+    ],
+    [
+     "STALL_HALT_MISSED",
+     "VIOLATION"
+    ],
+    [
+     "STALL_HALT_MISSED",
+     "VIOLATION"
+    ],
+    [
+     "STALL_HALT_MISSED",
+     "VIOLATION"
+    ],
+    [
+     "STALL_HALT_MISSED",
+     "VIOLATION"
+    ]
+   ],
+   "note": "the stall Check leaves required c3 unchecked (not pass): HALT(STALL) is due and every later record misses it (pairs with fp01)",
+   "source": "runs/2026-09-25-peer/checker-attack/fn33_stall_with_unchecked_runs_on.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ]
+  },
+  {
+   "invariant": "P17",
+   "fixture": "fn34_gap_closed_without_evidence.jsonl",
+   "codes": [],
+   "note": "a required gap closed with no evidence field: SKILL.md's substrate record has no evidence field, so the closure is unauditable, not open",
+   "source": "runs/2026-09-25-peer/checker-attack/fn34_gap_closed_without_evidence.jsonl",
+   "ruling": "fixed",
+   "exit": 0,
+   "unauditable_includes": [
+    "substrate"
+   ],
+   "state": {
+    "status": "COMPLETE"
+   }
+  },
+  {
+   "invariant": "P09",
+   "fixture": "fp01_halt_stall_on_unchecked.jsonl",
+   "codes": [],
+   "note": "honest HALT(STALL) after a stall Check leaving required c3 unchecked (votes pass, ERROR, ERROR)",
+   "source": "runs/2026-09-25-peer/checker-attack/fp01_halt_stall_on_unchecked.jsonl",
+   "ruling": "fixed",
+   "exit": 0,
+   "state": {
+    "status": "PARTIAL"
+   }
+  },
+  {
+   "invariant": "P06",
+   "fixture": "fp02_early_drop_logged_dropped.jsonl",
+   "codes": [
+    [
+     "REJECTION_AS_ERROR",
+     "VIOLATION"
+    ]
+   ],
+   "note": "ruling: SKILL.md and INITIATOR.md step 3 now read \"reject the variant\" (the attack quoted older wording), so an early rejection logged dropped is still flagged",
+   "source": "runs/2026-09-25-peer/checker-attack/fp02_early_drop_logged_dropped.jsonl",
+   "ruling": "not a checker defect",
+   "record_indexes": [
+    5
+   ]
+  },
+  {
+   "invariant": "P06",
+   "fixture": "fp03_error_after_objection_halt_error.jsonl",
+   "codes": [],
+   "note": "judge 1 best (med), judge 2 ERROR after one retry: \"Retry an ERROR once, then drop the variant (not a rejection)\", so two such rounds support HALT(ERROR)",
+   "source": "runs/2026-09-25-peer/checker-attack/fp03_error_after_objection_halt_error.jsonl",
+   "ruling": "fixed",
+   "exit": 0,
+   "state": {
+    "error_streak": 2
+   }
+  },
+  {
+   "invariant": "P22",
+   "fixture": "fp04_skill_schema_amend.jsonl",
+   "codes": [],
+   "note": "an amend without done (SKILL.md Setup names amend{what,why}): DONE after it is unknown, so DONE-dependent rules are unauditable",
+   "source": "runs/2026-09-25-peer/checker-attack/fp04_skill_schema_amend.jsonl",
+   "ruling": "fixed",
+   "exit": 0,
+   "unauditable_includes": [
+    "required"
+   ]
+  },
+  {
+   "invariant": "P18",
+   "fixture": "fp05_utf8_bom.jsonl",
+   "codes": [],
+   "note": "a valid COMPLETE archive saved with a UTF-8 BOM: the BOM is not content",
+   "source": "runs/2026-09-25-peer/checker-attack/fp05_utf8_bom.jsonl",
+   "ruling": "fixed",
+   "exit": 0,
+   "state": {
+    "status": "COMPLETE"
+   }
+  },
+  {
+   "invariant": "P04",
+   "fixture": "fp06_voluntary_strict.jsonl",
+   "codes": [],
+   "note": "a clean probe logged strict: strict by choice only makes keeps and passes harder (fail closed), so the declined 2/3 keep is correct",
+   "source": "runs/2026-09-25-peer/checker-attack/fp06_voluntary_strict.jsonl",
+   "ruling": "fixed",
+   "exit": 0
+  },
+  {
+   "invariant": "P11",
+   "fixture": "fp07_human_pause_counts_as_budget.jsonl",
+   "codes": [],
+   "note": "the human takes 12 hours to escalate: waits after rung, amend, held-out, exit or resume are not loop time",
+   "source": "runs/2026-09-25-peer/checker-attack/fp07_human_pause_counts_as_budget.jsonl",
+   "ruling": "fixed",
+   "exit": 0
+  },
+  {
+   "invariant": "P22",
+   "fixture": "fp08_citation_mixed_criterion_field.jsonl",
+   "codes": [],
+   "note": "a verified citation without a criterion field: whether c2 has a verified source is unauditable, not failed",
+   "source": "runs/2026-09-25-peer/checker-attack/fp08_citation_mixed_criterion_field.jsonl",
+   "ruling": "fixed",
+   "exit": 0,
+   "unauditable_includes": [
+    "check_source"
+   ]
+  },
+  {
+   "invariant": "P22",
+   "fixture": "fp09_malformed_retries_string.jsonl",
+   "codes": [],
+   "note": "retries \"0\" (a string): the retry rule is unauditable and the round is otherwise audited",
+   "source": "runs/2026-09-25-peer/checker-attack/fp09_malformed_retries_string.jsonl",
+   "ruling": "fixed",
+   "exit": 0,
+   "unauditable_includes": [
+    "retry"
+   ]
+  },
+  {
+   "invariant": "P20",
+   "fixture": "fp10_selection_missing_words.jsonl",
+   "codes": [],
+   "note": "two equally supported eligible variants, one without words: the tie-break is unauditable",
+   "source": "runs/2026-09-25-peer/checker-attack/fp10_selection_missing_words.jsonl",
+   "ruling": "fixed",
+   "exit": 0,
+   "unauditable_includes": [
+    "selection"
+   ]
+  },
+  {
+   "invariant": "P21",
+   "fixture": "fp11a_oscillation_human_picks_old_best.jsonl",
+   "codes": [],
+   "note": "after exit OSCILLATION the human picks v1 over v2; the next round names v1 as best",
+   "source": "runs/2026-09-25-peer/checker-attack/fp11a_oscillation_human_picks_old_best.jsonl",
+   "ruling": "fixed",
+   "exit": 0,
+   "state": {
+    "best": "v3"
+   }
+  },
+  {
+   "invariant": "P21",
+   "fixture": "fp11b_oscillation_human_picks_variant.jsonl",
+   "codes": [],
+   "note": "HALT(OSCILLATION) before the version; the human picks the variant and its version follows the resume",
+   "source": "runs/2026-09-25-peer/checker-attack/fp11b_oscillation_human_picks_variant.jsonl",
+   "ruling": "fixed",
+   "exit": 0,
+   "state": {
+    "best": "v3"
+   }
+  },
+  {
+   "invariant": "P12",
+   "fixture": "fp12_e3_amend_after_rung.jsonl",
+   "codes": [],
+   "note": "rung E3, then the amend adding the objective, then probe E3: the amend only has to precede the E3 probe or round",
+   "source": "runs/2026-09-25-peer/checker-attack/fp12_e3_amend_after_rung.jsonl",
+   "ruling": "fixed",
+   "exit": 0
+  },
+  {
+   "invariant": "P21",
+   "fixture": "fp13_two_small_edits_as_oscillation.jsonl",
+   "codes": [],
+   "note": "two keeps change different phrases of Aims; each moves away from the older text, so nothing is restored",
+   "source": "runs/2026-09-25-peer/checker-attack/fp13_two_small_edits_as_oscillation.jsonl",
+   "ruling": "fixed",
+   "exit": 0,
+   "ok": true
+  },
+  {
+   "invariant": "P19",
+   "fixture": "fp14_version_diff_adds_file_key.jsonl",
+   "codes": [],
+   "note": "version diff = judged section/old/new plus a file key: the applied text is the judged text",
+   "source": "runs/2026-09-25-peer/checker-attack/fp14_version_diff_adds_file_key.jsonl",
+   "ruling": "fixed",
+   "exit": 0
+  },
+  {
+   "invariant": "P22",
+   "fixture": "cr01_v2_resume_unfinished.jsonl",
+   "codes": [],
+   "note": "v2 archive: kept variant, no version, resume: no snapshot to restore, never a crash",
+   "source": "runs/2026-09-25-peer/checker-attack/cr01_v2_resume_unfinished.jsonl",
+   "ruling": "fixed",
+   "exit": 0,
+   "ok": true,
+   "unauditable_includes": [
+    "keep",
+    "setup"
+   ]
+  },
+  {
+   "invariant": "P22",
+   "fixture": "cr02_second_setup_record.jsonl",
+   "codes": [
+    [
+     "SETUP_REPEATED",
+     "RECORD"
+    ]
+   ],
+   "note": "a second setup record (same DONE, no t0) after a timed round is ignored and reported, never a crash",
+   "source": "runs/2026-09-25-peer/checker-attack/cr02_second_setup_record.jsonl",
+   "ruling": "fixed",
+   "record_indexes": [
+    7
+   ],
+   "exit": 0
+  },
+  {
+   "invariant": "P22",
+   "fixture": "cr03_target_nonstring_check_file.jsonl",
+   "codes": [],
+   "note": "audit --target with setup.check_files [[\"tests\",\"t.py\"]]: the non-path entry is unauditable, never a crash",
+   "source": "runs/2026-09-25-peer/checker-attack/cr03_target_nonstring_check_file.jsonl",
+   "ruling": "fixed",
+   "exit": 0,
+   "unauditable_includes": [
+    "check_hashes"
+   ],
+   "args": {
+    "target": "."
+   }
+  },
+  {
+   "invariant": "P18",
+   "fixture": "cr04_deep_nesting_torn_tail.jsonl",
+   "codes": [],
+   "note": "last line is 200000 unclosed brackets: a torn tail, not a RecursionError",
+   "source": "runs/2026-09-25-peer/checker-attack/cr04_deep_nesting_torn_tail.jsonl",
+   "ruling": "fixed",
+   "exit": 0,
+   "torn_tail": true
+  },
+  {
+   "invariant": "P22",
+   "fixture": "cr05_pending_not_object.jsonl",
+   "codes": [],
+   "note": "--pending file is a JSON list: a usage error (exit 2), never a crash",
+   "pending": "cr05_pending.json",
+   "required_keep": null,
+   "outcomes": null,
+   "next_due": null,
+   "exit": 2,
+   "source": "runs/2026-09-25-peer/checker-attack/cr05_pending_not_object.jsonl",
+   "ruling": "fixed"
+  }
+ ]
+}

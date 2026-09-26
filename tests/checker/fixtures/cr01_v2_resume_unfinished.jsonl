@@ -1,0 +1,3 @@
+{"t": "version", "id": "v0", "parent": null, "change": "initial draft"}
+{"t": "variant", "round": 1, "id": "r1-a", "section": "Intro", "screen": "pass", "verdicts": ["B/high", "B/med"], "kept": true}
+{"t": "resume", "at_round": 1, "reason": "crash"}

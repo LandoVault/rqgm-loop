@@ -4,3 +4,6 @@ archive.jsonl
 coevolution_log.md
 .rqgm/
 .DS_Store
+# Evidence-run archives under runs/ are committed (DESIGN.md, maintainer process rules)
+!runs/**/archive*.jsonl
+__pycache__/
