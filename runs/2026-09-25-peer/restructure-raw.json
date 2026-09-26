@@ -1,0 +1,247 @@
+{
+  "summary": "Human-proxy-approved restructure after HALT(BUDGET): one multi-section variant per iteration fixing the failing Check reasons, judged under the frozen v3 keep rule, then auditor conformance and a fresh 3-judge Check (max 2 iterations)",
+  "agentCount": 4,
+  "logs": [],
+  "result": {
+    "best": "9d07665dde77",
+    "history": [
+      {
+        "it": 1,
+        "outcome": "rejected",
+        "reason": [
+          {
+            "claim": "Removal reasons for the absolute 0-10 gate and its parameters, bundles, gates G1-G6, dissent-triggered escalation, E4, re-offering losers, the paraphrase probe control and judge replacement, per-call keys/usage/model-written hashes, the exact-text oscillation test, an owning controller and sidecar rule files are in blueprint.json's `rejected` and `design_md_changes` (DESIGN.md, 'What was removed').",
+            "status": "not-found",
+            "locator": "runs/2026-09-25-peer/blueprint.json: I read all of `rejected` (0-19) and all of `design_md_changes` (0-19). FOUND: owning controller (rejected[0]); sidecar rule files (rejected[1]); paraphrase control and judge replacement on a miss (rejected[4], also design_md_changes[5] and [16]); hashes, per-call usage and per-call keys (rejected[10], design_md_changes[16]); exact-text oscillation (rejected[6], design_md_changes[16]). NOT FOUND: the whole file has no match for '0-10'/'0–10', 'absolute', 'G1', 'G6', 'E4', 're-offer' or 'loser'. 'bundle' appears only in design_md_changes[0], as a v1-era procedure in the evidence legend, with no removal reason. 'dissent' appears only in prose_changes, outside the cited fields. So six of the eleven items have no reason in the cited source. The parent snapshot 9d07665dde77/DESIGN.md (and the repo's DESIGN.md) gave these reasons in its own 'What was removed' table; the candidate 3df5a28e3a7c/DESIGN.md lines 44-50 deleted that table and points to blueprint.json instead. Minor tension: rejected[6] says '(nearly)' stays and the checker's 0.9 ratio is advisory (AMBIGUOUS; rqgm_check.py line 567). The candidate replaces '(nearly)' with 'up to cosmetic differences' and calls that judgment unauditable (DESIGN.md line 66)."
+          },
+          {
+            "claim": "The v3 meta-run's audit flagged prose-compliant null times (DESIGN.md row 11, under the 'measured (text dry-run)' label).",
+            "status": "contradicted",
+            "locator": "runs/2026-09-25-peer/archive-meta.v3.audit.json, `violations`: RECORD_MISSING for setup.budget{rounds,minutes} (record_index 1; minutes null) and for round.t0/t1 null (record_index 6, 7, 9, 11, ..., 23). The flag itself is VERIFIED. The label is CONTRADICTED: candidate DESIGN.md line 13 defines 'measured (text dry-run)' as 'no loop ran', but archive-meta.v3.jsonl is a real loop (setup plus 10 round records; audit state rounds=10). 'Prose-compliant' is only PARTLY true. SKILL.md line 20 requires minutes ('`BUDGET`: max rounds and minutes (tokens only if reported)') in both the start snapshot e62daa30b117 and the best snapshot 9d07665dde77, and rqgm_check.py r_setup (lines 252-254) encodes that rule. Only the INITIATOR paste (9d07665dde77 line 15, 'minutes and tokens only if your host reports them'; line 63, 'Never estimate tokens or times') allowed null."
+          },
+          {
+            "claim": "Required times are newly removed because a host without a clock can only guess them (DESIGN.md 'What was removed').",
+            "status": "not-found",
+            "locator": "No primary source gives the rationale. Candidate DESIGN.md line 50 itself marks it 'New here', not a blueprint item. blueprint.json rejected[10] covers tokens only ('Chat hosts cannot see subagent tokens'), not times. blueprint.json design_md_changes[11] (Row 9) prescribes the opposite: 'The budget is rounds and time from records ... Start a round only if the remaining time covers twice the costliest round.' The v3 meta-run's null times (archive-meta.v3.jsonl record 0, budget.minutes null) show that times went unlogged, not that a host can only guess them. 'Newly' is accurate only against SKILL.md: parent 9d07665dde77 SKILL.md line 20 required minutes, but its INITIATOR line 15 already made them optional. The claim is design-only."
+          }
+        ],
+        "impl": {
+          "tool_output": "{\"ok\": true, \"class\": \"OK\", \"hash\": \"3df5a28e3a7c\", \"base\": \"9d07665dde77\", \"words\": {\"skills/rqgm-loop/SKILL.md\": 997, \"INITIATOR.md\": 1283, \"README.md\": 1196, \"DESIGN.md\": 2191}, \"words_delta\": {\"skills/rqgm-loop/SKILL.md\": -2, \"INITIATOR.md\": -16, \"README.md\": -52, \"DESIGN.md\": -9}, \"caps_ok\": true, \"over\": {}, \"diff\": \"diffs/9d07665dde77-3df5a28e3a7c.diff\", \"variant\": \"restructure-1\"}\n\nVariant: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/variants/restructure-1.json (28 edits across all 4 files). Diff: runs/2026-09-25-peer/diffs/9d07665dde77-3df5a28e3a7c.diff.\n\nSide effect: my first apply (before one DESIGN table fix) also left snapshot 304d8c9a2ef8 and diffs/9d07665dde77-304d8c9a2ef8.diff. They are orphans and can be deleted. Drafts and the scripts that build the edits are in the session scratchpad under rs1/.\n\nStructure:\n- SKILL gains a \"Human only\" paragraph; the paste gains a matching HUMAN ONLY block.\n- Every operative sentence in SKILL now has a same-meaning sentence in the paste.\n- The DONE schema moves into the setup.done record in both.\n- The README slot table and its \"Only you decide\" list are replaced by a pointer to INITIATOR, which stops the two from drifting apart.\n- DESIGN's mechanism cells become summaries (the exact rules live only in SKILL and the paste).\n- DESIGN's \"What was removed\" table becomes a paragraph that cites blueprint.json for the reasons.\n- DESIGN gains a \"Pending rqgm_check.py changes\" table (rule, record fields, fixtures) and an \"Unauditable:\" line.",
+          "addressed": [
+            "d1/d5/d2(d)/d4: held-out check failing open, and a bare held-out fail having no record shape. Each held-out judge now marks every required criterion pass/fail/UNKNOWN. The human reports heldout.results{id:pass|fail|unchecked} using the Check rule (majority pass; strict 3/3; an ERROR vote makes it unchecked). Each non-pass becomes non-pass in best's Check, and COMPLETE requires every required criterion to pass. UNKNOWN or ERROR can no longer pass, and unchecked is kept distinct from pass. heldout.set now has the vocabulary primary|spare. SKILL and the paste say the same; DESIGN row 8 is rewritten, and the pending-changes table names the r_heldout change (fixtures b01, fn21).",
+            "d1/d3/d4: human-only approval of restructures. The Human only list (SKILL) and HUMAN ONLY block (paste) now say: escalate or stop below the final rung; amend DONE, the rubric or BUDGET; approve restructures and OSCILLATION picks (new record approve{what:restructure|pick,sections?,version?}); close an [OPEN] with Verifier-checked evidence (substrate.evidence) or waive it (amend); write, see and run held-out judges. Step 1 now reads 'one approved restructure'. The checker change is named: MULTI_SECTION becomes a VIOLATION unless an approve covers the variant (fn29).",
+            "d1: UNKNOWN on a protected item no longer lets a variant through. Judge 1 rejects early, and KEEP is vetoed, when any judge rates a protected item worse or UNKNOWN. SKILL, the paste, DESIGN row 7 and README all say this; the checker change to worse() is named (fn10, p03).",
+            "d2(a), NEWCOMER-11, print-mode resume: resume is now defined in both texts. In print mode the human pastes the records back. After a halt, the human's logged decision sets the next step: OPEN goes to Stop, OVERFIT ends the archive, anything else goes to the next round.",
+            "d2(b): HALT(OSCILLATION) moved from step 4 into step 5, after the round and its version are logged. '(nearly)' is replaced by 'up to cosmetic differences', a term the judges already use. DESIGN declares that judgment unauditable beyond the checker's advisory similarity flag (an exact undo stays a VIOLATION). The human's pick is logged as approve{what:pick,version}, after which the next round runs on the picked best.",
+            "d2(c): probe gaps. A probe ERROR, or a DONE with no judges criterion, now puts the rung in strict mode.",
+            "d2: plain chat and relay. Without subagents the human now runs every other role (generator, Verifier, Screen, judges) from the orchestrator's prompts in fresh chats, else HALT(OPEN). This keeps the Screen isolated and lets the orchestrator, never the generator, seed the probe. The human-facing note outside the paste says the same.",
+            "d2: Check judges now have a stated input and output. They see best (not A/B) and return {\"<id>\":\"pass|fail|UNKNOWN\"}. A Check is 3 fresh judges, each marking every judges criterion (3 calls, not 3 per criterion). The vote vocabulary is in the schema: pass|fail|UNKNOWN|ERROR.",
+            "d2: 'a required [OPEN]' is now defined. An [OPEN] is required unless its criterion is optional, and every [OPEN] names its criterion. The records gain substrate.criterion.",
+            "d2: 'criteria best passes' is now 'criteria whose last result is pass', which the records can decide after any keep.",
+            "d2/d3/d4 plus the auditor finding on time and budget. Both texts now say: BUDGET is max rounds, with minutes and tokens only if the host reports them, never estimated, and unreported values are null. The round-start rule is the same in both ('each reported budget (time, tokens) holds twice the costliest round'). A human budget change is logged as amend{budget}. The checker changes are named: r_setup, budget() and r_amend (p22). README's 'wall-clock' is gone.",
+            "d3: held-out storage (outside TARGET, GROUNDING, MEMORY and the repo), 'spent on this TARGET once used', the print-mode fallback and the DONE schema ({id,required,kind,guardrail?}, must_not_change, final_rung default E2) are now in both SKILL and the paste.",
+            "d4/d5: check records now carry models, so 'same family = one source' can be recomputed. Output lists judges as 'one source per named model family' and reports every amend and approve.",
+            "d4: DESIGN row 11 and the audit text in README and INITIATOR no longer claim the checker recomputes every decision. They now say it recomputes what its records allow and lists the rest as unauditable (held-out secrecy, relay authenticity, the cosmetic-differences judgment).",
+            "d5: README claims corrected. 'It works on anything you can review' became 'It is meant for'. 'never reach a judge' now says the Screen and Verifier are LLM passes that can miss. The substrate firewall is stated as a rule the loop must follow, not a guarantee. Added to Not guaranteed: the Screen, Verifier and judges can miss flaws. DESIGN Non-guarantees gains the same line.",
+            "d5: DESIGN row 6 'Run 1's stall was structural' is relabeled as a design-only reading. Row 3 and the removed-list were reworded from causal ('the gate stalled run 1') to observational ('run 1 stalled at its gate').",
+            "d6/d7: every file is shorter (SKILL 997, INITIATOR 1283, README 1196, DESIGN 2191). A Check costs 3 calls instead of 3 per judges criterion, and a DONE with no judges criterion needs no probe calls."
+          ],
+          "not_addressed": [
+            "The checker itself is unchanged: the task was prose-only. Until the listed rqgm_check.py changes land, a paste-compliant v3 archive still audits as RECORD_MISSING for null minutes and t0/t1. A boolean heldout.pass is still accepted, and MULTI_SECTION is still advisory. DESIGN lists all of these as pending, but the d4 mismatch between prose and checker stays live until the checker change and fixtures ship.",
+            "The cosmetic-differences oscillation test is still a judgment, not a numeric threshold. A difflib ratio cannot be computed in a plain chat, so I declared it unauditable instead.",
+            "Relay authenticity is unchanged. The approve, amend and substrate records name the decision but carry no quote of the human's words, so human decisions relayed by an agent are still unauthenticated (this stays a Non-guarantee).",
+            "Retarget ('a new TARGET needs new held-out judges, a new archive and E1') stays only in INITIATOR outside the paste. Both operative texts carry 'spent on this TARGET once used', which implies it; the explicit sentence did not fit SKILL's word cap.",
+            "Three wording removals made to fit the caps may be flagged. (1) 'resume after an audit pause' is no longer itemized in the Human only list; it is implied by 'a violation pauses for the human' and 'after a halt, the human's decision leads'. (2) The search heuristic 'target failing command checks first' was dropped from both texts and from DESIGN row 6. (3) 'others return text or diffs' was dropped; 'Only you write best, TARGET and MEMORY' still holds.",
+            "Decision-quality trade-off (d6): the UNKNOWN veto on protected items fails closed, so there may be more rejections and more rounds per keep. Calls per round are unchanged.",
+            "The prose does not say that a protected criterion missing from a judge's criteria map counts as UNKNOWN. The checker still treats a missing value as not-worse.",
+            "examples/worked-example.md is not a target file and was not updated. Its DONE and held-out shapes may predate heldout.results, approve and substrate.criterion.",
+            "Under the maintainer rule, this spec change invalidates the Stage-1 answer key until the human re-adjudicates it."
+          ],
+          "checker_changes": [
+            "r_heldout: on a v3 archive, require results{id:pass|fail|unchecked}. A boolean or legacy map `pass` is RECORD_MISSING, with every required criterion treated as non-pass. Every required id that is missing or not 'pass' goes into hofail, and passed = all required are 'pass'. Fixtures: update b01 and fn21; add a case with 1 fail and 2 UNKNOWN (reported unchecked, so no COMPLETE); add the bare-fail case, which must reach a compliant HALT(STALL) instead of HELDOUT_REROLL.",
+            "r_setup: budget.rounds must be finite. budget.minutes and budget.tokens may be a number or an explicit null; if absent, RECORD_MISSING. budget(): null round t0/t1 is allowed when the live budget.minutes is null, and stays RECORD_MISSING when minutes is a number (p22 unchanged). Add a positive null-time fixture, then re-audit archive-meta.v3.jsonl: its 11 RECORD_MISSING findings should clear. Update the r_setup comment 'BUDGET: max rounds and minutes'.",
+            "r_amend: a dict `budget` field replaces the live budget read by bud(), budget() and budget_out(). New fixture: HALT(BUDGET), then amend{budget}, then resume, then later rounds with no BUDGET_OVERRUN or BUDGET_START.",
+            "New r_approve for approve{what:restructure|pick,sections?,version?}. keep_checks: MULTI_SECTION on a kept variant becomes a VIOLATION (move it out of AMBIGUOUS) unless an approve{restructure} logged since the last keep lists all of its sections (fn29, plus a positive fixture). approve{pick,version} calls take_pick(version). On v3, a best chosen after exit OSCILLATION with no approve{pick} is RECORD_MISSING (add approve lines to fp11a and fp11b).",
+            "pre(): on v3, remove the ('version','OSCILLATION') exemption so that exiting OSCILLATION before the kept round's version is logged gives VERSION_MISSING (RECORD). Update p21_oscillation_pick_check. OSCILLATION_MISSED stays advisory except for an exact undo, and OSCILLATION_UNSUPPORTED (ratio 0.5) stays advisory. Both are the cosmetic-differences judgment, declared unauditable.",
+            "worse(): count 'UNKNOWN' as worse on protected items, i.e. x not in ('variant','tie'). This affects both panel pbest and judge 1's early rejection. New negative fixture: overall variant, criteria {protected: UNKNOWN}, a 2-judge keep, expected KEEP_VETOED. p03 and fn10 unchanged.",
+            "r_substrate: recompute `required` from DONE as crit[substrate.criterion].required is not False; a missing or unknown criterion counts as required. A logged required value that disagrees is a VIOLATION (new code). `closed` needs `evidence` equal to the locator of an earlier citation with status verified; otherwise RECORD_MISSING on v3 and the gap stays open. Update fn34 (currently unauditable) and re-check a24.",
+            "r_check: on v3, require check.models (the Check judges' models in slot order) when any judges criterion is checked; if absent, RECORD_MISSING. Votes outside pass|fail|UNKNOWN|ERROR never count as a pass.",
+            "r_probe: when DONE has no judges criterion, probe{rung,mode:strict} with no identity or seeded pair is compliant (not RECORD_MISSING). A normal mode without pairs stays RECORD_MISSING. a13 and fn05 unchanged; add a positive fixture.",
+            "Docstring (lines 8-18): replace 'recomputes every keep, drop, Check value, halt and exit' with 'recomputes the keeps, drops, Checks, halts and exits its records allow', and list what is unauditable: held-out secrecy, relay authenticity, the cosmetic-differences judgment.",
+            "tests/checker/expected.json: update the cases above, rerun `rqgm_check.py selftest` and the Stage-0 rule-to-checker map, and flag the Stage-1 answer key for human re-adjudication."
+          ]
+        }
+      },
+      {
+        "it": 2,
+        "outcome": "dropped",
+        "reason": "variant did not apply within caps",
+        "impl": {
+          "tool_output": "{\"ok\": true, \"class\": \"OK\", \"hash\": \"4428a0fc753e\", \"base\": \"9d07665dde77\", \"words\": {\"skills/rqgm-loop/SKILL.md\": 1000, \"INITIATOR.md\": 1295, \"README.md\": 1209, \"DESIGN.md\": 2199}, \"words_delta\": {\"skills/rqgm-loop/SKILL.md\": 1, \"INITIATOR.md\": -4, \"README.md\": -39, \"DESIGN.md\": -1}, \"caps_ok\": true, \"over\": {}, \"diff\": \"diffs/9d07665dde77-4428a0fc753e.diff\", \"variant\": \"restructure-2\"}  (variant: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/variants/restructure-2.json, 47 edits across all 4 files. It builds on restructure-1's structure, with the 3 Verifier findings fixed and further fail-closed repairs. An earlier intermediate apply left snapshot dfb73b1cce0f and its diff in the run dir; 4428a0fc753e is the final snapshot.)",
+          "addressed": [
+            "Restructure claim 1 (blueprint.json 'not-found'): DESIGN 'What was removed' no longer says blueprint.json holds every reason. Items with no source there are listed with their existing DESIGN reasons or a row cross-reference: the 0-10 gate and parameters (row 3), bundles (row 6), G1-G6, dissent/E4/re-offering losers. Only the six items I checked are in blueprint.json `rejected` are cited to it: paraphrase control + judge replacement, least-recently-changed fallback, model-written hashes/per-call usage/keys, exact-text oscillation test, owning controller, sidecar files. The causal 'noise stalled run 1' reason is dropped.",
+            "Restructure claim 2 (meta-run audit 'contradicted'): removed from DESIGN row 11. The motivation cell again cites only the two v2 dry-runs. Row 11 now says the checker lags this spec until the pending changes land.",
+            "Restructure claim 3 ('host without a clock can only guess', not-found): sentence removed. Row 9 keeps only the rule (minutes/tokens only if the host reports them, never estimated) and its existing literature cite.",
+            "Auditor finding (archive-meta.v3.audit.json: 11 RECORD_MISSING for null minutes and t0/t1): SKILL and the paste both say unreported values are null and minutes/tokens are used only if the host reports them, never estimated. The checker change is named (r_setup/budget() accept null when budget.minutes is null).",
+            "#0/#8/#12/#20/#6 held-out fails open and bare pass:false is unrecomputable: each held-out judge marks every required criterion pass/fail/UNKNOWN. The human reports `heldout.results{id:pass|fail|unchecked}` by the Check rule (majority pass; strict 3/3; any ERROR: unchecked). Each non-pass is non-pass in best's Check, so UNKNOWN/ERROR never pass and unchecked stays distinct from pass. The r_heldout change and fixtures are named.",
+            "#1/#10/#19/#21 restructure approval and human authority: a 'Human only (own messages, logged)' list is now in both SKILL and the paste. It covers escalate/stop, amend DONE/rubric/BUDGET, approve restructures and OSCILLATION picks (`approve` record), close [OPEN] with Verifier-checked evidence (`substrate.evidence`) or waive (`amend`), and write/see/run held-out judges. Step 1 says 'one human-approved restructure'. keep_checks/take_pick changes are named.",
+            "#1/#11 protected UNKNOWN: judge 1 rejects early, and Keep vetoes, when any judge rates a protected item worse OR UNKNOWN. DESIGN row 7 states the design-only trade: fail closed, at a cost in some keeps. The worse() change is named.",
+            "#2a re-entry after a halt: 'after a halt, the human's decision leads (all gaps waived -> Stop; OVERFIT ends the archive; else the next round)'. This is in both texts. A closed gap goes to a round so the evidence gets written into best. The r_resume change is named.",
+            "#2b/#13 oscillation: moved into step 5 after the round/version is logged. The criterion is 'restoring an earlier best's section (cosmetic differences aside)'. The pick is an `approve` record. The pre() exemption removal and fixtures are named. The cosmetic judgment is declared unauditable; an exact undo stays a checker VIOLATION.",
+            "#2c/#15 probe: 'No judges criterion (skip it), a non-tie, miss or ERROR -> strict mode, told to the human', in both texts. The r_round change is named. #15 protected set is now 'criteria whose last result is pass'.",
+            "#3/#16/#24 plain chat: without subagents the human runs every other role (generator, Screen, Verifier, judges) from your prompts in fresh chats, else HALT(OPEN). So the orchestrator is never the generator and can seed the probe. Role separation is declared unauditable.",
+            "#4/#17/#27 budget parity: the same wording in SKILL and the paste ('max rounds; minutes and tokens only if the host reports them, never estimated'; 'each reported budget (time, tokens) covers twice the costliest round'). README's 'wall-clock' slot table is replaced by a pointer to INITIATOR. BUDGET changes only by human amend (`amend.budget`).",
+            "#5/#28 held-out storage/spent-per-TARGET and the human-only list are now in SKILL as well as the paste. SKILL's MEMORY slot carries print mode ('print for the human to keep'; resume 'print: pasted back').",
+            "#7/#29/#30 records vs checker: added `approve`, `amend.budget?`, `check.models`, `heldout{set:primary|spare,results}`, `substrate{criterion,evidence?}` and an explicit `setup.done` shape. DESIGN has a 'Pending rqgm_check.py changes' table naming the function and fixtures for each changed rule. An 'Unauditable' line covers held-out secrecy, role separation, relay authenticity and the cosmetic-differences judgment.",
+            "#8 same-family: `check.models` added; Output says 'judges (one source per named model family)'.",
+            "#9/#22/#23 README/DESIGN overclaims: 'It works on anything' becomes 'It is meant for anything'. 'never reach a judge' becomes 'read each change before any judge ... as LLM passes, they can miss'. 'surfaces the gaps' becomes 'is designed to surface'. 'The loop never touches/fabricates' becomes 'The rules forbid'. DESIGN row 11 now says 'recomputes the decisions its records allow; lags this spec'. Row 6's causal 'stall was structural' is removed. Non-guarantees and README 'Not guaranteed' add that the Screen/Verifier/judges can miss. The INITIATOR and README audit sections state the checker lag.",
+            "#14 'required [OPEN]': 'An [OPEN] is required unless its criterion is optional'. [OPEN]s are written 'for its criterion'. `substrate.criterion` is added; r_substrate derives required from DONE.",
+            "#18 DONE schema in the paste: RECORDS gives setup.done:{criteria:[{id,required,kind,guardrail?}],must_not_change:{id:text},final_rung:E2}. SETUP says to propose DONE in that shape.",
+            "#25 Check judge shape: Check judges return {\"<id>\":\"pass|fail|UNKNOWN\"}. A Check is 3 fresh judges each marking every judges criterion: 3 calls, fewer than 3 per criterion (d6).",
+            "#26 print-mode resume: 'If MEMORY holds records (print: the human pastes them back), resume'.",
+            "Guardrail wording kept: 'Never add, edit or delete check files, DONE or the rubric' restores best's wording, which restructure-1 had weakened to 'change'.",
+            "d7 caps: SKILL 1000/1000, INITIATOR 1295/1300, README 1209/1250, DESIGN 2199/2200. Net words fall: -43 overall."
+          ],
+          "not_addressed": [
+            "The checker was not edited, per the task, so d4 recomputation holds only once the named rqgm_check.py changes land. Until then the checker reports false violations on records the new prose requires. For example, a protected-UNKNOWN rejection looks like MISSED_KEEP/JUDGE_MISSING, and `heldout.results` looks like RECORD_MISSING. The prose now discloses the lag in DESIGN row 11, the INITIATOR 'Optional audit' and README.",
+            "Oscillation still depends on a judgment ('cosmetic differences aside'). No numeric threshold is stated, because the checker's difflib 0.9/0.5 ratios cannot be computed in a plain chat. It is declared unauditable; only an exact undo is a checker VIOLATION (a38).",
+            "Role separation and the authenticity of relayed human decisions cannot be proven from records. Both are declared unauditable or non-guarantees rather than fixed.",
+            "After a held-out non-pass with 3 or more stalls already counted, the next stall round goes straight to HALT(STALL), because the stall count is not reset. The next state is defined, but 'rerun rounds' may allow only one round. I left this unchanged to avoid adding a rule without evidence.",
+            "'A required [OPEN]' at Stop relies on reading closed or waived gaps as no longer [OPEN]. I added no explicit 'not closed or waived' wording because SKILL is at its 1000-word cap.",
+            "The SKILL description stays restructure-1's short form. Trigger phrases ('run the RQGM loop', 'harden / pressure-test') are lost; restoring them does not fit the cap.",
+            "Validation protocol and Deferred sections are unchanged (pre-registered)."
+          ],
+          "checker_changes": [
+            "r_heldout: on v3, require `heldout.results{id:pass|fail|unchecked}`. A boolean `pass` or a missing results map is RECORD_MISSING and not credited. Every required ID not 'pass' (fail, unchecked or absent) goes into hofail, so it fails best's Check. Fixtures: b01_heldout_pass_bool flips to a violation; fn21 stays; migrate every held-out fixture (p13/p14/p17/p23*, fn16, fn26, a26-a28, etc.) from `pass` to `results`.",
+            "r_setup / budget() / budget_out(): accept `budget.minutes: null`, and null round t0/t1 when budget.minutes is null, with no RECORD_MISSING. t0/t1 stay required when minutes is a number. Add a new positive fixture; p22_v3_record_missing (minutes 600) stays. This clears the 11 RECORD_MISSING in archive-meta.v3.audit.json.",
+            "r_amend: `amend.budget` replaces the live budget read by bud() (BUDGET_OVERRUN/BUDGET_START/budget_out use the amended budget); add a fixture.",
+            "New r_approve for approve{what:restructure|pick,sections?,version?}. keep_checks: MULTI_SECTION becomes a VIOLATION unless a prior approve{what:restructure} covers those sections (fn29 expected codes change). take_pick reads approve{what:pick,version} instead of inferring the pick from the next round or Check (fp11a/fp11b and p21_oscillation_pick_check gain approve records).",
+            "pre(): remove the ('version','OSCILLATION') exemption so the kept round's version must be logged before exit OSCILLATION. Rewrite fp11b, p21_oscillation_pick_check and p21_oscillation_rerun, which halt before the version.",
+            "worse(): treat UNKNOWN on a protected criterion as a veto, in panel() pbest/xobj and in judge 1's early rejection. fn10 and the p03 positive stay; add a negative (protected criterion rated UNKNOWN, kept -> KEEP_VETOED) and an early-rejection positive (judge 1 UNKNOWN on protected, no judges 2-3, no JUDGE_MISSING).",
+            "r_substrate: read `substrate.criterion`. required = the criterion is required in DONE (no criterion -> required). status closed needs `evidence` equal to the locator of a verified citation, else a VIOLATION on v3 (fn34 flips from unauditable; a24 stays).",
+            "r_check: `check.models` required on v3 (RECORD_MISSING if absent); votes vocabulary pass|fail|UNKNOWN|ERROR is unchanged.",
+            "r_round / r_probe: when DONE has no judges criterion, no probe record is required. The rung is strict, with no PROBE_MISSING (new positive). fn05 (empty probe with a judges criterion) stays.",
+            "r_resume / feed: any record after exit OVERFIT is a VIOLATION (new negative).",
+            "Update expected.json and the module docstring ('recomputes every keep, drop, Check value, halt and exit') to the new records. Record the unauditable rules: held-out secrecy, role separation, relay authenticity, the cosmetic-differences judgment (the difflib 0.9 ratio stays advisory; an exact undo stays a VIOLATION per a38)."
+          ]
+        }
+      }
+    ]
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Restructure"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 2,
+      "title": "Gate"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 3,
+      "title": "Judge"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 4,
+      "title": "Conform"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 5,
+      "title": "Check"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "it1:restructure",
+      "phaseIndex": 1,
+      "phaseTitle": "Restructure",
+      "agentId": "adac90e83697f713d",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790418598445,
+      "queuedAt": 1790418598418,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "{\"ok\": true, \"class\": \"OK\", \"hash\": \"3df5a28e3a7c\", \"base\":…",
+      "promptPreview": "You are the GENERATOR for a HUMAN-APPROVED RESTRUCTURE of the RQGM v3 protocol text (approved by the orchestrating session acting as the human's proxy under the user's instruction to continue autonomously; recorded as such). Best: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/snapshots/9d07665dde77/skills/rqgm-loop/SKILL.md, F:/git/rqgm-loop/.claude/worktre…",
+      "promptFramed": true,
+      "lastProgressAt": 1790420490370,
+      "tokens": 320165,
+      "toolCalls": 61,
+      "durationMs": 1891923,
+      "resultPreview": "{\"tool_output\":\"{\\\"ok\\\": true, \\\"class\\\": \\\"OK\\\", \\\"hash\\\": \\\"3df5a28e3a7c\\\", \\\"base\\\": \\\"9d07665dde77\\\", \\\"words\\\": {\\\"skills/rqgm-loop/SKILL.md\\\": 997, \\\"INITIATOR.md\\\": 1283, \\\"README.md\\\": 1196, \\\"DESIGN.md\\\": 2191}, \\\"words_delta\\\": {\\\"skills/rqgm-loop/SKILL.md\\\": -2, \\\"INITIATOR.md\\\": -16, \\\"README.md\\\": -52, \\\"DESIGN.md\\\": -9}, \\\"caps_ok\\\": true, \\\"over\\\": {}, \\\"diff\\\": \\\"diffs/9d07665dde77…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "it1:screen",
+      "phaseIndex": 2,
+      "phaseTitle": "Gate",
+      "agentId": "afb19c22cd26b3a45",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790420493300,
+      "queuedAt": 1790420493208,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "pass",
+      "promptPreview": "You are the SCREEN for a human-approved restructure (a multi-section change is allowed here). You did not write it; do not edit files. Diff: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/diffs/9d07665dde77-3df5a28e3a7c.diff; best F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/snapshots/9d07665dde77; candidate F:/git/r…",
+      "promptFramed": true,
+      "lastProgressAt": 1790420969096,
+      "tokens": 152303,
+      "toolCalls": 23,
+      "durationMs": 475795,
+      "resultPreview": "{\"screen\":\"pass\",\"reasons\":[\"PASS. None of the reject categories applies. d7 caps hold under str.split: SKILL.md 997 (<=1000), INITIATOR.md 1283 (<=1300), README.md 1196 (<=1250), DESIGN.md 2191 (<=2200). Best was 999/1299/1248/2200, so every file got shorter.\",\"d1 guardrails are kept or strengthened in both SKILL.md and the paste. (a) The writer never judges. Without subagents the human now relay…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 3,
+      "label": "it1:verify",
+      "phaseIndex": 2,
+      "phaseTitle": "Gate",
+      "agentId": "a87e898aeddf58a94",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790420971410,
+      "queuedAt": 1790420971356,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are the VERIFIER. Check each claim only against its cited primary source (files under F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/ are primary for run facts; open papers' arXiv/DOI pages with WebFetch via ToolSearch). Loop-written summaries are not primary sources. Claims: [{\"claim\":\"Removal reasons for the absolute 0-10 gate and its parameters, bundles, gates G1-G6,…",
+      "promptFramed": true,
+      "lastProgressAt": 1790421210420,
+      "tokens": 119628,
+      "toolCalls": 25,
+      "durationMs": 239009,
+      "resultPreview": "{\"results\":[{\"claim\":\"Removal reasons for the absolute 0-10 gate and its parameters, bundles, gates G1-G6, dissent-triggered escalation, E4, re-offering losers, the paraphrase probe control and judge replacement, per-call keys/usage/model-written hashes, the exact-text oscillation test, an owning controller and sidecar rule files are in blueprint.json's `rejected` and `design_md_changes` (DESIGN.m…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 4,
+      "label": "it2:restructure",
+      "phaseIndex": 1,
+      "phaseTitle": "Restructure",
+      "agentId": "a4072f39505055535",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790421212015,
+      "queuedAt": 1790421211994,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "{\"ok\": true, \"class\": \"OK\", \"hash\": \"4428a0fc753e\", \"base\":…",
+      "promptPreview": "You are the GENERATOR for a HUMAN-APPROVED RESTRUCTURE of the RQGM v3 protocol text (approved by the orchestrating session acting as the human's proxy under the user's instruction to continue autonomously; recorded as such). Best: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/snapshots/9d07665dde77/skills/rqgm-loop/SKILL.md, F:/git/rqgm-loop/.claude/worktre…",
+      "promptFramed": true,
+      "lastProgressAt": 1790422268584,
+      "tokens": 276514,
+      "toolCalls": 65,
+      "durationMs": 1056569,
+      "resultPreview": "{\"tool_output\":\"{\\\"ok\\\": true, \\\"class\\\": \\\"OK\\\", \\\"hash\\\": \\\"4428a0fc753e\\\", \\\"base\\\": \\\"9d07665dde77\\\", \\\"words\\\": {\\\"skills/rqgm-loop/SKILL.md\\\": 1000, \\\"INITIATOR.md\\\": 1295, \\\"README.md\\\": 1209, \\\"DESIGN.md\\\": 2199}, \\\"words_delta\\\": {\\\"skills/rqgm-loop/SKILL.md\\\": 1, \\\"INITIATOR.md\\\": -4, \\\"README.md\\\": -39, \\\"DESIGN.md\\\": -1}, \\\"caps_ok\\\": true, \\\"over\\\": {}, \\\"diff\\\": \\\"diffs/9d07665dde77-…"
+    }
+  ],
+  "totalTokens": 868610,
+  "totalToolCalls": 174
+}

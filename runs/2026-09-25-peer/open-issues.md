@@ -10,3 +10,12 @@
 3. Newcomer items skipped for word budget: NEWCOMER-11 (re-entry after a HALT; print-mode paste-back),
    NEWCOMER-12, NEWCOMER-17.
 4. SKILL.md, INITIATOR.md and DESIGN.md are exactly at their caps (1000/1300/2200); README 1248/1250.
+
+## Restructure log (2026-09-26)
+- restructure-1 (28 edits): REJECTED at the Verifier gate: its DESIGN.md text cited blueprint.json for removal
+  reasons the blueprint does not contain, labelled a real loop run 'measured (text dry-run)', and stated an
+  unsupported rationale for removing required times. (The substrate firewall working on the loop's own spec.)
+- restructure-2 (47 edits, applies within caps as 4428a0fc753e): wrongly DROPPED by the orchestrating harness,
+  not by the protocol: the generator appended a note after the tool's JSON on the same line and the harness
+  parser required a pure-JSON line. Fixed (brace-matched extraction) and resumed from that variant as tag 'r'
+  (an instrumentation ERROR is retried once, per v3).
