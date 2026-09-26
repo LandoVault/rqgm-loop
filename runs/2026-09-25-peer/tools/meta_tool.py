@@ -12,12 +12,12 @@ diff application, word caps, and a stale-base guard before promotion.
 VARIANT.json: {"id": "r3-a", "edits": [{"file": "skills/rqgm-loop/SKILL.md", "old": "...", "new": "..."}]}
 Each `old` must occur exactly once in the file at the time it is applied; otherwise the
 variant is an ERROR (not a merit loss). Word counts use str.split(), like `wc -w`.
+Text is normalized to LF (the worktree may be checked out with CRLF).
 """
 import difflib
 import hashlib
 import json
 import os
-import shutil
 import sys
 
 RUN = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -28,9 +28,13 @@ CONFIG = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
 TARGETS = list(CONFIG["caps"].keys())
 
 
+def lf(s):
+    return s.replace("\r\n", "\n")
+
+
 def read(root, rel):
     with open(os.path.join(root, rel), encoding="utf-8", newline="") as f:
-        return f.read()
+        return lf(f.read())
 
 
 def digest(texts):
@@ -84,13 +88,14 @@ def cmd_apply(vpath, base):
         if rel not in TARGETS:
             errors.append(f"edit {i}: file {rel!r} is not a target")
             continue
-        n = texts[rel].count(e.get("old", ""))
-        if not e.get("old"):
+        old, new = lf(e.get("old", "")), lf(e.get("new", ""))
+        n = texts[rel].count(old) if old else 0
+        if not old:
             errors.append(f"edit {i}: empty anchor")
         elif n != 1:
             errors.append(f"edit {i}: anchor occurs {n} times in {rel} (must be exactly 1)")
         else:
-            texts[rel] = texts[rel].replace(e["old"], e.get("new", ""), 1)
+            texts[rel] = texts[rel].replace(old, new, 1)
     if not v.get("edits"):
         errors.append("no edits")
     if errors:
