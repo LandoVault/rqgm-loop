@@ -61,6 +61,16 @@
    },
    "P2": "declared now: the text after the human-proxy-approved restructure that addresses the meta-run's failing Check reasons (v3.1). Frozen and hashed (amendment 4) before any pilot outcome is scored; run on T1 and T2 with the same cap 49. P and P2 are both reported.",
    "note": "The meta-run never saw any pilot output. The orchestrator saw V/S/B self-reports in notifications but ran no scorer."
+  },
+  {
+   "n": 4,
+   "when": "after the restructure ended; before any pilot scoring (no scorer has been run on any pilot output)",
+   "P2": {
+    "text": "v3.1 = 8332bed570f1 (restructures 1-2 kept; its own E2 Check still fails d2-executable and d4-auditable: exit PARTIAL)",
+    "SKILL.md": "fb3a779cdcffd361de152ba8951f43c6de90e7be25aeb0de8341b6ea50f39ce6",
+    "INITIATOR.md": "77c922905fbc362ab6dfd7bf7abf9ef4a5a112de84df12880b59de80f685cd67"
+   },
+   "note": "P2 runs on T1/T2 with cap 49 and the same harness and proxy. All 10 runs are scored together after P2 finishes."
   }
  ]
 }

@@ -1,0 +1,411 @@
+{
+  "summary": "Sealed held-out judges (never seen by loop agents): pass/fail per criterion on final v3 (majority, failing IDs only) + pairwise final v3 vs v2 in both orders (design review)",
+  "agentCount": 9,
+  "logs": [
+    "[stall] agent \"H2:pair-BA\" stalled (no progress) after 484s — retrying (1/5)"
+  ],
+  "result": {
+    "set": "primary",
+    "failing": [
+      "d2-executable",
+      "d4-auditable"
+    ],
+    "judges": [
+      {
+        "judge": "H1",
+        "passfail": {
+          "d1-guardrails": "pass",
+          "d2-executable": "fail",
+          "d3-parity": "pass",
+          "d4-auditable": "fail",
+          "d5-honest": "pass",
+          "d6-cost": "pass",
+          "d7-caps": "pass",
+          "reasons": [
+            "d1 pass: both SKILL.md (L8-14, 34, 42-44, 52-54, 84-93) and the INITIATOR paste (L31-38, 40-42, 73-75, 80-83, 111-120) keep all the listed guardrails: the writer never judges; [OPEN] is written instead of fabricating; check files, DONE and the rubric are never edited, and only the human amends them; the HUMAN ONLY list reserves escalating, stopping, picking, approving restructures and closing or waiving an [OPEN]; held-out judges stay outside TARGET, GROUNDING, MEMORY and the repo, and the first held-out result is reported; UNKNOWN and ERROR never count as support or a pass (a Check ERROR leaves the criterion unchecked, a probe ERROR forces strict mode); the loop stays domain-agnostic. The weak point is enforcement: the Screen's 'unevidenced [OPEN] removals' test can let a loop-evidenced removal through (see d2). The rule itself is still stated as human-only.",
+            "d2 FAIL (gate order): Gate step 2 runs the commands first, then the Verifier edits the variant (contradicted claim -> strip; not found -> insert [OPEN: source needed]). Judges see the edited text, and Keep 'applies exactly the judged text'. So the kept text is never command-checked, and the rule 'a command failing where best passes rejects the variant' fails open. Concrete case: SKILL.md sits at exactly 1000 words under a word-cap command. The Verifier inserting three words breaks the cap after the gate has already logged pass, and gates.commands then records pass for text that fails. The peer register's frozen-check-inputs item requires checks on the exact variant.",
+            "d2 FAIL (Screen inputs): the Screen sees only 'the diff and rubric' (SKILL L40), yet it must reject 'unevidenced [OPEN] removals'. Evidence for closing a gap is the human's substrate.evidence in MEMORY, which the Screen never sees. So the rule cannot be decided from the Screen's inputs. It also lets a generator remove an [OPEN] by citing its own source that the Verifier verifies, which in effect closes a gap without the human.",
+            "d2 FAIL (resume path): 'set aside a torn last line' is not defined as an operation on an append-only file. Leave it in place? Delete it? Start a new line? Appending to a line with no trailing newline merges the resume record into the torn fragment. 'Unfinished round' is also undefined for partial commits. Step 5 logs the round, then version, then substrate as separate lines, then writes TARGET. No rule covers a round line logged with its version torn (rerunning it duplicates round n), or all records complete but TARGET not written. No resume rule reconciles TARGET with the last version record, so the next round can propose and judge against stale text while records say best = v_n. The Non-guarantees disclaim crash-safety, but the procedure itself still has no defined next state.",
+            "d2 FAIL (budget and timeouts): 'each reported budget covers twice the costliest round' has no defined value before round 1. Minutes spent has no stated basis: does it include setup, the probe, or waits for the human at Boundary, amend or held-out steps? Probe (5 calls), setup Verifier and Boundary-Check costs are never logged, yet 'Count from records' governs spend. Nothing says what to do with a late result from a timed-out call that was retried: could it be counted? Minor: whether the orchestrator is the generator in a plain chat ('you (never the generator)' vs step 1 'Propose') is not stated, and neither is the unit for 'shorter'.",
+            "d3 pass: SKILL.md and the INITIATOR paste match rule for rule: HUMAN ONLY, roles and judge schema, results/ERROR, the five round steps, Boundary, Stop, Output and the RECORDS schema (wording differences only, e.g. 'rationale' vs 'reasoning', 'a DONE claim' vs 'when you believe DONE holds'). The only extras outside the paste are non-safety setup notes ('no pass/fail values' in DONE, Retarget) and DESIGN restatements. One caveat: the elapsed-time convention for the minutes budget exists only in rqgm_check.py (see d4).",
+            "d4 FAIL: (a) The minutes budget cannot be recomputed under a rule the prose defines. setup has no timestamp in the schema, but the auditor reads setup.t0. 'Loop time excludes waits for the human' exists only in the rqgm_check.py docstring. DESIGN does not declare this rule unauditable. (b) gates.commands describes the text before the Verifier edited it, while version.diff is the judged text after the edit. So whether the kept text passes the command gate cannot be recomputed, and this is missing from DESIGN's unauditable list. (c) HALT(OPEN) and COMPLETE depend on [OPEN] markers in best, but v0's text and any [OPEN] in a drafted v0 are never recorded. The auditor counts markers from kept diffs only, starting at 0, as advisory. DESIGN lists only 'Closed gap' as pending, not [OPEN] presence as unauditable. (d) Probe, setup and Boundary spend have no record, so a spend or budget decision that used host totals cannot be recomputed. Keeps, drops, Check tallies and the STALL, ERROR and OVERFIT halts are otherwise well recorded.",
+            "d5 pass: Output reports each criterion as pass/fail/unchecked/waived and names what decided it (command, source, judges with one source per model family, or held-out), plus the first held-out result, amends and approvals, and whether the audit ran. DESIGN keeps its four evidence labels and never upgrades them: it says 'no mechanism has yet been shown to improve outcomes', v3 is 'design review' only, and no matched-budget baseline has run. README says the same. Spot-checked figures (55.4%, TNR under 25%) match register.json. One small point: 'spend' leaves out unlogged probe and setup costs, but that is not a relabelled evidence type.",
+            "d6 pass: a round costs at most about 12 judge, Screen and Verifier calls over 2 variants (judge 3 is skipped when judges 1 and 2 agree; judge 1 can reject early). A probe is 5 calls per rung and a Check is 3. The staged validation protocol lives in DESIGN, not in each run, so there is no per-run study apparatus. The prose is dense but not padded.",
+            "d7 pass: str.split counts are SKILL.md 1000, INITIATOR.md 1300, README.md 1231 and DESIGN.md 2199, all within caps. The snapshot files are identical to the current repo files."
+          ]
+        },
+        "pair": {
+          "overall": "v3",
+          "orders": [
+            "v3",
+            "v3"
+          ],
+          "confidence": [
+            "high",
+            "high"
+          ],
+          "criteria": {
+            "d1-guardrails": "v3",
+            "d2-executable": "v3",
+            "d3-parity": "v3",
+            "d4-auditable": "v3",
+            "d5-honest": "v3",
+            "d6-cost": "UNKNOWN"
+          },
+          "defects": [
+            "Resume path re-executes completed work. 'Rerun an unfinished round' re-asks every generator, Screen, Verifier and judge call in that round because there are no per-call keys (they are Deferred). That contradicts 'Never re-ask a verdict', lets a crash re-roll a keep decision, and duplicates any citation or probe records logged before the crash. DESIGN admits it ('no crash-safe resume'), but the prose has no fail-closed rule for this.",
+            "The log-then-write order is never reconciled on resume. SKILL step 5 logs the round and version, then writes TARGET. If a crash lands between the two, the round is logged as complete but TARGET is stale. No rule rebuilds best/TARGET from the last version record, so the next round can gate and judge against a version that has already been superseded.",
+            "The budget gate runs only at round start. Probes (5 calls per rung), the Check triggered by budget exhaustion (trigger:budget), and the re-Check plus probe after an escalation are not budget-gated, so they can overrun a spent budget. 'Twice the costliest round' is undefined before the first round has finished. The prose also has no concurrency rule, while B at least advised running one agent at a time in a stable order.",
+            "Late results after an ERROR retry are unaddressed. If the original timed-out call returns after the retry, no rule says which result fills the judge slot or that the superseded one is discarded, so one slot can count twice toward '>=2 prefer'.",
+            "A HALT's record is only implicit. The prose never says each HALT(X) logs exit{status:PARTIAL, reason:X}. Only the schema and rqgm_check.py assume it. Resume-after-halt ('after a halt, the human decides') and the OSCILLATION pick depend on that record.",
+            "The veto can be misapplied. The veto covers a protected item 'rated worse, UNKNOWN or not at all', but judge 3 is skipped when judges 1 and 2 agree. An orchestrator could read the skipped judge's missing ratings as a veto, which would block every 2-judge keep, or could ignore the clause entirely.",
+            "'Idea' is undefined, so the ledger skip (rejected by >=2 judges or twice by the Screen) cannot be decided mechanically. The auditor treats it as advisory only.",
+            "The held-out report is described inconsistently. SKILL/INITIATOR say the human reports 'only the marks', while the heldout.results record and DESIGN row 8 require marks and votes.",
+            "SKILL.md (1000 words) and INITIATOR.md (1300 words) sit exactly at their caps, and DESIGN.md is one word under at 2199. Any fix to the defects above has to cut other text.",
+            "Budget admission is ambiguous. 'each reported budget covers twice the costliest round' does not say remaining vs total budget. It has no margin before round 1, when there is no costliest round yet. It reserves nothing for Check, probe or retry calls, and the prose does not say whether human waits count as minutes. rqgm_check.py reads it as remaining budget and excludes human waits, but the prose does not, so an orchestrator can misapply it.",
+            "Resume reruns the whole unfinished round, so finished generator, gate and judge calls run again and the keep decision is redrawn. This is declared (per-call keys deferred, 'no claim of crash-safe resume'), but it is the re-executed-finished-work failure.",
+            "Crash window between logging and writing TARGET: step 5 logs the round and version before writing TARGET, and a version record holds only a diff. No resume rule makes TARGET match the last logged version, so after a crash there the loop can go on from a stale TARGET.",
+            "Gate order: commands run on the diff before the Verifier strips a claim or inserts [OPEN: source needed]. The text that is judged and kept ('apply exactly the judged text') can differ from the text the command gate passed, which is a verdict applied to a changed version.",
+            "Halts have no record type. HALT(STALL/OPEN/BUDGET/ERROR/OSCILLATION) must be logged as exit{status:PARTIAL, reason}, even though most halts can be resumed. The prose never says this, while the checker's pre()/r_exit rely on it, so 'exit' is overloaded.",
+            "HALT(OPEN) is overloaded. It covers both a required substrate gap and 'no separate context for a role', so the reason alone does not tell the human what to supply.",
+            "Minor parity drift: SKILL triggers Check on 'a DONE claim', the paste on 'when you believe DONE holds'. DESIGN's maintainer rule correction{record,why} is missing from the RECORDS schema.",
+            "The prose is packed to the exact caps (SKILL 1000/1000, INITIATOR 1300/1300, DESIGN 2199/2200). Rules are very dense and still untested for orchestrator misreading (Stage 1 is pending). In print mode, resume relies on the human pasting back complete records."
+          ]
+        }
+      },
+      {
+        "judge": "H2",
+        "passfail": {
+          "d1-guardrails": "pass",
+          "d2-executable": "fail",
+          "d3-parity": "pass",
+          "d4-auditable": "fail",
+          "d5-honest": "pass",
+          "d6-cost": "pass",
+          "d7-caps": "pass",
+          "reasons": [
+            "d1 pass: The HUMAN ONLY list is complete in both SKILL.md and the paste. It covers escalating or stopping below the final rung, resuming after halts or violations, amending DONE, the rubric or BUDGET, approving restructures, picking after an OSCILLATION halt, closing an [OPEN] with Verifier-checked evidence or waiving it, and writing and running the held-out judges. The writer never judges, and the probe defect is seeded by the orchestrator, 'never the generator'. Missing data becomes [OPEN] and is never fabricated. Check files, DONE and the rubric are never edited, and commands run with setup's check files. Held-out prompts stay outside TARGET, GROUNDING, MEMORY and the repo and are single-use per TARGET. Output reports the first held-out result; spares run only once, and a second non-pass is HALT(OVERFIT). UNKNOWN is never a tie, pass or support. An UNKNOWN or unrated protected item is a veto, and any ERROR leaves a Check criterion unchecked. Nothing in the loop is domain-specific.",
+            "d2 fail (a), the command gate fails open after Verifier edits: Gate order is commands, then Verifier, then Screen. The Verifier then edits the variant ('contradicted -> strip; not found -> [OPEN: source needed]'), Keep applies 'exactly the judged text', and commands are never rerun on the edited text. So a variant that passes a command criterion can be kept in a form that fails it. Examples: a file at a word cap gains 3 words from the inserted '[OPEN: source needed]' (all four files here are exactly at their caps), or a code file gets a syntax break from a strip or insertion. The protected veto does not catch this, because judges cannot run commands. DESIGN row 1's 'failing one best passes rejects the variant before judging' is therefore false for Verifier-edited variants. The next round's 'where best passes' then compares against stale results.",
+            "d2 fail (b), held-out judges cannot decide command criteria: Stop has each held-out judge mark every required criterion 'fresh on best, DONE and GROUNDING', which includes command criteria the judge cannot execute. An honest judge returns UNKNOWN, which is a non-pass; that leads to rounds, then spares, then HALT(OVERFIT). So any target with a required command criterion (for example code, the pilot's T1) cannot reach COMPLETE unless the LLM judges guess. The OVERFIT halt then names a cause (overfitting) that the data do not show. (c) Minor: 'twice the costliest round' is undefined before round 1. A HALT(OPEN) raised because no subagents are available can be read on resume as 'all (zero) gaps waived -> Stop', which would spend the single-use held-out set on v0.",
+            "d3 pass: A token-level diff of SKILL.md against the paste shows the same rules with only reordering and slot syntax. The one wording difference ('a DONE claim' vs 'when you believe DONE holds') has the same meaning. DESIGN's safety statements restate these rules, and no rule lives only in a sidecar file.",
+            "d4 fail, some keep and halt inputs are neither logged nor declared unauditable. (a) Judge 1's both-order rule ('disagreement = UNKNOWN') also applies to per-criterion ratings, and those ratings drive the protected veto. The schema logs both orders only for the overall verdict ('orders:[overallAB,overallBA]'), so the per-criterion merge cannot be recomputed. The unauditable list declares only 'judge 1's logged confidence'. (b) Each variant has a single 'diff' field, which cannot hold both the text the commands ran on and the Verifier-edited text that was judged and kept. Whenever the Verifier edits, either the command gate or 'apply exactly the judged text' cannot be recomputed, and this is not declared. (c) The probe, Check and setup calls have no token field, so the token budget, HALT(BUDGET) and the spend reported in Output cannot be recomputed from records. (d) The schema fixes setup{loop:'v3'}, the same label the pilot's P arm used for a materially different text (9d07665dde77), whose veto and Check rules differ. DESIGN's own maintainer rule requires a new version label for a spec change outside a run. As a result, archives from the two texts cannot be told apart, and Stage 5's 'audit --first on P archives' would apply this candidate's rules to them.",
+            "d5 pass: Output labels each criterion pass, fail, unchecked or waived, with its source: command, source, judges (one source per model family) or held-out. It also reports the first held-out result and every amend and approve. The docs call judges 'a preference, never proof', and the Non-guarantees say no judge PASS establishes truth. Evidence labels carry n=1 and correlated-call caveats, name their record files and the commits that edited them, and state that 'labels are never upgraded'. The docs also say 'no mechanism has yet been shown to improve outcomes' and 'no matched-budget baseline has been run'. The validation decision rules only withhold claims.",
+            "d5 caveats, none of which upgrades a label: (1) README places the 1.91x over-acceptance figure next to the loop's mechanisms, which implies they counter it, although DESIGN cites 2510.11822 (majority voting fails to fix leniency) and the Check and held-out steps both use majority votes. (2) The status line 'v3 ... not yet run on a task or compared with simpler methods at equal budget' is stale: pilot runs P-T1 and P-T2 ran the earlier 'v3' text against S, B and V at an equal call cap (not yet scored). This understates rather than overclaims. (3) Output omits the probe outcome, and the held-out record has no model field, so a correlated held-out panel is undisclosed. (4) In Stage 3, the primary outcome 'false completion' can be driven to zero by never declaring COMPLETE, and 'P below S or B' names no metric.",
+            "d6 pass: A round costs at most about 14 calls (generator, 2 Verifier, 2 Screen, up to 4 judge calls per variant). The 5-call probe per rung feeds a decision (strict mode), and a Check is 3 calls. The validation study is a one-time plan in DESIGN, not per-run apparatus.",
+            "d7 pass: str.split word counts are SKILL.md 1000/1000, INITIATOR.md 1300/1300, README.md 1231/1250 and DESIGN.md 2199/2200."
+          ]
+        },
+        "pair": {
+          "overall": "v3",
+          "orders": [
+            "v3",
+            "v3"
+          ],
+          "confidence": [
+            "high",
+            "high"
+          ],
+          "criteria": {
+            "d1-guardrails": "v3",
+            "d2-executable": "v3",
+            "d3-parity": "v3",
+            "d4-auditable": "v3",
+            "d5-honest": "v3",
+            "d6-cost": "tie"
+          },
+          "defects": [
+            "Held-out contamination: after a held-out fail, A makes 'each non-pass ... non-pass in *best*'s Check' and runs more rounds aimed at the failing criterion IDs before running the spares. A later COMPLETE therefore comes from spares scored after the loop was tuned on held-out feedback. Reporting the first held-out result limits the damage, but the spare pass is not a clean held-out result. Nothing labels a spare-based COMPLETE as post-feedback.",
+            "COMPLETE can rest entirely on majority votes from judges of one model family: the Check majority plus held-out judge marks. Output does list the source of each criterion and the non-guarantees say no judge PASS establishes truth. Still, the COMPLETE status word is not qualified, so a reader can take it as validation.",
+            "Held-out judges mark every required criterion, including 'command' and 'source' criteria. This mixes judge preference into criteria that a command or the Verifier is supposed to decide, and the Stop rule does not say which result wins when they disagree.",
+            "'Each reported budget covers twice the costliest round' is undefined before any round has run (there is no costliest round yet), so the first-round admission check has no defined input.",
+            "The probe clause 'a copy ... seeded with one judges-criterion defect that a Check judge marks' does not say exactly what counts as a miss for the Check-judge call.",
+            "'No judges criterion (no probe) -> strict mode' forces all 3 judges on every variant and 3/3 keeps even when every criterion is command- or source-checked. That adds calls without adding decision information (cost).",
+            "Resume says 'rerun an unfinished round', which draws the judge calls again and can re-roll a keep decision. This is deferred (per-call keys) and noted under non-guarantees, but it stays a known gap in auditability and reproducibility.",
+            "Much of the audit coverage is still pending: the unrated-protected-id veto, the held-out recount, waiver-driven Stop, spares sequencing and source Checks are listed as future rqgm_check.py changes. DESIGN declares this, but for now those rules can only be recomputed by hand.",
+            "DESIGN row 6 cites judge-won tallies (16/17, 10/15) as 'measured (v1 run)' evidence in the Search row. They are labelled as correlated judge calls, but they are still judge votes set beside a mechanism.",
+            "SKILL.md (1000/1000), INITIATOR.md (1300/1300) and DESIGN.md (2199/2200) sit exactly at their word caps, leaving no margin for any fix.",
+            "Output status COMPLETE rests, for judges-kind criteria, on a majority of 3 LLM Check votes plus held-out LLM judge marks. The Non-guarantees line says no judge PASS establishes truth, but the word COMPLETE still invites readers to treat judge votes as truth. Label it something like 'passed by judges' rather than complete.",
+            "Held-out results are reused as feedback. STOP makes each held-out non-pass a non-pass in best's Check, and the loop then runs rounds aimed at those criterion IDs. Spares and 'report the first held-out result' limit the damage, but the second held-out attempt is conditioned on the first failure, and there is only one retry.",
+            "The validation protocol runs one run per cell with one model family on 2-3 tasks. Its decision rules block an 'improved' claim only when P falls below S or B. They do not explicitly forbid a superiority claim when P is at or above S and B at n=1 per cell; 'no significance claims' is the only guard.",
+            "DESIGN row 6 (Search) gives judge win-rate tallies (16 of 17, 10 of 15) from correlated single-family v1 judges as its evidence. These are judge preferences from the kind of lenient reviewer row 2 warns about, placed next to a mechanism, even though the mechanism column is marked design-only.",
+            "The seeded probe is one planted defect per rung, marked by one Check judge. That is n=1 calibration. README's 'a planted defect tests the judges' suggests a reliability check that a single item cannot provide.",
+            "The Stage-1 answer key comes from the co-designed auditor (audit --pending). Its oracle is built by the same author who wrote the spec, and only human adjudication separates the two.",
+            "The budget admission rule 'each reported budget covers twice the costliest round' is undefined before the first round has run.",
+            "HALT(OPEN) is overloaded. It covers substrate gaps and also the infrastructure case where no separate context exists for a role, which blurs what the halt tells the human to supply.",
+            "SKILL, INITIATOR and DESIGN sit at or just under their word caps (1000/1000, 1300/1300, 2199/2200 words). The prose is heavily compressed, which makes rules like the probe definition hard to parse in a plain chat."
+          ]
+        }
+      },
+      {
+        "judge": "H3",
+        "passfail": {
+          "d1-guardrails": "pass",
+          "d2-executable": "fail",
+          "d3-parity": "pass",
+          "d4-auditable": "pass",
+          "d5-honest": "pass",
+          "d6-cost": "pass",
+          "d7-caps": "pass",
+          "reasons": [
+            "d1 pass: Both SKILL.md and the THE LOOP paste keep every binding rule. The writer never judges, and without subagents the human runs every other role, else HALT(OPEN). Fabrication is banned ([OPEN: what is needed]). Check files, DONE and the rubric are never edited, and change only by human amend. The HUMAN ONLY list covers escalate/stop, resume, pick, restructure approval and closing or waiving an [OPEN]. Held-out judges stay outside TARGET/GROUNDING/MEMORY/repo, only the human runs them, and Output reports the first held-out result. UNKNOWN is never a tie, pass or support; ERROR leads to drop or unchecked. The rules are domain-agnostic. Compared with the pre-restructure text (git diff aafbbc9..17d91ec), the restructures strengthen the rules (veto adds UNKNOWN or not rated; the human now runs every role, not only judges). The README Quickstart is still one-chat self-review, but it existed before, is disclosed as self-review, and gained 'none prefers best' and 'unsure never counts'.",
+            "d2 FAIL (H3, first-time user). (a) The auditor path only works if you know record vocabularies the four files never state. SKILL Memory and INITIATOR RECORDS give gates:{apply,commands,verifier,screen,retries} and exit{status,reason} with no allowed values. The prose writes halts as HALT(STALL) and never says that a halt logs exit{PARTIAL,reason}. Reproduced with skills/rqgm-loop/rqgm_check.py: changing fixture fp01's exit reason from 'STALL' to the prose's own 'HALT(STALL)' gives STALL_HALT_MISSED (VIOLATION). Changing p23_prune's gate values to 'passed'/'applied' gives GATE_KEPT and ERROR_AS_REJECTION (VIOLATION). The prose wires the auditor into control flow ('a violation pauses until the human resumes or stops'), so a newcomer using Python gets spurious pauses.",
+            "d2 FAIL (cont.). (b) The INITIATOR DONE slot says 'JSON like the example' (examples/worked-example.md). That example's command criterion (grep on spec.md) has no `files`. The prose rule 'naming every file it runs' is met by files:[] for a grep, but the auditor reports RECORD_MISSING either way (reproduced on a minimal archive: VIOLATION, exit 1). Listing spec.md instead would make TARGET a check file, which the loop may never edit. So no value satisfies both the prose and the auditor. (c) SKILL path: the restructure cut v3's 'Ask only for missing slots'. The README's own triggers ('run the RQGM loop on this proposal until it's fundable') supply no BUDGET, EVALUATORS or GROUNDING, and SKILL has a fallback rule only for DONE. With no BUDGET, 'start a round only if one remains' cannot be decided (or halts at once with HALT(BUDGET)).",
+            "d2 FAIL (cont.). (d) Terms left undefined: the `guardrail?` flag has no stated meaning, yet it controls the veto and the Screen's 'weakened guardrails'. Output lists 'waived' as a criterion status, but no rule says how waiving a required gap affects 'All required pass'. After a HALT(STALL) on a gap the human waives, the only defined next state is another round and another stall, unless the human also amends DONE. The substrate field 'owner' is undefined, and so is which personas serve as Check judges. On a print-mode resume, nothing says which TARGET text (v0 or the latest best) to paste back. (e) Cost cannot be predicted: README and INITIATOR never give calls per round. In a plain chat that is roughly 14 fresh-chat relays per round (2 generator, 2 Verifier, 2 Screen, up to 8 judge calls), plus 5 per rung for the probe and 3 per Check. The plain-chat paste is otherwise executable through human relay.",
+            "d3 pass: HUMAN ONLY, Setup/Resume, Probe, Roles, Results, Each round 1-5, Boundary, Stop, Output and the Memory schema say the same thing in SKILL.md and the INITIATOR paste; the only differences are wording ('rationale' vs 'reasoning'; 'DONE claim' vs 'believe DONE holds'). No safety rule lives only in DESIGN.md or the README. The only INITIATOR-only note ('no pass/fail values' in DONE) is a filling hint, not a safety rule.",
+            "d4 pass: the required records can recompute keeps (verdicts with orders, per-criterion ratings, confidence, words, protected set from setup.done and check), drops (gates.retries, ERROR), Checks (check votes, citation.version), halts (round, check, substrate, heldout, t0/t1/tokens) and exits. DESIGN lists what cannot be audited (cosmetic judgment, section boundaries, judge 1 confidence, file-editing checks, role separation, relay authenticity, held-out secrecy). The vocabulary gaps under d2 hurt mechanical auditing, but a reader can still recompute each decision. The DESIGN pending table is stale: the conformed auditor already enforces the command `files` RECORD_MISSING rule that it lists as pending.",
+            "d5 pass: Output keeps pass/fail/unchecked/waived by command, source, judges (one source per model family) and held-out separate, and reports the first held-out result. README and DESIGN state that nothing is validated on a task and that no matched-budget baseline has run. The self-applied meta-run is labelled design review only. The literature IDs I spot-checked (1.91x, 55.4% AB/BA reversals, TNR under 25%, output-cap artifact, 4.52M/75 tokens) appear in research.json, register.json, grounding.md or meta/log.md as cited. v1 results are labelled n = 1.",
+            "d6 pass: judging is staged (judge 1 in both orders; judge 3 only when needed), with one probe per rung (5 calls), 3-call Checks and 3+3 held-out judges. The pre-registered validation stages are maintainer-level, not per run, so there is no per-run study apparatus. Heavy protected-item vetoes cost keeps, a trade the design discloses.",
+            "d7 pass: str.split counts are SKILL 1000/1000, INITIATOR 1300/1300, README 1231/1250 and DESIGN 2199/2200."
+          ]
+        },
+        "pair": {
+          "overall": "v3",
+          "orders": [
+            "v3",
+            "v3"
+          ],
+          "confidence": [
+            "high",
+            "high"
+          ],
+          "criteria": {
+            "d1-guardrails": "v3",
+            "d2-executable": "v3",
+            "d3-parity": "v3",
+            "d4-auditable": "v3",
+            "d5-honest": "v3",
+            "d6-cost": "UNKNOWN"
+          },
+          "defects": [
+            "Generator identity and context are undefined. PROPOSE is addressed to the orchestrator ('you'), yet the probe copy must be seeded by 'you (never the generator)', and judges must never see 'the generator's rationale'. A never says whether the orchestrator is the generator, or what the generator sees: the ledger, logged flaws, GROUNDING. B stated the generator's context. In plain-chat mode, where the human runs 'every other role', this is contradictory for a first-time user.",
+            "Check-files trap: a command criterion must list 'every file it runs' (`files`). The INITIATOR links examples/worked-example.md as the DONE template, and its command criterion (`grep ... spec.md`) has no `files` field. rqgm_check.py then reports RECORD_MISSING, a VIOLATION that pauses the loop. If the user instead lists spec.md, TARGET becomes a check file that the loop is forbidden to edit.",
+            "The `guardrail?` field in the setup.done schema, and 'guardrails' as a protected item, are never defined in the prose. The auditor treats `guardrail:true` criteria as protected, so its behaviour depends on a term the user is never told about.",
+            "Budget rule 'each reported budget covers twice the costliest round' is undefined before round 1. Neither SKILL nor the paste states the calls per round (proposal, gates, up to 4 judge calls per variant, the 5-call probe per rung, 3-call Checks). The plain-chat human workload (running every role in fresh chats, keeping printed JSON records) is not quantified, so a first-time user cannot predict cost.",
+            "The paste is very dense. Record-field shorthand ('heldout.results; Check rule', 'substrate.evidence', 'one source per named model family') and nested parentheticals make it hard to follow from the paste alone. No prompt templates are given for the Screen, Verifier or judge roles that the human must run in plain chat.",
+            "The text never says when or how the loop asks the human for a multi-section restructure; it says only that one needs `approve`.",
+            "The auditor's docstring references setup.check_files, setup.check_hashes and a `hash` op. None of these appear in the prose schema: a small drift between the prose and the sidecar.",
+            "The paste is written in very short clauses, so some rules only make sense after reading DESIGN.md. Example: the Probe rule says 'a copy you seeded with one judges-criterion defect that a Check judge marks'. It never says how many calls the probe takes or exactly what counts as a 'miss'. Only DESIGN row 3 says it is a 5-call probe.",
+            "The budget rule 'start a round only if each reported budget covers twice the costliest round' has no meaning before any round has finished. It also does not say whether setup calls (v0 commands, the Verifier, the probe) count toward it.",
+            "A new user cannot estimate cost from the paste. It gives no per-round call count or formula. The only figures are in DESIGN and come from v1 runs: about 60K tokens per agent call and about 6.8 agents per epoch.",
+            "In a plain chat, keeping roles separate falls entirely on the human. They must run every role except the orchestrator's in fresh chats and paste printed records back. The docs never say how many fresh chats a round needs (roughly 8-12), so the human's workload is large and hard to foresee.",
+            "Undefined term: the setup.done schema has a `guardrail?` field that is never explained. 'Guardrails' as protected items are never listed, so a user cannot tell which items are protected by the veto.",
+            "A 'file-editing check' is classed as ERROR, but no step says how the orchestrator would detect one. DESIGN itself lists it as unauditable.",
+            "'Section = one heading's text, else the file' fits code targets badly. In a file with no headings, the smallest allowed variant is a change to the whole file.",
+            "The ledger rule ('skip logged ideas rejected by ≥2 judges or twice by the Screen, absent new evidence') needs a judgment about whether two ideas are the same. The records cannot decide it.",
+            "The example DONE is in an external file (examples/worked-example.md), not in the paste. The paste gives the shape of `test` and `command` but not what each field means for a command criterion.",
+            "About 700 words of DESIGN serve maintainers and the validation study: Stages 0-6, T1/T2 tasks, the 'P+audit arm' and Stage-6 promotion triggers. A first-time user cannot act on any of it, and these terms are undefined for them.",
+            "The auditor does not fully match B's schema. rqgm_check.py still refers to setup.check_files and setup.check_hashes and has a `hash` command, but B's setup record has neither field. DESIGN lists 9 rules the auditor does not check yet. open-issues.md records that the auditor sometimes reports missing v3 fields as unauditable rather than as violations."
+          ]
+        }
+      }
+    ]
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Held-out"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "H1:passfail",
+      "phaseIndex": 1,
+      "phaseTitle": "Held-out",
+      "agentId": "a169034b42c9839a1",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790431962759,
+      "queuedAt": 1790431962677,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "pass",
+      "promptPreview": "You are a final reviewer of a proposed new version of the RQGM loop (a protocol, plus an optional read-only auditor script, for improving one artifact with separate generator / screen / verifier / judge roles). You did not write it. Judge substance only; formatting, length and tone are ties unless a criterion measures them. For each criterion answer per the requested format; UNKNOWN means you cann…",
+      "promptFramed": true,
+      "lastProgressAt": 1790432423942,
+      "tokens": 156774,
+      "toolCalls": 21,
+      "durationMs": 461172,
+      "resultPreview": "{\"d1-guardrails\":\"pass\",\"d2-executable\":\"fail\",\"d3-parity\":\"pass\",\"d4-auditable\":\"fail\",\"d5-honest\":\"pass\",\"d6-cost\":\"pass\",\"d7-caps\":\"pass\",\"reasons\":[\"d1 pass: both SKILL.md (L8-14, 34, 42-44, 52-54, 84-93) and the INITIATOR paste (L31-38, 40-42, 73-75, 80-83, 111-120) keep all the listed guardrails: the writer never judges; [OPEN] is written instead of fabricating; check files, DONE and the rub…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "H2:passfail",
+      "phaseIndex": 1,
+      "phaseTitle": "Held-out",
+      "agentId": "a3ef52c52548f3375",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790431962764,
+      "queuedAt": 1790431962677,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "pass",
+      "promptPreview": "You are a final reviewer of a proposed new version of the RQGM loop (a protocol, plus an optional read-only auditor script, for improving one artifact with separate generator / screen / verifier / judge roles). You did not write it. Judge substance only; formatting, length and tone are ties unless a criterion measures them. For each criterion answer per the requested format; UNKNOWN means you cann…",
+      "promptFramed": true,
+      "lastProgressAt": 1790432749286,
+      "tokens": 198492,
+      "toolCalls": 28,
+      "durationMs": 784919,
+      "resultPreview": "{\"d1-guardrails\":\"pass\",\"d2-executable\":\"fail\",\"d3-parity\":\"pass\",\"d4-auditable\":\"fail\",\"d5-honest\":\"pass\",\"d6-cost\":\"pass\",\"d7-caps\":\"pass\",\"reasons\":[\"d1 pass: The HUMAN ONLY list is complete in both SKILL.md and the paste. It covers escalating or stopping below the final rung, resuming after halts or violations, amending DONE, the rubric or BUDGET, approving restructures, picking after an OSCIL…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 3,
+      "label": "H3:passfail",
+      "phaseIndex": 1,
+      "phaseTitle": "Held-out",
+      "agentId": "ad20454bba45641cb",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790431962769,
+      "queuedAt": 1790431962678,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "pass",
+      "promptPreview": "You are a final reviewer of a proposed new version of the RQGM loop (a protocol, plus an optional read-only auditor script, for improving one artifact with separate generator / screen / verifier / judge roles). You did not write it. Judge substance only; formatting, length and tone are ties unless a criterion measures them. For each criterion answer per the requested format; UNKNOWN means you cann…",
+      "promptFramed": true,
+      "lastProgressAt": 1790432764091,
+      "tokens": 199038,
+      "toolCalls": 38,
+      "durationMs": 799722,
+      "resultPreview": "{\"d1-guardrails\":\"pass\",\"d2-executable\":\"fail\",\"d3-parity\":\"pass\",\"d4-auditable\":\"pass\",\"d5-honest\":\"pass\",\"d6-cost\":\"pass\",\"d7-caps\":\"pass\",\"reasons\":[\"d1 pass: Both SKILL.md and the THE LOOP paste keep every binding rule. The writer never judges, and without subagents the human runs every other role, else HALT(OPEN). Fabrication is banned ([OPEN: what is needed]). Check files, DONE and the rubri…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 4,
+      "label": "H1:pair-AB",
+      "phaseIndex": 1,
+      "phaseTitle": "Held-out",
+      "agentId": "a616b5634b05c024d",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790432427268,
+      "queuedAt": 1790432427247,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "A",
+      "promptPreview": "You are a final reviewer of a proposed new version of the RQGM loop (a protocol, plus an optional read-only auditor script, for improving one artifact with separate generator / screen / verifier / judge roles). You did not write it. Judge substance only; formatting, length and tone are ties unless a criterion measures them. For each criterion answer per the requested format; UNKNOWN means you cann…",
+      "promptFramed": true,
+      "lastProgressAt": 1790432634734,
+      "tokens": 115681,
+      "toolCalls": 15,
+      "durationMs": 207465,
+      "resultPreview": "{\"criteria\":{\"d1-guardrails\":\"A\",\"d2-executable\":\"A\",\"d3-parity\":\"A\",\"d4-auditable\":\"A\",\"d5-honest\":\"A\",\"d6-cost\":\"tie\"},\"overall\":\"A\",\"confidence\":\"high\",\"defects_of_preferred\":[\"Resume path re-executes completed work. 'Rerun an unfinished round' re-asks every generator, Screen, Verifier and judge call in that round because there are no per-call keys (they are Deferred). That contradicts 'Never r…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 5,
+      "label": "H1:pair-BA",
+      "phaseIndex": 1,
+      "phaseTitle": "Held-out",
+      "agentId": "adfbcffe35b655208",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790432636262,
+      "queuedAt": 1790432636256,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "B",
+      "promptPreview": "You are a final reviewer of a proposed new version of the RQGM loop (a protocol, plus an optional read-only auditor script, for improving one artifact with separate generator / screen / verifier / judge roles). You did not write it. Judge substance only; formatting, length and tone are ties unless a criterion measures them. For each criterion answer per the requested format; UNKNOWN means you cann…",
+      "promptFramed": true,
+      "lastProgressAt": 1790432826039,
+      "tokens": 117660,
+      "toolCalls": 19,
+      "durationMs": 189776,
+      "resultPreview": "{\"criteria\":{\"d1-guardrails\":\"B\",\"d2-executable\":\"B\",\"d3-parity\":\"B\",\"d4-auditable\":\"B\",\"d5-honest\":\"B\",\"d6-cost\":\"B\",\"d7-caps\":\"tie\"},\"overall\":\"B\",\"confidence\":\"high\",\"defects_of_preferred\":[\"Budget admission is ambiguous. 'each reported budget covers twice the costliest round' does not say remaining vs total budget. It has no margin before round 1, when there is no costliest round yet. It reser…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 6,
+      "label": "H2:pair-AB",
+      "phaseIndex": 1,
+      "phaseTitle": "Held-out",
+      "agentId": "a58449b5af37506bf",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790432750906,
+      "queuedAt": 1790432750897,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "A",
+      "promptPreview": "You are a final reviewer of a proposed new version of the RQGM loop (a protocol, plus an optional read-only auditor script, for improving one artifact with separate generator / screen / verifier / judge roles). You did not write it. Judge substance only; formatting, length and tone are ties unless a criterion measures them. For each criterion answer per the requested format; UNKNOWN means you cann…",
+      "promptFramed": true,
+      "lastProgressAt": 1790432874392,
+      "tokens": 102588,
+      "toolCalls": 14,
+      "durationMs": 123484,
+      "resultPreview": "{\"criteria\":{\"d1-guardrails\":\"A\",\"d2-executable\":\"A\",\"d3-parity\":\"A\",\"d4-auditable\":\"A\",\"d5-honest\":\"A\",\"d6-cost\":\"tie\"},\"overall\":\"A\",\"confidence\":\"high\",\"defects_of_preferred\":[\"Held-out contamination: after a held-out fail, A makes 'each non-pass ... non-pass in *best*'s Check' and runs more rounds aimed at the failing criterion IDs before running the spares. A later COMPLETE therefore comes fr…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 7,
+      "label": "H3:pair-AB",
+      "phaseIndex": 1,
+      "phaseTitle": "Held-out",
+      "agentId": "ad7273d98afe34314",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790432765845,
+      "queuedAt": 1790432765841,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "A",
+      "promptPreview": "You are a final reviewer of a proposed new version of the RQGM loop (a protocol, plus an optional read-only auditor script, for improving one artifact with separate generator / screen / verifier / judge roles). You did not write it. Judge substance only; formatting, length and tone are ties unless a criterion measures them. For each criterion answer per the requested format; UNKNOWN means you cann…",
+      "promptFramed": true,
+      "lastProgressAt": 1790432953994,
+      "tokens": 108935,
+      "toolCalls": 18,
+      "durationMs": 188148,
+      "resultPreview": "{\"criteria\":{\"d1-guardrails\":\"A\",\"d2-executable\":\"A\",\"d3-parity\":\"A\",\"d4-auditable\":\"A\",\"d5-honest\":\"A\",\"d6-cost\":\"A\"},\"overall\":\"A\",\"confidence\":\"high\",\"defects_of_preferred\":[\"Generator identity and context are undefined. PROPOSE is addressed to the orchestrator ('you'), yet the probe copy must be seeded by 'you (never the generator)', and judges must never see 'the generator's rationale'. A nev…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 8,
+      "label": "H2:pair-BA (retry 1)",
+      "phaseIndex": 1,
+      "phaseTitle": "Held-out",
+      "agentId": "af8775ed405988add",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790432876006,
+      "queuedAt": 1790432876000,
+      "attempt": 2,
+      "lastAttemptReason": "stalled",
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "B",
+      "promptPreview": "You are a final reviewer of a proposed new version of the RQGM loop (a protocol, plus an optional read-only auditor script, for improving one artifact with separate generator / screen / verifier / judge roles). You did not write it. Judge substance only; formatting, length and tone are ties unless a criterion measures them. For each criterion answer per the requested format; UNKNOWN means you cann…",
+      "promptFramed": true,
+      "lastProgressAt": 1790433633198,
+      "tokens": 198011,
+      "toolCalls": 26,
+      "durationMs": 756590,
+      "resultPreview": "{\"criteria\":{\"d1-guardrails\":\"B\",\"d2-executable\":\"B\",\"d3-parity\":\"B\",\"d4-auditable\":\"B\",\"d5-honest\":\"B\",\"d6-cost\":\"tie\"},\"overall\":\"B\",\"confidence\":\"high\",\"defects_of_preferred\":[\"Output status COMPLETE rests, for judges-kind criteria, on a majority of 3 LLM Check votes plus held-out LLM judge marks. The Non-guarantees line says no judge PASS establishes truth, but the word COMPLETE still invites …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 9,
+      "label": "H3:pair-BA",
+      "phaseIndex": 1,
+      "phaseTitle": "Held-out",
+      "agentId": "aabda5a597f6c0769",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790432956095,
+      "queuedAt": 1790432956089,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "B",
+      "promptPreview": "You are a final reviewer of a proposed new version of the RQGM loop (a protocol, plus an optional read-only auditor script, for improving one artifact with separate generator / screen / verifier / judge roles). You did not write it. Judge substance only; formatting, length and tone are ties unless a criterion measures them. For each criterion answer per the requested format; UNKNOWN means you cann…",
+      "promptFramed": true,
+      "lastProgressAt": 1790433654716,
+      "tokens": 107869,
+      "toolCalls": 17,
+      "durationMs": 698621,
+      "resultPreview": "{\"criteria\":{\"d1-guardrails\":\"B\",\"d2-executable\":\"B\",\"d3-parity\":\"B\",\"d4-auditable\":\"B\",\"d5-honest\":\"B\",\"d6-cost\":\"tie\"},\"overall\":\"B\",\"confidence\":\"high\",\"defects_of_preferred\":[\"The paste is written in very short clauses, so some rules only make sense after reading DESIGN.md. Example: the Probe rule says 'a copy you seeded with one judges-criterion defect that a Check judge marks'. It never says…"
+    }
+  ],
+  "totalTokens": 1305048,
+  "totalToolCalls": 196
+}
