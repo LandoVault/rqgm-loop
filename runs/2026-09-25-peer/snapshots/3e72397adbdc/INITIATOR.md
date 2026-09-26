@@ -47,9 +47,9 @@ RECORDS. Append one JSON line {"t":name,…fields} per record to {{MEMORY}} (if 
 print each for the human to keep): setup{loop:"v3",done,models,budget:{rounds,minutes,tokens}},
 resume{at_round}, version{id,parent,round,diff,words},
 round{n,best,t0,t1,tokens,variants:[{id,section,words,diff,gates:{apply,commands,verifier,screen},verdicts:[{slot,model,orders:[overallAB,overallBA],overall:variant|best|tie|UNKNOWN|ERROR,criteria,confidence,retries}],outcome:kept|rejected|dropped}],kept},
-citation{claim,locator,status:verified|contradicted|not-found,criterion,gap?}, probe{rung,mode,identity,seeded:{criterion,pair,check},misses},
-check{version,rung,trigger:setup|stall|claim|budget,results:{<id>:{kind,value,votes}}}, amend{what,why,done,gap?},
-rung{name}, substrate{gap,owner,required,status:open|closed|waived}, heldout{attempt,set,version,pass}, exit{status,reason}.
+citation{claim,locator,status,criterion}, probe{rung,mode,identity,seeded:{criterion,pair,check},misses},
+check{version,rung,trigger:setup|stall|claim|budget,results:{<id>:{kind,value,votes}}}, amend{what,why,done},
+rung{name}, substrate{gap,owner,required,status}, heldout{attempt,set,version,pass}, exit{status,reason}.
 Count rounds, stalls and spend from these records, never from recollection. If rqgm_check.py runs here,
 audit {{MEMORY}} each round; a violation pauses for the human.
 
@@ -68,7 +68,8 @@ RESULTS. Each result is a verdict, UNKNOWN or ERROR (timeout, unparsable, unappl
 check). Retry an ERROR once, then drop the variant (not a rejection) or leave its criterion unchecked.
 UNKNOWN is never a tie, pass or support. Never re-ask a returned verdict.
 
-EACH ROUND.
+EACH ROUND. Start a round only if one is left and remaining time and tokens (each if reported) cover
+twice the costliest round so far; else Check: all required pass → Boundary, else HALT(BUDGET).
 1. PROPOSE 2 variants, each one change to one section of *best* (or an approved restructure), with a
    hypothesis naming its criterion; target failing command checks first. Skip ideas your records show
    rejected by ≥2 judges or twice by the screen, absent new evidence. Never add, edit or delete check
@@ -95,7 +96,7 @@ EACH ROUND.
    3 fresh judges per judges criterion (majority; strict: 3/3). Check and held-out results stand until
    *best*, the rung or {{DONE}} changes. All required pass → Boundary; else, after 3 stalls,
    HALT(STALL), naming each non-pass required criterion's need (source, approved restructure or
-   human input); else the next round, budget permitting (STOP).
+   human input); else the next round.
 
 BOUNDARY. Below the final rung (default E2), pause: the human escalates or stops (PARTIAL); at it,
 STOP. E1 fair-critical → E2 adversarial (reject polish, demand derivations) → E3 a second, human-added
@@ -104,9 +105,7 @@ objective (amend). On escalation: log rung, rerun the probe, reset the stall cou
 STOP. A required [OPEN] → HALT(OPEN): name each gap and its owner; the human closes it with evidence the
 Verifier checks, or waives it by amend. Otherwise ask the human to run the held-out judges (pass/fail
 by majority) and report failing criterion IDs only. Fail → rerun rounds on those IDs; the spares run
-only once a changed *best* passes Check; a second fail → HALT(OVERFIT). Start a round only if one is
-left and remaining time and tokens (each if reported) cover twice the costliest round so far; else
-Check; unless all required pass, HALT(BUDGET).
+only once a changed *best* passes Check; a second fail → HALT(OVERFIT).
 
 OUTPUT at every exit: *best*; COMPLETE (final rung, held-out pass) or PARTIAL; each criterion as
 pass/fail/unchecked/waived and how decided (command, source, judges with model families, same family =

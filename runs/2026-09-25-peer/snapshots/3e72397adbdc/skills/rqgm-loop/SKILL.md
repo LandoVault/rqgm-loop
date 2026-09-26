@@ -42,6 +42,9 @@ unrunnable check). Retry an ERROR once, then drop the variant (not a rejection) 
 unchecked. UNKNOWN is never a tie, pass or support. Never re-ask a returned verdict.
 
 ## Each round
+Start a round only if one is left and remaining time (and reported tokens) cover twice the costliest
+round so far; else Check: all required pass → Boundary, else **HALT(BUDGET)**.
+
 1. **Propose** 2 variants, each **one change to one section** of *best* (or an approved restructure),
    with a hypothesis naming its criterion; target failing command checks first. Skip ideas the records
    show rejected by ≥2 judges or twice by the screen, absent new evidence. Never add, edit or delete
@@ -69,7 +72,7 @@ unchecked. UNKNOWN is never a tie, pass or support. Never re-ask a returned verd
    judges per `judges` criterion (majority; strict: 3/3). Check and held-out results stand until
    *best*, the rung or `DONE` changes. All required pass → Boundary; else, after 3 stalls,
    **HALT(STALL)**, naming each non-pass required criterion's need (source, approved restructure or
-   human input); else the next round, budget permitting (Stop).
+   human input); else the next round.
 
 ## Boundary
 Below the final rung, **pause**: the human escalates or stops (PARTIAL); at it, **Stop**. **E1**
@@ -80,9 +83,7 @@ objective (`amend`). On escalation: log `rung`, rerun the probe, reset the stall
 A required `[OPEN]` → **HALT(OPEN)**: name each gap and its owner; the human closes it with evidence the
 Verifier checks, or waives it by `amend`. Otherwise the human runs the held-out judges (pass/fail by
 majority), reporting failing criterion IDs only. Fail → rerun rounds on those IDs; the spares run only
-once a changed *best* passes Check; a second fail → **HALT(OVERFIT)**. Start a round only if one is left
-and remaining time (and reported tokens) cover twice the costliest round so far; else Check;
-unless all required pass, **HALT(BUDGET)**.
+once a changed *best* passes Check; a second fail → **HALT(OVERFIT)**.
 
 **Output** at every exit: *best*; COMPLETE (final rung, held-out pass) or PARTIAL; each criterion as
 pass/fail/unchecked/waived and how decided (command, source, judges with model families, same family =
@@ -93,8 +94,8 @@ whether `rqgm_check.py` audited it; one next action.
 Lines `{"t":name,…fields}`: `setup{loop:"v3",done,models,budget:{rounds,minutes,tokens}}`, `resume{at_round}`,
 `version{id,parent,round,diff,words}`,
 `round{n,best,t0,t1,tokens,variants[{id,section,words,diff,gates:{apply,commands,verifier,screen},verdicts[{slot,model,orders:[overallAB,overallBA],overall:variant|best|tie|UNKNOWN|ERROR,criteria,confidence,retries}],outcome:kept|rejected|dropped}],kept}`,
-`citation{claim,locator,status:verified|contradicted|not-found,criterion,gap?}`, `probe{rung,mode,identity,seeded:{criterion,pair,check},misses}`,
-`check{version,rung,trigger:setup|stall|claim|budget,results{id:{kind,value,votes}}}`, `amend{what,why,done,gap?}`,
-`rung{name}`, `substrate{gap,owner,required,status:open|closed|waived}`, `heldout{attempt,set,version,pass}`, `exit{status,reason}`.
+`citation{claim,locator,status,criterion}`, `probe{rung,mode,identity,seeded:{criterion,pair,check},misses}`,
+`check{version,rung,trigger:setup|stall|claim|budget,results{id:{kind,value,votes}}}`, `amend{what,why,done}`,
+`rung{name}`, `substrate{gap,owner,required,status}`, `heldout{attempt,set,version,pass}`, `exit{status,reason}`.
 Count from records, never recollection. If `rqgm_check.py` runs here, audit `MEMORY` each round; a
 violation pauses for the human.

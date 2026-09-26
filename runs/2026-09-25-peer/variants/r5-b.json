@@ -1,0 +1,35 @@
+{
+ "id": "r5-b",
+ "edits": [
+  {
+   "file": "skills/rqgm-loop/SKILL.md",
+   "old": "`citation{claim,locator,status,criterion}`",
+   "new": "`citation{claim,locator,status:verified|contradicted|not-found,criterion,gap?}`"
+  },
+  {
+   "file": "skills/rqgm-loop/SKILL.md",
+   "old": "`amend{what,why,done}`",
+   "new": "`amend{what,why,done,gap?}`"
+  },
+  {
+   "file": "skills/rqgm-loop/SKILL.md",
+   "old": "`substrate{gap,owner,required,status}`",
+   "new": "`substrate{gap,owner,required,status:open|closed|waived}`"
+  },
+  {
+   "file": "INITIATOR.md",
+   "old": "citation{claim,locator,status,criterion},",
+   "new": "citation{claim,locator,status:verified|contradicted|not-found,criterion,gap?},"
+  },
+  {
+   "file": "INITIATOR.md",
+   "old": "amend{what,why,done},",
+   "new": "amend{what,why,done,gap?},"
+  },
+  {
+   "file": "INITIATOR.md",
+   "old": "substrate{gap,owner,required,status},",
+   "new": "substrate{gap,owner,required,status:open|closed|waived},"
+  }
+ ]
+}
