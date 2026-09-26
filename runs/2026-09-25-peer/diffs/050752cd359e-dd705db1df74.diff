@@ -1,0 +1,39 @@
+--- A/skills/rqgm-loop/SKILL.md
++++ B/skills/rqgm-loop/SKILL.md
+@@ -77,8 +77,9 @@
+ objective (`amend`). On escalation: log `rung`, rerun the probe, reset the stall count.
+ 
+ ## Stop
+-A required `[OPEN]` → **HALT(OPEN)**: name each gap and its owner; the human closes it with evidence the
+-Verifier checks, or waives it by `amend`. Otherwise the human runs the held-out judges (pass/fail by
++A required `[OPEN]` → **HALT(OPEN)**: name each gap and owner; the human closes it with Verifier-checked
++evidence (`citation{gap,status:verified}`), or waives it by a later `amend{gap}`. Otherwise the human
++runs the held-out judges (pass/fail by
+ majority), reporting failing criterion IDs only. Fail → rerun rounds on those IDs; the spares run only
+ once a changed *best* passes Check; a second fail → **HALT(OVERFIT)**. Start a round only if one is left
+ and remaining time (and reported tokens) cover twice the costliest round so far; else Check;
+--- A/INITIATOR.md
++++ B/INITIATOR.md
+@@ -101,8 +101,9 @@
+ STOP. E1 fair-critical → E2 adversarial (reject polish, demand derivations) → E3 a second, human-added
+ objective (amend). On escalation: log rung, rerun the probe, reset the stall count.
+ 
+-STOP. A required [OPEN] → HALT(OPEN): name each gap and its owner; the human closes it with evidence the
+-Verifier checks, or waives it by amend. Otherwise ask the human to run the held-out judges (pass/fail
++STOP. A required [OPEN] → HALT(OPEN): name each gap and owner; the human closes it with Verifier-checked
++evidence (citation{gap,status:verified}), or waives it by a later amend{gap}. Otherwise ask the human
++to run the held-out judges (pass/fail
+ by majority) and report failing criterion IDs only. Fail → rerun rounds on those IDs; the spares run
+ only once a changed *best* passes Check; a second fail → HALT(OVERFIT). Start a round only if one is
+ left and remaining time and tokens (each if reported) cover twice the costliest round so far; else
+--- A/DESIGN.md
++++ B/DESIGN.md
+@@ -25,7 +25,7 @@
+ | 2 | **Independence.** Reviewers favor work like their own; judges' errors correlate. | Separate roles; the writer never judges. Judges come from another model family where available; same-family judges count as one source. Without subagents the human relays judges in fresh chats, else HALT(OPEN). | Literature: RQGM 2606.26294, its strongest baseline reviewer over-accepts AI-generated papers at up to 1.91× the human rate (`grounding.md`); 2506.07962, errors correlate most within a provider; 2603.00077. |
+ | 3 | **Signal.** Absolute scores are noisy; pairwise judges show order bias and leniency. | Blind pairwise comparison with *best*, per criterion; cosmetic = tie. A result is a verdict, UNKNOWN or ERROR (retried once, then dropped, not rejected). Judge 1's two orders disagreeing is UNKNOWN, not a tie. Per rung, a 5-call probe: judge 1 on identity and seeded-defect pairs in both orders, plus one Check judge; the orchestrator, never the generator, writes the seed. A non-tie or miss → strict mode (all 3 judges, no early rejection, 3/3 for keeps and Check passes); tell the human. | Measured (v1 run): the absolute-score gate stalled run 1 (`rrsi/log.md`). Literature: 2609.17857 (open-weight preprint), 55.4% of AB/BA pairs reverse; 2510.11822, validator true-negative rate under 25%; FLAWS 2511.21843 bears on the Check; 2607.23002, a silent output cap faked an effect; 2506.03785. |
+ | 4 | **Goodhart.** The generator optimizes whatever the judge rewards. | A Screen seeing the diff and rubric reads every variant before judging. It rejects rubric echo, mechanism-free compliance claims, judge-targeting, inert text, weakened guardrails and unevidenced `[OPEN]` removals. Judges never see the generator's rationale. The ledger blocks ideas rejected by ≥2 judges or twice by the Screen. | Measured (v1 run): run 1's screen rejected 11 edits (`rrsi/log.md`; 12 until c3eebb2 edited it). Meta-run: 13 substantive screen rejections + 2 apply errors (e5-A, e18-B), now ERROR, of 47 variants (`ledger-e1-9.json`, `result-e9-19.json`); one idea was screened out 3 times (`meta/log.md`). Literature: RRSI 2609.24972, a pre-evaluation leakage critic (`grounding.md`). |
+-| 5 | **Truth.** The generator can invent facts. | The Verifier checks every claim, v0's included, against a primary source it read, never loop-written text, logging a locator: verified, contradicted (strip) or not-found (`[OPEN]`). No fabricated substrates. Only a required `[OPEN]` blocks Stop; the human closes it with Verifier-checked evidence or waives it by `amend` (Output: "waived"). | Measured (v1 run): `grounding.md` marks RRSI's truncated Table 5 values UNVERIFIED, never to be cited. Cursor's reward-hacking write-up: audit before trusting a score. |
++| 5 | **Truth.** The generator can invent facts. | The Verifier checks every claim, v0's included, against a primary source it read, never loop-written text, logging `citation{locator,status}`: verified, contradicted (strip) or not-found (`[OPEN]`). No fabricated substrates. Only a required `[OPEN]` blocks Stop; the human closes it with Verifier-checked evidence (`citation{gap,status:verified}`) or waives it by a later `amend{gap}` (Output: "waived"; `r_substrate` change pending). | Measured (v1 run): `grounding.md` marks RRSI's truncated Table 5 values UNVERIFIED. Cursor's reward-hacking write-up: audit before trusting a score. |
+ | 6 | **Search.** Bundled edits can't be credited; failures repeat. | 2 variants per round, each one change to one section of *best*, naming its criterion; failing command checks first. Non-`pass` required criteria after 3 stalls → HALT(STALL), naming a source, an approved restructure or human input. `GROUNDING` may carry exemplars. | Measured (v1 run): judged variants won 16 of 17 in meta e1–e9 (`ledger-e1-9.json`, rebuilt in c237491) and 10 of 15 in lean e10–e19 (`result-e9-19.json`). Run 1's stall was structural (the scalar gate, `rrsi/log.md`); v2 removed it outside any round (ff9eab2). Literature: RRSI §3.2 (`grounding.md`); 2507.19457; 2604.25850; 2605.24539. |
+ | 7 | **Selection.** Keep only real, non-regressing gains, without bloat. | Keep if ≥2 judges prefer it (strict: 3), none prefers *best*, and no protected item (guardrails, must-not-change constraints, criteria *best* passes) is rated worse. Judge 3 runs unless judges 1 and 2 prefer the same version. Pruning a shorter variant needs all 3 judges completed without UNKNOWN. Keep one (most support, then shorter, then first); apply exactly the judged text. (Nearly) restoring an earlier *best* → HALT(OSCILLATION). Preference is not transitive: the command gate, protected veto and each Check's full re-marking catch regressions. | Literature: RRSI complexity-aware acceptance (low-gain rule, `grounding.md`); 2604.13717; 2602.13110. The two-tie prune gap: design-only, found by a policy prototype. |
+ | 8 | **Generalization.** The loop overfits its own judges. | Rungs E1 fair → E2 adversarial → E3 a human-added objective, only with the human. Final check: 3 human-written held-out judges, stored outside `TARGET`, `GROUNDING`, `MEMORY` and the repo, spent per `TARGET`, pass/fail by majority. The first result is always reported; spares run only on a changed *best* passing a Check; a second fail → HALT(OVERFIT). | Literature: RQGM 2606.26294 uses no majority vote, so the majority rule is an uncited design choice; 2510.11822's minority veto awaits Stage-6 data. Measured (v1 run): 3/3 held-out judges preferred the meta-run result pairwise (`meta/log.md`); the pass/fail check never ran. Held-out rationales sit in the repo (`result-e9-19.json`). |

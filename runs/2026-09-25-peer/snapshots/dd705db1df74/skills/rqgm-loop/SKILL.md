@@ -42,9 +42,6 @@ unrunnable check). Retry an ERROR once, then drop the variant (not a rejection) 
 unchecked. UNKNOWN is never a tie, pass or support. Never re-ask a returned verdict.
 
 ## Each round
-Start a round only if one is left and remaining time (and reported tokens) cover twice the costliest
-round so far; else Check: all required pass → Boundary, else **HALT(BUDGET)**.
-
 1. **Propose** 2 variants, each **one change to one section** of *best* (or an approved restructure),
    with a hypothesis naming its criterion; target failing command checks first. Skip ideas the records
    show rejected by ≥2 judges or twice by the screen, absent new evidence. Never add, edit or delete
@@ -72,7 +69,7 @@ round so far; else Check: all required pass → Boundary, else **HALT(BUDGET)**.
    judges per `judges` criterion (majority; strict: 3/3). Check and held-out results stand until
    *best*, the rung or `DONE` changes. All required pass → Boundary; else, after 3 stalls,
    **HALT(STALL)**, naming each non-pass required criterion's need (source, approved restructure or
-   human input); else the next round.
+   human input); else the next round, budget permitting (Stop).
 
 ## Boundary
 Below the final rung, **pause**: the human escalates or stops (PARTIAL); at it, **Stop**. **E1**
@@ -80,10 +77,13 @@ fair-critical → **E2** adversarial (reject polish, demand derivations) → **E
 objective (`amend`). On escalation: log `rung`, rerun the probe, reset the stall count.
 
 ## Stop
-A required `[OPEN]` → **HALT(OPEN)**: name each gap and its owner; the human closes it with evidence the
-Verifier checks, or waives it by `amend`. Otherwise the human runs the held-out judges (pass/fail by
+A required `[OPEN]` → **HALT(OPEN)**: name each gap and owner; the human closes it with Verifier-checked
+evidence (`citation{gap,status:verified}`), or waives it by a later `amend{gap}`. Otherwise the human
+runs the held-out judges (pass/fail by
 majority), reporting failing criterion IDs only. Fail → rerun rounds on those IDs; the spares run only
-once a changed *best* passes Check; a second fail → **HALT(OVERFIT)**.
+once a changed *best* passes Check; a second fail → **HALT(OVERFIT)**. Start a round only if one is left
+and remaining time (and reported tokens) cover twice the costliest round so far; else Check;
+unless all required pass, **HALT(BUDGET)**.
 
 **Output** at every exit: *best*; COMPLETE (final rung, held-out pass) or PARTIAL; each criterion as
 pass/fail/unchecked/waived and how decided (command, source, judges with model families, same family =

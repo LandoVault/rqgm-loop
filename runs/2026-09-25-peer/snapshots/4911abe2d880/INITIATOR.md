@@ -68,8 +68,7 @@ RESULTS. Each result is a verdict, UNKNOWN or ERROR (timeout, unparsable, unappl
 check). Retry an ERROR once, then drop the variant (not a rejection) or leave its criterion unchecked.
 UNKNOWN is never a tie, pass or support. Never re-ask a returned verdict.
 
-EACH ROUND. Start a round only if one is left and remaining time and tokens (each if reported) cover
-twice the costliest round so far; else Check: all required pass → Boundary, else HALT(BUDGET).
+EACH ROUND.
 1. PROPOSE 2 variants, each one change to one section of *best* (or an approved restructure), with a
    hypothesis naming its criterion; target failing command checks first. Skip ideas your records show
    rejected by ≥2 judges or twice by the screen, absent new evidence. Never add, edit or delete check
@@ -96,16 +95,18 @@ twice the costliest round so far; else Check: all required pass → Boundary, el
    3 fresh judges per judges criterion (majority; strict: 3/3). Check and held-out results stand until
    *best*, the rung or {{DONE}} changes. All required pass → Boundary; else, after 3 stalls,
    HALT(STALL), naming each non-pass required criterion's need (source, approved restructure or
-   human input); else the next round.
+   human input); else the next round, budget permitting (STOP).
 
 BOUNDARY. Below the final rung (default E2), pause: the human escalates or stops (PARTIAL); at it,
 STOP. E1 fair-critical → E2 adversarial (reject polish, demand derivations) → E3 a second, human-added
 objective (amend). On escalation: log rung, rerun the probe, reset the stall count.
 
-STOP. A required [OPEN] → HALT(OPEN): name each gap and its owner; the human closes it with evidence the
-Verifier checks, or waives it by amend. Otherwise ask the human to run the held-out judges (pass/fail
+STOP. A required [OPEN] → HALT(OPEN): name each gap and owner; the human closes it with Verifier-checked evidence
+(citation{gap,status:verified}), or waives it by a later amend{gap}. Otherwise ask the human to run the held-out judges (pass/fail
 by majority) and report failing criterion IDs only. Fail → rerun rounds on those IDs; the spares run
-only once a changed *best* passes Check; a second fail → HALT(OVERFIT).
+only once a changed *best* passes Check; a second fail → HALT(OVERFIT). Start a round only if one is
+left and remaining time and tokens (each if reported) cover twice the costliest round so far; else
+Check; unless all required pass, HALT(BUDGET).
 
 OUTPUT at every exit: *best*; COMPLETE (final rung, held-out pass) or PARTIAL; each criterion as
 pass/fail/unchecked/waived and how decided (command, source, judges with model families, same family =

@@ -1,0 +1,35 @@
+{
+ "id": "r6-a",
+ "edits": [
+  {
+   "file": "skills/rqgm-loop/SKILL.md",
+   "old": "## Each round\n1. **Propose**",
+   "new": "## Each round\nStart a round only if one is left and remaining time (and reported tokens) cover twice the costliest\nround so far; else Check: all required pass → Boundary, else **HALT(BUDGET)**.\n\n1. **Propose**"
+  },
+  {
+   "file": "skills/rqgm-loop/SKILL.md",
+   "old": "human input); else the next round, budget permitting (Stop).",
+   "new": "human input); else the next round."
+  },
+  {
+   "file": "skills/rqgm-loop/SKILL.md",
+   "old": " Start a round only if one is left\nand remaining time (and reported tokens) cover twice the costliest round so far; else Check;\nunless all required pass, **HALT(BUDGET)**.",
+   "new": ""
+  },
+  {
+   "file": "INITIATOR.md",
+   "old": "EACH ROUND.\n1. PROPOSE",
+   "new": "EACH ROUND. Start a round only if one is left and remaining time and tokens (each if reported) cover\ntwice the costliest round so far; else Check: all required pass → Boundary, else HALT(BUDGET).\n1. PROPOSE"
+  },
+  {
+   "file": "INITIATOR.md",
+   "old": "human input); else the next round, budget permitting (STOP).",
+   "new": "human input); else the next round."
+  },
+  {
+   "file": "INITIATOR.md",
+   "old": " Start a round only if one is\nleft and remaining time and tokens (each if reported) cover twice the costliest round so far; else\nCheck; unless all required pass, HALT(BUDGET).",
+   "new": ""
+  }
+ ]
+}

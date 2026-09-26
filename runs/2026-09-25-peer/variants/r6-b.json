@@ -1,0 +1,20 @@
+{
+ "id": "r6-b",
+ "edits": [
+  {
+   "file": "skills/rqgm-loop/SKILL.md",
+   "old": "A required `[OPEN]` → **HALT(OPEN)**: name each gap and its owner; the human closes it with evidence the\nVerifier checks, or waives it by `amend`. Otherwise the human runs the held-out judges (pass/fail by\n",
+   "new": "A required `[OPEN]` → **HALT(OPEN)**: name each gap and owner; the human closes it with Verifier-checked\nevidence (`citation{gap,status:verified}`), or waives it by a later `amend{gap}`. Otherwise the human\nruns the held-out judges (pass/fail by\n"
+  },
+  {
+   "file": "INITIATOR.md",
+   "old": "STOP. A required [OPEN] → HALT(OPEN): name each gap and its owner; the human closes it with evidence the\nVerifier checks, or waives it by amend. Otherwise ask the human to run the held-out judges (pass/fail\n",
+   "new": "STOP. A required [OPEN] → HALT(OPEN): name each gap and owner; the human closes it with Verifier-checked\nevidence (citation{gap,status:verified}), or waives it by a later amend{gap}. Otherwise ask the human\nto run the held-out judges (pass/fail\n"
+  },
+  {
+   "file": "DESIGN.md",
+   "old": "logging a locator: verified, contradicted (strip) or not-found (`[OPEN]`). No fabricated substrates. Only a required `[OPEN]` blocks Stop; the human closes it with Verifier-checked evidence or waives it by `amend` (Output: \"waived\"). | Measured (v1 run): `grounding.md` marks RRSI's truncated Table 5 values UNVERIFIED, never to be cited.",
+   "new": "logging `citation{locator,status}`: verified, contradicted (strip) or not-found (`[OPEN]`). No fabricated substrates. Only a required `[OPEN]` blocks Stop; the human closes it with Verifier-checked evidence (`citation{gap,status:verified}`) or waives it by a later `amend{gap}` (Output: \"waived\"; `r_substrate` change pending). | Measured (v1 run): `grounding.md` marks RRSI's truncated Table 5 values UNVERIFIED."
+  }
+ ]
+}
