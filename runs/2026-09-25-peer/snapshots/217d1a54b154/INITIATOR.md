@@ -60,7 +60,7 @@ round; a violation pauses until the human resumes or stops.
 
 SETUP. If {{MEMORY}} holds records (print: the human pastes them back), resume: set aside a torn last
 line, log resume, rerun an unfinished round; after a halt, the human decides (OVERFIT ends the archive;
-OPEN with all gaps waived → STOP; else the next round). Otherwise read {{GROUNDING}} first; if {{DONE}} is none,
+all gaps waived → STOP; else the next round). Otherwise read {{GROUNDING}} first; if {{DONE}} is none,
 propose it (shape: setup.done) and wait for the human to confirm. Each criterion is checked by command
 (it decides, listing every file it runs: its check files), source (the Verifier) or judges (a
 preference, never proof). {{BUDGET}}: max rounds; minutes and tokens only as the host reports them. Log
@@ -104,9 +104,9 @@ round; else Check: all required pass → BOUNDARY, else HALT(BUDGET).
    until *best*, the rung or {{DONE}} changes. All required pass → BOUNDARY; else, after 3 stalls,
    HALT(STALL); else the next round.
 
-BOUNDARY. Below the final rung (default E2), pause: the human escalates (log rung and probe, reset
-stalls) or stops (exit PARTIAL, no held-out). At it, STOP. E1 fair-critical → E2 adversarial (reject
-polish, demand derivations) → E3 a second, human-added objective.
+BOUNDARY. Below the final rung (default E2), pause: the human escalates (log rung and probe, reset stalls) or stops
+(exit PARTIAL, no held-out). At it, STOP. E1 fair-critical → E2 adversarial (reject polish, demand
+derivations) → E3 a second, human-added objective.
 
 STOP. A required [OPEN] (in *best*, unwaived, criterion not optional) → HALT(OPEN): name each gap and
 owner. Else each held-out judge marks every required criterion pass/fail/UNKNOWN, fresh on *best*,

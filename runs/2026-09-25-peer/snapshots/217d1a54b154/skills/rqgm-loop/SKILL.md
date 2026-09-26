@@ -17,14 +17,14 @@ outside `TARGET`, `GROUNDING`, `MEMORY` and the repo, single-use per `TARGET`.
 Slots: `TARGET`; `GROUNDING` (sources of truth; read first); `DONE` (propose if missing; the human
 confirms; shape: `setup.done`), criteria checked by `command` (it decides, listing every file it runs:
 its **check files**), `source` (the Verifier) or `judges` (a preference, never proof); `EVALUATORS` (3
-personas); `MEMORY` (append-only `archive.jsonl`, or `print`, human-kept); `BUDGET` (max rounds; minutes
-and tokens only as the host reports them).
+personas); `MEMORY` (append-only `archive.jsonl`, or `print` for the human); `BUDGET` (max rounds;
+minutes and tokens only as the host reports them).
 
 Resume if `MEMORY` holds records (print: pasted back): set aside a torn last line, log `resume`, rerun
-an unfinished round; after a halt, the human decides (OVERFIT ends the archive; OPEN with all gaps
-waived → Stop; else the next round). Else log `setup` and `version` **v0** = `TARGET` (draft if
-absent) = *best*; run its commands and Verifier (`check{trigger:setup}`; only rounds fix failures);
-start at **E1**. The **rubric** = `DONE` + the rung's stance.
+an unfinished round; after a halt, the human decides (OVERFIT ends the archive; all gaps waived →
+Stop; else the next round). Else log `setup` and `version` **v0** = `TARGET` (draft if absent) =
+*best*; run its commands and Verifier (`check{trigger:setup}`; only rounds fix failures); start at
+**E1**. The **rubric** = `DONE` + the rung's stance.
 
 **Probe** (per rung): judge 1 compares *best*, both orders, with an identical copy and a copy you
 (never the generator) seeded with one `judges`-criterion defect that a Check judge marks. A non-tie,
@@ -76,9 +76,9 @@ Check: all required pass → Boundary, else **HALT(BUDGET)**.
    **HALT(STALL)**; else the next round.
 
 ## Boundary
-Below the final rung (default **E2**), **pause**: the human escalates (log `rung` and `probe`, reset
-stalls) or stops (`exit` PARTIAL, no held-out). At it, **Stop**. **E1** fair-critical → **E2**
-adversarial (reject polish, demand derivations) → **E3** a second, human-added objective.
+Below the final rung (default **E2**), **pause**: the human escalates (log `rung` and `probe`, reset stalls) or stops
+(`exit` PARTIAL, no held-out). At it, **Stop**. **E1** fair-critical → **E2** adversarial (reject
+polish, demand derivations) → **E3** a second, human-added objective.
 
 ## Stop
 A **required** `[OPEN]` (in *best*, unwaived, criterion not optional) → **HALT(OPEN)**: name each gap
