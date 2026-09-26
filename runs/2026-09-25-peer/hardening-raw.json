@@ -1,0 +1,501 @@
+{
+  "summary": "Harden rqgm_check.py: fail closed on v3 archives missing required fields; checker-side parity items; re-attack; fix",
+  "agentCount": 3,
+  "logs": [],
+  "result": {
+    "harden": "All five requested fixes are in, plus two stricter results you should review (below). All three required checks pass:\n- **selftest:** 96/96 cases pass.\n- **unittest:** 4 tests pass (I added one).\n- **gen_attacks.py:** all 20 ctl_* archives and all 27 fn* archives it caught before are still flagged. fn05, fn08 and fn09 are now caught too, so 30 fn* in total.\n\nThe checker is 736 lines (limit 800) and is still read-only and stdlib-only. No git was run and none of the prose files were touched.\n\n**Two results that go further than the attack list.** fp04 and fp10 used to pass and now exit 1:\n- **fp04 (amend without `done`):** Memory lists `amend{what,why,done}`, but the Setup section still says \"only a human-approved `amend{what,why}` changes either\". I followed Memory. The prose process should make the two match. If they drop `done`, revert this one.\n- **fp10 (variant without `words`):** the \"then shorter\" tie-break needs word counts, and Memory lists `words` on variants.\n\nIf you would rather keep those two lenient, revert those two cases.\n\n### 1. Fail closed on v3 archives\nThis applies only when `setup.loop` starts with \"v3\". It rests on \"**When unsure, fail closed**: don't keep, don't pass\" and on the Memory schema, \"Lines `{\"t\":name,…fields}`: …\". SKILL marks optional fields with `?` (as in `guardrail?`), and nothing in the Memory list carries one.\n- **The rule:** if a field the schema lists is absent or empty and a decision needs it, the checker reports RECORD_MISSING, which counts as a violation. The decision is then not credited: a keep resting on it is not counted as a valid keep, a judges pass without votes becomes unchecked, and COMPLETE with an unknown DONE fails.\n- **Where leniency stays:** archives that are not v3, and values that are present but malformed. For example retries `\"0\"`, so fp09 still passes.\n\nCases covered:\n- **fn08 (command not run):** \"run every command there yourself\" plus `gates:{apply,commands,verifier,screen}`. Now RECORD_MISSING.\n- **fn09 (no screen):** \"The **Screen** rejects …\". Now RECORD_MISSING.\n- **Rejected variant with no gates record:** also reported, as the task asked (new fixture `p22_v3_record_missing`).\n- **fn05 (empty probe):** \"judge 1 compares *best*, in both orders … A non-tie on the identical copy or a missed defect → **strict mode**\". Now RECORD_MISSING, and that rung is treated as strict, which adds STRICT_KEEP and JUDGE_MISSING for its keep.\n- **Missing probe (existing PROBE_MISSING):** in v3 it now leaves the rung strict too. That adds STRICT_KEEP and JUDGE_MISSING to the p12 case.\n- **Other required fields now reported:** slot-1 `orders` (unless that judge's result was ERROR), verdicts, slot, overall, retries when absent, `round.t0/t1`, `setup.budget{rounds,minutes}`, `version.diff`, check version/results, a judges pass without votes, held-out version/pass, and exit status.\n- **fn34 (gap closed without evidence) stays unauditable, as you allowed.** SKILL's `substrate{gap,owner,required,status}` has no evidence field. \"The human closes it with evidence the Verifier checks\" names no record, and no field links a citation to a gap. I clarified the unauditable message and the case note.\n- **Deliberately left lenient:** `citation.criterion` for a source pass (fp08), because SKILL never says a source pass needs a logged citation. Also tokens (\"tokens only if reported\"), and the regression baseline after an amend adds a new command.\n\n### 2. Parity items\n- **PARITY-3 (fixed):** \"Lines `{\"t\":name,…fields}`\". If no line has a `t` or `type` naming a known record, the audit now exits 2 with an integrity error, never ok. Fixture `p18_no_t_records` plus a unit test.\n- **PARITY-4 (already implemented, no code change):** \"none rates a **protected** item worse\". The veto already counts every slot, whether or not its overall result completed; fn10 is the negative case. I added the missing positive, `p03_unknown_protected_rejected`.\n- **PARITY-5 (already implemented, no code change):** \"Retry an ERROR once, then drop the variant (not a rejection)\". fp03 was the only case. I added the negative `p06_error_after_objection_rejected`, which expects two ERROR_AS_REJECTION findings and ERROR_HALT_MISSED.\n- **PARITY-6 (fixed):** \"…or leave its criterion unchecked\". Any ERROR vote in a Check now means the criterion is unchecked, never pass. A logged pass is CHECK_MISCOUNT; a logged fail or unchecked is accepted. Fixtures `p04_check_error_vote_pass` (negative) and `p09_check_error_vote_unchecked` (positive; this was a false violation before).\n- **PARITY-11 (fixed an edge case):** \"→ **HALT(OSCILLATION)**: the human picks *best*.\" Round n+1 after resume and a version accepted as the pick already worked. What was missing: if resume was followed by a Check or an exit rather than the pick's version, the checker assumed the variant was kept and reported a false violation. Now `best` stays unchanged, and a Check that names a known version counts as the pick. Fixtures `p21_oscillation_pick_check` (positive; was a false violation) and `p21_oscillation_rerun` (negative, RECORD class only).\n\nI ran every new fixture against the original checker; each one either shows the fix or pins behaviour that was already there. A fuzz of about 55,000 field mutations across all fixtures produced no crashes.\n\n**Side effect:** running gen_attacks.py rewrites its archives in `runs/2026-09-25-peer/checker-attack/`. The generator is deterministic, so the content should be unchanged.\n\nFiles are in F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab:\n- skills/rqgm-loop/rqgm_check.py\n- tests/checker/expected.json\n- tests/checker/test_selftest.py\n- tests/checker/fixtures/ (9 new): p22_v3_record_missing.jsonl, p22_v2_loop_lenient.jsonl, p18_no_t_records.jsonl, p03_unknown_protected_rejected.jsonl, p06_error_after_objection_rejected.jsonl, p04_check_error_vote_pass.jsonl, p09_check_error_vote_unchecked.jsonl, p21_oscillation_pick_check.jsonl, p21_oscillation_rerun.jsonl",
+    "reattack": {
+      "verdict": "The hardened checker is still easy to break. Across 56 new round-2 archives: 46 v3 archives that violate a SKILL.md rule exit 0, 5 valid archives exit 1, and 5 inputs crash (exit 2 with a caught exception). A control (k*) shows the unevaded form is flagged wherever one exists. Nothing in the checker, the tests or the prose files was edited. Final required checks all pass: selftest 96/96; unittest 4 OK; gen_attacks.py flags all 20 ctl_* and all 30 fn* archives it caught before (fn19, fn25, fn30 and fn34 are still unflagged, unchanged). Running gen_attacks.py rewrote its archives, as expected.\n\nWhere to find them: the generator is F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/gen_round2.py. It imports helpers from ../gen_attacks.py, writes every archive next to itself and audits each one; --json prints full output.\n\nRoot causes, most to least severe:\n(1) Fail-open defaults on values. Screen, criteria, held-out set and exit status are matched literally and case-sensitively, and any other value counts as a pass or is ignored (a01, a02, a09, a26, a27, a29). An unknown DONE kind, or a missing one, silently turns off command gating and vote counting (a22, a23).\n(2) Fields the Memory schema lists that the checker never reads, so they never fail closed: gates.verifier (a06, a07), probe.misses (a43), probe.seeded.criterion (a13), verdicts[].criteria when absent (a45), heldout.set when absent (a28). \"votes\": null slips past the implementer's own \"absent or empty\" rule (a20). The check-file rule depends on setup.check_files, which is not in the schema, so on a schema-conformant archive it silently never runs (a16).\n(3) Diff shape. diffs() turns any string into [], so unified-diff strings compare as equal and skip the check-file, oscillation and ledger rules (a14). The file key is compared only when both sides have one (a15). No-op detection covers only diff == [] (a18).\n(4) Records are never cross-checked, and record typing leaks. variant.words and version.words can disagree (a17). The same variant id can appear twice in one round (a46). A duplicate \"t\" key, \"Round\", or v2 `variant` records inside a v3 archive hide rounds from the budget and stall counts (a33, a34, a35). \"Setup\", \"V3\", or a setup logged late switch off all v3 strictness (a30, a31, a32).\n(5) State-machine gaps. A rung record clears a due Check, so alternating E1/E2 bypasses the fn11 fix (a36). HALT(ERROR) is only due when the streak equals 2, so it is missed after a resume (a37). A probe is only required before a round, so a Check at a new rung runs non-strict (a44). Reordering DONE counts as a change (a41). A second root version skips judging (a19). A gap's required flag can be flipped without an amend (a24). Any earlier amend satisfies E3 (a40). An exact restore is only AMBIGUOUS, and changing the section's case hides it completely (a38, a39). ERRORs with retries 0 are accepted (a08). A string slot hides an objecting judge (a11). must_not_change given as a list of objects is dropped (a12). NaN budgets disable the budget (a42).\n(6) Uneven leniency. \"Present but malformed -> unauditable\" still credits the keep or pass with exit 0 (a03, a04, a05, a10, a21). Yet heldout pass:true, attempt \"1\" and a DONE criteria map become FALSE_COMPLETE violations (b01-b03). The pre-amend command baseline is reused after DONE changes, producing a false REGRESSION_KEPT (b05).\n(7) Crashes. OverflowError, OSError and RecursionError are not in BAD. A fuzz of 106,506 mutations over every fixture field found only these three escaping classes: huge ints in t0, t1, tokens or budget; naive ISO times before 1970 on Windows (for example the .NET DateTime.MinValue \"0001-01-01T00:00:00\"); and values about 2996 levels deep that a finding or the state echoes back. NaN, Infinity and timezone-aware extreme dates did not crash.\n\nWeakest items: b04 depends on reading orders:[overallAB,overallBA] as raw A/B letters; a25 and a13 depend on reading the prose's intent. All other items break a literal SKILL.md sentence.",
+      "breaks": [
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a01_screen_unknown.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; no findings; nothing unauditable. gate() treats any screen value other than None, 'ERROR' or 'reject*' as a pass, so screen:'UNKNOWN' keeps the variant.",
+          "rule": "UNKNOWN is never a tie, pass or support. / The **Screen** rejects rubric echo, mechanism-free compliance claims, text aimed at judges, inert text, weakened guardrails, and unevidenced `[OPEN]` removals."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a02_screen_rejected_capitalised.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; silent. screen 'Rejected: rubric echo' reads as a pass (control k02 with lowercase 'rejected: ...' -> GATE_KEPT).",
+          "rule": "The **Screen** rejects rubric echo, mechanism-free compliance claims, text aimed at judges, inert text, weakened guardrails, and unevidenced `[OPEN]` removals."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a03_command_FAIL_uppercase.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; only 'gates' listed unauditable. commands {c1:'FAIL'} while best passes c1; the keep is credited (control k04 with 'fail' -> REGRESSION_KEPT).",
+          "rule": "Failing a command *best* passes rejects the variant; a failure *best* shares does not."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a04_command_exit_code.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; only 'gates' unauditable. c1 logged as exit status 1 (a failure); the regression is not detected and the keep is credited.",
+          "rule": "Failing a command *best* passes rejects the variant; a failure *best* shares does not."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a05_apply_synonym_skips_gate.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; only 'gates' unauditable. apply:'applied' makes gate() return before it checks commands or screen, so fn08+fn09 (commands {}, no screen) pass again in a v3 archive.",
+          "rule": "**Gate**, in order. Apply the diff to a fresh copy (check files as at setup); run every command there yourself; a check editing files is ERROR."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a06_verifier_error_kept.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; silent. gates.verifier:'ERROR' (retries {verifier:1}) and the variant is kept; gates.verifier is never read.",
+          "rule": "**Results.** Each result is a verdict, **UNKNOWN** or **ERROR** (timeout, unparsable, unapplied diff, unrunnable check). Retry an ERROR once, then drop the variant (not a rejection) or leave its criterion unchecked."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a07_verifier_absent_v3.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; silent. A v3 gates record with no verifier key: the RECORD_MISSING rule that now catches a missing screen (fn09) does not cover the Verifier.",
+          "rule": "The **Verifier** checks each new claim against a primary source it read, never loop-written text: contradicted → strip; not found → `[OPEN: source needed]`. (Memory: gates:{apply,commands,verifier,screen})"
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a08_error_never_retried.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; silent. Every judge ERROR logs retries:0 (never retried); all variants are dropped and PARTIAL/ERROR is accepted.",
+          "rule": "Retry an ERROR once, then drop the variant (not a rejection) or leave its criterion unchecked."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a09_protected_rated_Best_case.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; silent. Slot 2 rates protected c2 'Best'; the case-sensitive compare ignores it (control k09 with 'best' -> KEEP_VETOED).",
+          "rule": "**Keep** a variant if ≥2 judges prefer it (strict: 3), none prefers *best*, and none rates a **protected** item worse (guardrails, must-not-change constraints, criteria *best* passes)."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a10_judge1_Best_high_kept.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; only 'keep' unauditable. Judge 1 overall 'Best' with high confidence; one non-canonical overall makes panel() return None, and the keep goes unflagged.",
+          "rule": "Judge 1 compares in both orders (disagreement = UNKNOWN); if it prefers *best* with high confidence or on a protected item, reject the variant."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a11_slot_string_hides_objection.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; only EXTRA_VERDICT (RECORD). Judge 3 preferred best but logged slot '3' (a string), so it is discarded and the keep is credited.",
+          "rule": "**Keep** a variant if ≥2 judges prefer it (strict: 3), none prefers *best*, and none rates a **protected** item worse (guardrails, must-not-change constraints, criteria *best* passes)."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a12_must_not_change_objects.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; silent. must_not_change as [{id,text}] is dropped from protected(); slot 2 rates m1 worse (control k12 with an {id:text} map -> KEEP_VETOED).",
+          "rule": "`must_not_change` constraints `{id:text}` / none rates a **protected** item worse (guardrails, must-not-change constraints, criteria *best* passes)."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a13_probe_seeded_command_criterion.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; silent. The probe's defect is seeded against c1 (a command criterion); normal mode is credited and a 2/2 keep passes.",
+          "rule": "**Probe** (per rung): judge 1 compares *best*, in both orders, with an identical copy and a copy you (not the generator) seeded with one defect against a named `judges` criterion; a Check judge marks it."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a14_unified_diff_string.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; silent. Unified-diff strings: the judged diff edits check file tests/test_public.py and the version applies different text. diffs(str) returns [], so same_text([],[]) is True and there is no CHECK_FILE_EDIT, no KEPT_TEXT_MISMATCH and nothing unauditable.",
+          "rule": "Never add, edit or delete check files, `DONE` or the rubric. / Keep at most one (most support, then shorter, then first); apply exactly the judged text."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a15_version_adds_check_file.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; silent. The judged diff has no file; the version applies the same text to check file tests/test_public.py. file is compared only when both sides name one, and CHECK_FILE_EDIT reads only the variant diff.",
+          "rule": "Never add, edit or delete check files, `DONE` or the rubric. / Keep at most one (most support, then shorter, then first); apply exactly the judged text."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a16_check_file_declared_in_DONE.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; silent, not even unauditable. Setup has no setup.check_files (not in the Memory schema); DONE c1 names tests/test_public.py and the kept diff edits it.",
+          "rule": "Files a command runs belong to `DONE`. / Never add, edit or delete check files, `DONE` or the rubric."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a17_prune_words_split_records.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; silent. An all-tie prune keep on variant.words 90 < 100, but the applied version logs 120 words (longer than best); the two records are never cross-checked.",
+          "rule": "A shorter variant is also kept if all 3 judges completed without UNKNOWN, none preferring *best* or rating anything worse. / Keep at most one (most support, then shorter, then first); apply exactly the judged text."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a18_noop_diff_launders_spare.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; status COMPLETE; silent. A diff with new == old is credited as a change; v2 gets a fresh Check and the spare held-out set (the fn27 fix only covers diff == []).",
+          "rule": "Fail → rerun rounds on those IDs; the spares run only once a changed *best* passes Check; a second fail → **HALT(OVERFIT)**."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a19_second_root_version.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; status COMPLETE; silent. A second parentless version v0b before round 1 replaces best with unjudged text; VERSION_WITHOUT_KEEP only fires when parent is set or a round has run.",
+          "rule": "Else log `setup`; **v0** = `TARGET` (draft if absent) = *best*; run its commands and Verifier (`check{trigger:setup}`); start at **E1**. / **Keep** a variant if ≥2 judges prefer it (strict: 3), none prefers *best* ..."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a20_votes_null.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; status COMPLETE; only check_judges unauditable. votes:null is 'empty', but the pass is credited (control k20 with the key absent -> RECORD_MISSING + FALSE_COMPLETE); this contradicts the implementer's stated 'absent or empty' rule.",
+          "rule": "**Check** after 3 stalls since the last keep, or a `DONE` claim: each criterion by its check on *best*, with 3 fresh judges per `judges` criterion (majority; strict: 3/3). / **When unsure, fail closed**: don't keep, don't pass; write `[OPEN]`."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a21_votes_as_object.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; status COMPLETE; only check_judges unauditable. votes {j1:fail,j2:fail,j3:pass} with value pass is credited (control k21 as a list -> CHECK_MISCOUNT + FALSE_COMPLETE).",
+          "rule": "with 3 fresh judges per `judges` criterion (majority; strict: 3/3)"
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a22_done_kind_capitalised.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; status COMPLETE; silent. DONE kinds 'Command' and 'Judges': c1 is never run at the gate (commands {}), and c3 passes on 1 of 3 votes.",
+          "rule": "**kind**: `command` (you run it; it decides), `source` (the Verifier checks it) or `judges` (a preference, never proof) / run every command there yourself / with 3 fresh judges per `judges` criterion (majority; strict: 3/3)"
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a23_done_kind_absent.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; status COMPLETE; silent. A v3 DONE whose criteria have no kind (a schema field without '?'): c1 is never gated and c3 passes with no votes; no RECORD_MISSING.",
+          "rule": "`DONE` (propose if missing; human confirms): atomic pass/fail criteria `{id,required,kind,guardrail?}`, required or optional / **When unsure, fail closed**: don't keep, don't pass; write `[OPEN]`."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a24_gap_required_flipped.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; status COMPLETE; silent. A required open gap is re-logged required:false (still open) with no amend.",
+          "rule": "A required `[OPEN]` → **HALT(OPEN)**: name each gap and its owner; the human closes it with evidence the Verifier checks, or waives it by `amend`."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a25_open_marker_unlogged.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; status COMPLETE; silent. The kept version diff writes '[OPEN: pilot sample size and source needed]' into best, and no substrate record is logged. Moderate: whether the gap is required is unlogged.",
+          "rule": "**Log** the round, any `version` and `substrate`, then write `TARGET`. / A required `[OPEN]` → **HALT(OPEN)** / **When unsure, fail closed**: don't keep, don't pass; write `[OPEN]`."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a26_heldout_attempt1_spares.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; status COMPLETE; silent. Attempt 1 uses set 'spares' (the prose's word); only 'spare' is recognised (fn26 with 'spare' -> HELDOUT_REROLL).",
+          "rule": "Fail → rerun rounds on those IDs; the spares run only once a changed *best* passes Check; a second fail → **HALT(OVERFIT)**."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a27_heldout_attempt2_Primary.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; status COMPLETE; silent. Attempt 2 reruns set 'Primary' (control k27 with 'primary' -> HELDOUT_REROLL + FALSE_COMPLETE).",
+          "rule": "the spares run only once a changed *best* passes Check; a second fail → **HALT(OVERFIT)**."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a28_heldout_attempt2_no_set.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; status COMPLETE; silent. Attempt 2 omits set (a schema field without '?'); which prompts ran is unknown, yet the pass is credited with no RECORD_MISSING.",
+          "rule": "the spares run only once a changed *best* passes Check / **When unsure, fail closed**: don't keep, don't pass (Memory: heldout{attempt,set,version,pass})"
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a29_exit_Complete_case.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; only 'exit' unauditable. exit status 'Complete' with no held-out run (control k29 with 'COMPLETE' -> FALSE_COMPLETE).",
+          "rule": "**Output** at every exit: *best*; COMPLETE (final rung, held-out pass) or PARTIAL"
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a30_setup_t_capitalised.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; state status UNKNOWN; unauditable setup/status/budget/required; 1 warning. The setup line is {\"t\":\"Setup\"}, so every rule goes lenient and COMPLETE without a held-out run is not flagged.",
+          "rule": "Else log `setup`; **v0** = `TARGET` (draft if absent) = *best* / COMPLETE (final rung, held-out pass) or PARTIAL"
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a31_setup_logged_late.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; only gates/budget unauditable. The fn08+fn09 keep round is placed before the setup record, so v3 fail-closed is off while it is audited; a late setup is not a finding.",
+          "rule": "Else log `setup`; **v0** = `TARGET` (draft if absent) = *best* ... / run every command there yourself / The **Screen** rejects ..."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a32_loop_V3_case.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; only 'gates' unauditable. setup.loop 'V3' fails startswith('v3'), so fn08+fn09 revert to lenient (control k32 with 'v3' -> RECORD_MISSING).",
+          "rule": "Lines `{\"t\":name,…fields}`: `setup{loop:\"v3\",done,models,budget:{rounds,minutes,tokens}}` / run every command there yourself"
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a33_round_t_case_hides_budget.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; only ROUND_SEQUENCE (RECORD) and 2 warnings. Budget is 2 rounds and 4 run; two are logged {\"t\":\"Round\"} and never counted (control k33 -> BUDGET_OVERRUN x2).",
+          "rule": "Start a round only if one is left and remaining time (and reported tokens) cover twice the costliest round so far; else Check; unless all required pass, **HALT(BUDGET)**. / Count from records, never recollection."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a34_duplicate_t_key_hides_stalls.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; 2x ROUND_SEQUENCE (RECORD) and 4 warnings. Six stall rounds; four carry a trailing duplicate \"t\":\"note\" (json keeps the last key), so the stall count never reaches 3 and no MISSED_CHECK fires.",
+          "rule": "**Check** after 3 stalls since the last keep, or a `DONE` claim / Count from records, never recollection."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a35_v2_variant_records_hide_budget.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; ROUND_SEQUENCE (RECORD) + 'keep' unauditable, no warning. In a loop:'v3' archive, rounds 1-2 are logged as v2 `variant` records, a known type that r_variant never counts; 4 rounds run under a budget of 2.",
+          "rule": "Start a round only if one is left ... / Count from records, never recollection."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a36_rung_pingpong_skips_check.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; silent. 12 stall rounds with no Check: rung records alternate E1/E2/E1/E2 with no boundary, and pre('rung') clears the due Check while each rung resets the stall count (the fn11 fix only catches a repeated rung name).",
+          "rule": "**Check** after 3 stalls since the last keep, or a `DONE` claim / Below the final rung, **pause**: the human escalates or stops (PARTIAL); at it, **Stop**."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a37_error_streak_after_resume.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; silent. HALT(ERROR), resume, then 3 more all-ERROR rounds; rounds 3-4 are two in a row, yet round 5 starts with no ERROR_HALT_MISSED (the due is set only when rs['e'] == 2).",
+          "rule": "A round keeping nothing is a **stall** unless every variant ended ERROR (two such in a row → **HALT(ERROR)**)."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a38_exact_restore_advisory_only.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; only OSCILLATION_MISSED as AMBIGUOUS. Round 2 restores S1 verbatim (ratio 1.0, so not a 'nearly' judgment call) and round 3 runs on.",
+          "rule": "If it (nearly) restores an earlier *best*'s section → **HALT(OSCILLATION)**: the human picks *best*."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a39_restore_section_case.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; silent. The same verbatim restore with the section logged 's1' instead of 'S1': history is keyed by the exact label, so not even the advisory fires.",
+          "rule": "If it (nearly) restores an earlier *best*'s section → **HALT(OSCILLATION)**: the human picks *best*."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a40_e3_without_objective.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; silent. The only amend (at E1) makes c2 optional and adds no objective; E3 is logged and run with no E3_WITHOUT_AMEND, because any earlier amend satisfies the check.",
+          "rule": "**E1** fair-critical → **E2** adversarial (reject polish, demand derivations) → **E3** a second, human-added objective (`amend`)."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a41_reorder_amend_rerolls_check.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; status COMPLETE; silent. An amend that only reorders DONE.criteria bumps the epoch, so the failing Check on v1/E1 is re-rolled to a pass (the fn14 fix only catches an identical DONE).",
+          "rule": "A Check or held-out result stands until *best*, the rung or `DONE` changes. / Never re-ask a returned verdict."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a42_budget_nan.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; silent, nothing unauditable. budget {rounds:NaN, minutes:NaN} (Python json accepts NaN; num() accepts it); every comparison is False, so 6 rounds run unchecked.",
+          "rule": "Start a round only if one is left and remaining time (and reported tokens) cover twice the costliest round so far; else Check; unless all required pass, **HALT(BUDGET)**."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a43_probe_misses_ignored.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; silent. probe.misses lists a missed defect; the field is never read, normal mode is credited and a 2/2 keep passes (control k43 with the miss in seeded.pair -> PROBE_MODE_WRONG + STRICT_KEEP + JUDGE_MISSING).",
+          "rule": "A non-tie on the identical copy or a missed defect → **strict mode**; tell the human."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a44_no_probe_at_final_rung.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; status COMPLETE; silent. Escalated to E2 with no E2 probe; the E2 Check passes c3 on 2/3 votes. PROBE_MISSING is raised only by r_round, so v3's 'missing probe = strict' never reaches the Check (control k44 with a strict E2 probe -> CHECK_MISCOUNT + FALSE_COMPLETE).",
+          "rule": "**Probe** (per rung) / On escalation: log `rung`, rerun the probe, reset the stall count. / with 3 fresh judges per `judges` criterion (majority; strict: 3/3)"
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a45_verdict_criteria_absent.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; silent. v3 verdicts have no criteria key (a schema field without '?'), so the protected-item veto cannot be evaluated; the keep is credited with no RECORD_MISSING.",
+          "rule": "Judges use another model family where available, see `GROUNDING`, the rubric and A/B, never the generator's rationale, and return JSON: A/B/tie/UNKNOWN overall and per criterion, confidence low/med/high, ≤2 flaws of the winner. / none rates a **protected** item worse"
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/a46_variant_split_reask.jsonl",
+          "direction": "false-negative",
+          "checker_output": "exit 0; silent. The same variant (same id and diff) is logged twice in one round: first rejected by judge 1 (best, high), then re-judged and kept; each entry is audited alone.",
+          "rule": "Never re-ask a returned verdict. / if it prefers *best* with high confidence or on a protected item, reject the variant."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/b01_heldout_pass_bool.jsonl",
+          "direction": "false-positive",
+          "checker_output": "exit 1: FALSE_COMPLETE (plus 'heldout' unauditable). heldout pass:true, a present value the checker calls malformed; its policy says unauditable, yet the clean COMPLETE becomes a VIOLATION.",
+          "rule": "Otherwise the human runs the held-out judges (pass/fail by majority), reporting failing criterion IDs only. (Memory: heldout{attempt,set,version,pass})"
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/b02_heldout_attempt_string.jsonl",
+          "direction": "false-positive",
+          "checker_output": "exit 1: HELDOUT_REROLL + FALSE_COMPLETE. attempt '1' is the same malformation class as fp09's retries '0', which is deliberately kept lenient.",
+          "rule": "Lines `{\"t\":name,…fields}`: ... `heldout{attempt,set,version,pass}` / COMPLETE (final rung, held-out pass) or PARTIAL"
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/b03_done_criteria_map.jsonl",
+          "direction": "false-positive",
+          "checker_output": "exit 1: FALSE_COMPLETE (plus setup/required unauditable). DONE.criteria is keyed by id, the shape SKILL uses for must_not_change; the checker reads criteria only as a list, and a clean COMPLETE is flagged.",
+          "rule": "atomic pass/fail criteria `{id,required,kind,guardrail?}`, required or optional; ... `must_not_change` constraints `{id:text}`"
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/b04_orders_raw_ab_letters.jsonl",
+          "direction": "false-positive",
+          "checker_output": "exit 1: ORDER_MISMAP (R) + KEEP_WITHOUT_SUPPORT + JUDGE_MISSING. Judge 1 answers A then B, a consistent preference in the judge's own A/B terms, and it is read as disagreement. Low confidence: this depends on reading orders:[overallAB,overallBA] as raw letters.",
+          "rule": "Judge 1 compares in both orders (disagreement = UNKNOWN) / return JSON: A/B/tie/UNKNOWN overall and per criterion"
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/b05_stale_baseline_after_amend.jsonl",
+          "direction": "false-positive",
+          "checker_output": "exit 1: REGRESSION_KEPT. An amend replaces c1's command; the variant fails the new c1 (a failure best shares). rs['latest'] keeps the pre-amend 'pass' after DONE changes and asserts best passes c1.",
+          "rule": "Failing a command *best* passes rejects the variant; a failure *best* shares does not. / A Check or held-out result stands until *best*, the rung or `DONE` changes."
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/c01_round_t0_huge_int.jsonl",
+          "direction": "crash",
+          "checker_output": "exit 2 {\"ok\":false,\"error\":\"OverflowError('int too large to convert to float')\"}: minutes() calls float() on a 401-digit t0; OverflowError is not in BAD and escapes feed()/audit(). The fuzz also hits t1, tokens and budget.minutes.",
+          "rule": "Lines `{\"t\":name,…fields}`: ... `round{n,best,t0,t1,tokens,...}` (checker contract: a malformed field is unauditable, never a crash)"
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/c02_round_t0_datetime_minvalue.jsonl",
+          "direction": "crash",
+          "checker_output": "exit 2 {\"ok\":false,\"error\":\"OSError(22, 'Invalid argument')\"}: naive '0001-01-01T00:00:00' (.NET DateTime.MinValue), or any naive time before 1970; datetime.timestamp() raises OSError on Windows and minutes() does not catch it.",
+          "rule": "Lines `{\"t\":name,…fields}`: ... `round{n,best,t0,t1,...}` (checker contract: never a crash)"
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/c03_budget_rounds_huge_negative.jsonl",
+          "direction": "crash",
+          "checker_output": "exit 2 {\"ok\":false,\"error\":\"OverflowError('int too large to convert to float')\"}: budget.rounds = -10**400, and BUDGET_OVERRUN formats it with '%g'.",
+          "rule": "`setup{loop:\"v3\",done,models,budget:{rounds,minutes,tokens}}` (checker contract: never a crash)"
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/c04_deep_value_echoed_in_finding.jsonl",
+          "direction": "crash",
+          "checker_output": "exit 2 {\"ok\":false,\"error\":\"RecursionError('maximum recursion depth exceeded while encoding a JSON object')\"}: resume.at_round nested 2996 deep parses (the limit is ~2997); RESUME_MISMATCH echoes it and main()'s json.dumps(indent=1) adds 3 levels, so every finding is lost.",
+          "rule": "`resume{at_round}` (checker contract: never a crash)"
+        },
+        {
+          "archive": "F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/checker-attack/round2/c05_deep_round_kept.jsonl",
+          "direction": "crash",
+          "checker_output": "exit 2 RecursionError at output: round.kept nested 2996 deep, echoed by KEPT_ID_MISMATCH. The fuzz shows the same with n, best, version, parent, mode, rung, attempt, final_rung, what and id.",
+          "rule": "`round{...,kept}` (checker contract: never a crash)"
+        }
+      ]
+    },
+    "fix": {
+      "fixed": [
+        "a01 screen UNKNOWN: enumerated values match case-insensitively and a screen result other than pass/ok means rejected (UNKNOWN is never a pass) -> GATE_KEPT",
+        "a02 screen 'Rejected: ...': same rule -> GATE_KEPT",
+        "a03 command 'FAIL': gate results are canonicalized case-insensitively (new cres()) -> REGRESSION_KEPT",
+        "a04 command logged as exit status 1: exit status 0 passes and any other exit status fails -> REGRESSION_KEPT",
+        "a05 apply 'applied': an apply other than ok means the diff was not shown to apply, so it is an ERROR (dropped). The gate no longer returns unauditable before checking commands and Screen -> GATE_KEPT",
+        "a06 gates.verifier ERROR: dropped like any other gate ERROR -> GATE_KEPT",
+        "a07 v3 gates with no verifier: RECORD_MISSING, as fn09 is for a missing screen; the keep is not credited",
+        "a08 verdict ERROR logged with retries 0: new RETRY_MISSING (VIOLATION)",
+        "a09/a10 'Best' in criteria or overall: verdict values, orders and confidence are canonicalized -> KEEP_VETOED",
+        "a11 slot '3' as a string: a numeric-string slot is read as that slot. An extra or duplicate verdict still never adds support but now still objects -> KEEP_VETOED",
+        "a12 must_not_change as [{id,text}]: those ids are protected -> KEEP_VETOED",
+        "a13 probe defect seeded against a non-judges criterion: expected mode is strict -> PROBE_MODE_WRONG + STRICT_KEEP",
+        "a14 unified-diff strings: diffs() keeps a string as one opaque edit (compared verbatim), and new dfiles() reads its ---/+++ headers -> CHECK_FILE_EDIT + KEPT_TEXT_MISMATCH",
+        "a15 version diff names a check file the variant diff did not: version diffs are checked too -> CHECK_FILE_EDIT",
+        "a16 check file named only in DONE: a criterion's `files` list now counts as check files (as setup.check_files already did). If no list exists the rule is listed unauditable (check_files). Command strings are deliberately not parsed, because a command such as `mypy src/x.py` names TARGET files it only checks",
+        "a17 variant.words differs from version.words: KEPT_TEXT_MISMATCH",
+        "a18 edit whose new text equals its old text is a no-op, like fn27's empty diff -> KEEP_WITHOUT_SUPPORT",
+        "a19 second parentless version: only v0 may be a root -> VERSION_WITHOUT_KEEP",
+        "a20 votes null or empty: counted as absent -> v3 RECORD_MISSING, and the pass is not credited",
+        "a21 votes given as {judge: vote}: the values are counted -> CHECK_MISCOUNT",
+        "a22 DONE kinds 'Command'/'Judges': kinds are canonicalized -> RECORD_MISSING at the gate + CHECK_MISCOUNT",
+        "a23 DONE criteria with no kind: v3 RECORD_MISSING at setup. A pass on a criterion of unknown kind is not credited, and the probe's seeded criterion is not a known judges criterion, so the rung is strict",
+        "a24 gap flipped to required:false: removing the requirement needs a later amend, as waiving does -> OPEN_AT_HELDOUT/COMPLETE",
+        "a25 [OPEN] written into best with no substrate record: kept diffs track [OPEN] markers, and more markers than logged gaps counts as a required open gap -> OPEN_AT_HELDOUT/COMPLETE",
+        "a26/a27 held-out set 'spares'/'Primary': canonicalized -> HELDOUT_REROLL",
+        "a28 held-out attempt with no set: v3 RECORD_MISSING. Attempt 2 is credited only when it ran the spares",
+        "a29 exit 'Complete': canonicalized -> FALSE_COMPLETE",
+        "a30/a33 record type 'Setup'/'Round': record types are matched case-insensitively (rtype())",
+        "a31 setup logged late: v3 is decided by pre-scanning the first setup record anywhere in the file, and a late setup is flagged SETUP_LATE (RECORD)",
+        "a32 loop 'V3': compared case-insensitively",
+        "a34 line with a duplicate key: parse() rejects it (object_pairs_hook) -> integrity error, exit 2",
+        "a35 v2 variant/halt records inside a v3 archive: RECORD_MISSING",
+        "a36 rung E1 after E2: only a later rung (E1<E2<E3) counts as an escalation. Anything else is RUNG_REPEATED, with no stall reset and the due Check left in place -> MISSED_CHECK",
+        "a37 ERROR streak after resume: HALT(ERROR) is due when the streak is >= 2 (was == 2)",
+        "a38/a39 exact undo of a kept edit: OSCILLATION_MISSED is now a VIOLATION (near restores stay AMBIGUOUS), and section labels are matched ignoring case and spacing",
+        "a40 E3 reached with no new objective: E3 requires an amend that adds a DONE criterion",
+        "a41 amend that only reorders criteria: DONE is compared ignoring criteria order (dkey) -> RECHECK_UNCHANGED",
+        "a42/c03 NaN or huge budget: num() now accepts only finite, bounded numbers -> v3 RECORD_MISSING",
+        "a43 probe.misses non-empty: strict mode is expected",
+        "a44 Check at a rung with no probe: strict on a v3 archive -> CHECK_MISCOUNT",
+        "a45 completed v3 verdict with no criteria key: RECORD_MISSING. An empty map {} is still accepted",
+        "a46 same variant logged twice in one round: new VARIANT_REPEATED (VIOLATION if the repeat is kept)",
+        "b01 heldout pass:true/false accepted as a whole-set result",
+        "b02 attempt '1' (a malformed label): listed unauditable, never treated as a reroll",
+        "b03 DONE.criteria keyed by id: read the same as the list form (crits())",
+        "b05 amend redefines c1: a criterion whose definition changed is dropped from the best-passes baseline -> no false REGRESSION_KEPT",
+        "c01/c02 huge int or year-1 time: minutes() computes naive ISO times as UTC without timestamp(), and OverflowError is caught",
+        "c04/c05 deeply nested values: BAD now includes OverflowError and RecursionError, and main() clips report depth before json.dumps",
+        "Screen/commands/apply also accept 'ok' and exit status 0 as a pass; an unrecognized held-out set label fails closed only on attempt 2",
+        "Expectation updates to existing cases: p09 gains one ERROR_HALT_MISSED at record 8 (the >=2 streak rule). p21's exact undo becomes a VIOLATION (exit 1). Both are documented in their notes",
+        "All 56 round-2 archives were added as fixtures with expected cases (source and ruling fields), giving 152 cases. Added unit test test_audit_cli_never_crashes, which runs main() audit over every fixture in-process",
+        "Fuzz, run in-process and including report serialization: 411,180 mutations over the original fixtures plus 209,850 over the new ones, zero exceptions",
+        "Line count: rqgm_check.py is 799 lines (cap 800). Stdlib only, read-only, no network, model or clock",
+        "Process note: I ran one read-only `git diff tests/checker/test_selftest.py`, against the 'do not run git' instruction. It modified nothing"
+      ],
+      "rejected": [
+        "b04 orders as raw A/B letters: rejected, not a checker defect. The Memory schema gives orders:[overallAB,overallBA] in the same un-blinded vocabulary as overall (variant|best|tie|UNKNOWN|ERROR), and DESIGN.md calls the records 'verbatim, un-blinded verdict records'. The presentation order is not logged, so raw letters cannot be mapped back to variant or best. Judge 1's result is therefore unreadable (UNKNOWN) and is never support, so ORDER_MISMAP + KEEP_WITHOUT_SUPPORT + JUDGE_MISSING stand. Added as fixture b04 with ruling 'not a checker defect'",
+        "Partial (a16): parsing command strings to find check files was rejected as false-positive prone. A command can name TARGET files it only checks, e.g. `mypy src/x.py`. The check applies only to explicit lists (setup.check_files, a criterion's `files`) and is otherwise listed unauditable",
+        "Partial (a45): only an absent criteria key fails closed. Requiring an entry for every protected item would reject every existing fixture's criteria {}. An empty map is read as no per-criterion preference",
+        "a13 and a25 depend on prose intent, as the attacker notes. Both were implemented as fail-closed readings, with the reasoning recorded in the fixture notes"
+      ],
+      "selftest_output": "python skills/rqgm-loop/rqgm_check.py selftest -> exit 0: {\"ok\": true, \"cases\": 152, \"failed\": []}",
+      "unittest_output": "python -m unittest discover -s tests/checker -v -> Ran 5 tests in 1.402s OK (test_audit_cli_never_crashes, test_hash_matches_hashlib, test_no_t_records_is_an_integrity_error, test_selftest_passes, test_suite_covers_every_invariant_and_positives). gen_attacks.py (exit 0): ctl_* flagged 20/20; fn* flagged 30/34, and the unflagged fn19, fn25, fn30 and fn34 are the same four as before (already ruled); no crashes. gen_round2.py: all 46 a* flagged; b01, b02, b03 and b05 clean; b04 flagged (ruled not a defect); c01-c05 no crash",
+      "lines": 799
+    }
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Harden"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 2,
+      "title": "Reattack"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 3,
+      "title": "Fix"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "harden",
+      "phaseIndex": 1,
+      "phaseTitle": "Harden",
+      "agentId": "adb0e95ad18912fc6",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790406165161,
+      "queuedAt": 1790406165158,
+      "attempt": 1,
+      "lastToolName": "Bash",
+      "lastToolSummary": "python skills/rqgm-loop/rqgm_check.py selftest | head -5; e…",
+      "promptPreview": "Repo: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab. Do NOT run git. Do NOT edit skills/rqgm-loop/SKILL.md, INITIATOR.md, DESIGN.md or README.md (another process is revising them; read them as the current prose contract). You may edit only skills/rqgm-loop/rqgm_check.py and tests/checker/**. The checker must stay read-only, stdlib-only, no network/model/clock, <=800 lines. Alwa…",
+      "promptFramed": true,
+      "lastProgressAt": 1790407978464,
+      "tokens": 299003,
+      "toolCalls": 78,
+      "durationMs": 1813302,
+      "resultPreview": "All five requested fixes are in, plus two stricter results you should review (below). All three required checks pass:\n- **selftest:** 96/96 cases pass.\n- **unittest:** 4 tests pass (I added one).\n- **gen_attacks.py:** all 20 ctl_* archives and all 27 fn* archives it caught before are still flagged. fn05, fn08 and fn09 are now caught too, so 30 fn* in total.\n\nThe checker is 736 lines (limit 800) an…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "reattack",
+      "phaseIndex": 2,
+      "phaseTitle": "Reattack",
+      "agentId": "a7836fb4084f815ee",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790407980955,
+      "queuedAt": 1790407980825,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "The hardened checker is still easy to break. Across 56 new …",
+      "promptPreview": "Repo: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab. Do NOT run git. Do NOT edit skills/rqgm-loop/SKILL.md, INITIATOR.md, DESIGN.md or README.md (another process is revising them; read them as the current prose contract). You may edit only skills/rqgm-loop/rqgm_check.py and tests/checker/**. The checker must stay read-only, stdlib-only, no network/model/clock, <=800 lines. Alwa…",
+      "promptFramed": true,
+      "lastProgressAt": 1790409603478,
+      "tokens": 260573,
+      "toolCalls": 24,
+      "durationMs": 1622522,
+      "resultPreview": "{\"verdict\":\"The hardened checker is still easy to break. Across 56 new round-2 archives: 46 v3 archives that violate a SKILL.md rule exit 0, 5 valid archives exit 1, and 5 inputs crash (exit 2 with a caught exception). A control (k*) shows the unevaded form is flagged wherever one exists. Nothing in the checker, the tests or the prose files was edited. Final required checks all pass: selftest 96/9…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 3,
+      "label": "fix",
+      "phaseIndex": 3,
+      "phaseTitle": "Fix",
+      "agentId": "ac012a90a77becacf",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790409605875,
+      "queuedAt": 1790409605858,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "python skills/rqgm-loop/rqgm_check.py selftest -> exit 0: {…",
+      "promptPreview": "Repo: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab. Do NOT run git. Do NOT edit skills/rqgm-loop/SKILL.md, INITIATOR.md, DESIGN.md or README.md (another process is revising them; read them as the current prose contract). You may edit only skills/rqgm-loop/rqgm_check.py and tests/checker/**. The checker must stay read-only, stdlib-only, no network/model/clock, <=800 lines. Alwa…",
+      "promptFramed": true,
+      "lastProgressAt": 1790412646377,
+      "tokens": 433020,
+      "toolCalls": 65,
+      "durationMs": 3040501,
+      "resultPreview": "{\"fixed\":[\"a01 screen UNKNOWN: enumerated values match case-insensitively and a screen result other than pass/ok means rejected (UNKNOWN is never a pass) -> GATE_KEPT\",\"a02 screen 'Rejected: ...': same rule -> GATE_KEPT\",\"a03 command 'FAIL': gate results are canonicalized case-insensitively (new cres()) -> REGRESSION_KEPT\",\"a04 command logged as exit status 1: exit status 0 passes and any other ex…"
+    }
+  ],
+  "totalTokens": 992596,
+  "totalToolCalls": 167
+}

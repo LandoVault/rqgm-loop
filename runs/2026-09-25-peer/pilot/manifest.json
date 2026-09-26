@@ -1,0 +1,53 @@
+{
+ "frozen_at": "2026-09-26, before any scored pilot call (smoke runs on T0 only)",
+ "question": "On two prespecified small tasks with sealed deterministic oracles, how do v3 prose (P), frozen v2 (V), a strong single agent (S) and best-of-N with the same checks (B) compare at an equal model-call ceiling? Feasibility/case-comparison pilot, not a superiority study (n=1 per cell).",
+ "model": "claude-opus-5-5 for every role in every arm (one model family; disclosed; no strongest-model privilege)",
+ "cap_calls_per_run": 49,
+ "cap_derivation": "1.25 x max(complete smoke paths on T0): V 33 calls (smoke-V-T0), P 39 calls (smoke-P-T0) -> 48.75 -> 49",
+ "arms": {
+  "S": "one agent, same workspace/tools/public checks; up to 12 revise-and-check cycles (cap/4); 1 model context",
+  "B": "24 independent fresh revisions of v0 (cap/2), each + 1 Verifier call on source criteria; select by public checks pass, then fewest verifier flags, then fewer words, then index; no judges",
+  "V": "frozen v2 (commit 24663bd) SKILL.md + INITIATOR.md, orchestrator-in-the-loop relay (harness re-invokes the orchestrator each step; roles run as fresh subagents)",
+  "P": "final v3 SKILL.md + INITIATOR.md (hash appended as amendment 3 before P runs), same relay; no rqgm_check.py in the workspace"
+ },
+ "tasks": [
+  "T1 (code repair, hidden tests)",
+  "T2 (controlled-corpus report repair)"
+ ],
+ "runs": "one per arm x task (8); launched concurrently; memory reset (fresh workspace per run)",
+ "human_proxy": "sealed/pilot-heldout-and-proxy.md (escalate when offered; never amend/waive/close [OPEN]; newer at oscillation; held-out = 3 per-task prompts, majority, failing IDs only)",
+ "endpoints": {
+  "primary": "sealed score.py required_all_pass on the final emitted artifact (B: the selected candidate)",
+  "false_completion": "arm claims DONE/COMPLETE but required_all_pass is false",
+  "secondary": [
+   "required checks passed (count)",
+   "model calls",
+   "subagent tokens (workflow usage)",
+   "wall time",
+   "held-out/proxy calls (separate)",
+   "process coverage and archive audit (P and V with rqgm_check.py where format allows)"
+  ]
+ },
+ "decision_rule": "Report paired case outcomes and costs without significance claims. P may be called better on these cases under these ceilings only if its correctness/cost results justify that restricted statement against both V and the simple comparators (S, B); mixed or equal results are inconclusive. (peer_review_rqgm_v2.md 4.4)",
+ "contamination": "sealed files live outside every workspace; subagents are told not to read outside it; post-hoc grep of all journals for sealed paths",
+ "hashes": {
+  "harness pilot-harness.js": "68c77c44615a6ffe442a2becd7ae2b38ad6f4011c29072aef2c951e437101814",
+  "V SKILL.md": "c4a72761c311dfd03f10cdf5abc248ea04af9d9d73785c77f3ddc3fad9abb90e",
+  "V INITIATOR.md": "3cbe05037cb62096314afa11697488f96ef81c3077ae7e6f4bdc0b7d3c3d87d5",
+  "scorer sealed/score.py": "844c046abdd750d2843f73ccc3ed3e27da0df0bcfa70ffc6a11fa4f4ff4a8cb3",
+  "T1 hidden tests": "cb86b4b8eecca901a8d12328e71f0d20b7e8bd136d98611383375a5c1908f6c2",
+  "T2 answer key": "a0d8042665083493d0c58702710a1ca7783d4cd8f9810c981d12cddad7bf3c1f",
+  "held-out + proxy": "36c53f96dee7efa460494f1b92b25f8ad17568fdef88ec6f0a900773b52a2eb5",
+  "T1 DONE": "fecf86f3405e3d47f3b6e99e6fed356ed0a22e41bc093f76105e1b3d3009a765",
+  "T2 DONE": "a7c63bcea83c0923df851810a35601b070b5ed169e06692981ae778331d7abbe"
+ },
+ "limitations": [
+  "n=1 per cell; no significance",
+  "one model family for all roles and judges",
+  "per-step orchestrator re-invocation differs from a live session",
+  "T2 was co-designed with the v3 effort (planted unknown + causal claim favour fail-closed rules)",
+  "sealed files have no technical access boundary",
+  "S's internal turns are not counted as calls; compare tokens",
+  "answer keys and held-out prompts written by the orchestrating Claude session, not a human"
+ ]
+}

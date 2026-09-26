@@ -1,0 +1,65 @@
+{
+  "summary": "One pilot run (arm x task): V/P = orchestrator-in-the-loop relay of a frozen protocol; S = single strong agent; B = best-of-N with the same checks. The harness decides nothing; it relays, journals, runs the sealed human proxy and caps calls.",
+  "agentCount": 1,
+  "logs": [],
+  "result": {
+    "runId": "S-T2",
+    "arm": "S",
+    "task": "T2",
+    "cap": 49,
+    "calls": 1,
+    "proxyCalls": 0,
+    "final": {
+      "status": "DONE",
+      "claims_done": true,
+      "output": "All four required criteria and the optional clarity criterion now hold in the revised report.md. My scratch checker passes on it, and the same checker catches every original defect when run on a copy of the original report. The workspace had no public check files (only DONE.json, the corpus and report.md), so the only checks run were mine. Only report.md changed; the corpus, DONE.json and the table's rows, columns and metric labels are untouched.\n\nWhat was wrong and what changed:\n- **Q3 visits (t2-numbers):** 4,830 matched no corpus value. The final logs (corpus A, which supersede preliminary figures) give 1,540 + 1,620 + 1,690 = 4,850. Change is now +15.2% instead of +12.8%. The preliminary dashboard figure in corpus F (4,790) is not used.\n- **F2:** September was misquoted as 1,670; corpus A gives 1,690.\n- **Missing rows (t2-required):** Staff is now 21.0 → 23.5 FTE, +11.9% (current-year memo, corpus B; the prior-year memo, corpus C, is not used). Visits per FTE is now 200.5 → 206.4, +2.9%, which comes out the same whether computed from rounded or unrounded ratios.\n- **F3 (t2-claims):** it claimed the scheduling system caused the increase. Corpus D says three July changes overlapped and no analysis has attributed the Q3 change in visits to any one of them. F3 now states those facts, notes separately that two part-time clinicians joined in July (corpus B), makes no attribution, and marks attribution as [OPEN: reason].\n- **F4:** \"reported in the table above\" is replaced with the corpus-backed staffing and visits-per-FTE results.\n- **Patient satisfaction (t2-unknowns):** Q3 and its Change are marked [OPEN: reason] because corpus E says no Q3 score exists yet.\n- **Clarity (optional):** a new \"Sources and derivations\" section after the table shows the corpus file and arithmetic behind every number.\n\nCycles:\n1. Main revision.\n2. Reworded an F3 phrase that my checker flagged as possible causal wording.\n3. Made F3 cite D and B separately, because D's \"no analysis attributes\" statement covers only its own operational changes, not the clinician hires. Also fixed a heading level.\n\nThe Write tool refused to overwrite report.md because it treats that filename as a findings file. Since report.md is the task's target, I made the changes with Edit instead.\n\nFiles:\n- C:/Users/wii/AppData/Local/Temp/claude/F--git-rqgm-loop--claude-worktrees-peer-agent-input-review-514dab/3a60f828-5f3b-4323-b9f2-0b1275b1d45f/scratchpad/pilot/S-T2/report.md (revised target)\n- C:/Users/wii/AppData/Local/Temp/claude/F--git-rqgm-loop--claude-worktrees-peer-agent-input-review-514dab/3a60f828-5f3b-4323-b9f2-0b1275b1d45f/scratchpad/pilot/S-T2/scratch/check_report.py (my checker: recomputes values from the corpus, confirms every number traces to it, checks table structure, required cells, causal wording and [OPEN] marks)\n- C:/Users/wii/AppData/Local/Temp/claude/F--git-rqgm-loop--claude-worktrees-peer-agent-input-review-514dab/3a60f828-5f3b-4323-b9f2-0b1275b1d45f/scratchpad/pilot/S-T2/scratch/neg/ (copy of the original report, used to confirm the checker catches its defects)"
+    },
+    "journal": [
+      {
+        "t": "S",
+        "result": {
+          "status": "DONE",
+          "open_items": [],
+          "cycles": 3,
+          "summary": "All four required criteria and the optional clarity criterion now hold in the revised report.md. My scratch checker passes on it, and the same checker catches every original defect when run on a copy of the original report. The workspace had no public check files (only DONE.json, the corpus and report.md), so the only checks run were mine. Only report.md changed; the corpus, DONE.json and the table's rows, columns and metric labels are untouched.\n\nWhat was wrong and what changed:\n- **Q3 visits (t2-numbers):** 4,830 matched no corpus value. The final logs (corpus A, which supersede preliminary figures) give 1,540 + 1,620 + 1,690 = 4,850. Change is now +15.2% instead of +12.8%. The preliminary dashboard figure in corpus F (4,790) is not used.\n- **F2:** September was misquoted as 1,670; corpus A gives 1,690.\n- **Missing rows (t2-required):** Staff is now 21.0 → 23.5 FTE, +11.9% (current-year memo, corpus B; the prior-year memo, corpus C, is not used). Visits per FTE is now 200.5 → 206.4, +2.9%, which comes out the same whether computed from rounded or unrounded ratios.\n- **F3 (t2-claims):** it claimed the scheduling system caused the increase. Corpus D says three July changes overlapped and no analysis has attributed the Q3 change in visits to any one of them. F3 now states those facts, notes separately that two part-time clinicians joined in July (corpus B), makes no attribution, and marks attribution as [OPEN: reason].\n- **F4:** \"reported in the table above\" is replaced with the corpus-backed staffing and visits-per-FTE results.\n- **Patient satisfaction (t2-unknowns):** Q3 and its Change are marked [OPEN: reason] because corpus E says no Q3 score exists yet.\n- **Clarity (optional):** a new \"Sources and derivations\" section after the table shows the corpus file and arithmetic behind every number.\n\nCycles:\n1. Main revision.\n2. Reworded an F3 phrase that my checker flagged as possible causal wording.\n3. Made F3 cite D and B separately, because D's \"no analysis attributes\" statement covers only its own operational changes, not the clinician hires. Also fixed a heading level.\n\nThe Write tool refused to overwrite report.md because it treats that filename as a findings file. Since report.md is the task's target, I made the changes with Edit instead.\n\nFiles:\n- C:/Users/wii/AppData/Local/Temp/claude/F--git-rqgm-loop--claude-worktrees-peer-agent-input-review-514dab/3a60f828-5f3b-4323-b9f2-0b1275b1d45f/scratchpad/pilot/S-T2/report.md (revised target)\n- C:/Users/wii/AppData/Local/Temp/claude/F--git-rqgm-loop--claude-worktrees-peer-agent-input-review-514dab/3a60f828-5f3b-4323-b9f2-0b1275b1d45f/scratchpad/pilot/S-T2/scratch/check_report.py (my checker: recomputes values from the corpus, confirms every number traces to it, checks table structure, required cells, causal wording and [OPEN] marks)\n- C:/Users/wii/AppData/Local/Temp/claude/F--git-rqgm-loop--claude-worktrees-peer-agent-input-review-514dab/3a60f828-5f3b-4323-b9f2-0b1275b1d45f/scratchpad/pilot/S-T2/scratch/neg/ (copy of the original report, used to confirm the checker catches its defects)"
+        }
+      }
+    ]
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Run"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 2,
+      "title": "Proxy"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "S:agent",
+      "phaseIndex": 1,
+      "phaseTitle": "Run",
+      "agentId": "acf0ebfcae9949d26",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790408758343,
+      "queuedAt": 1790408758330,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "DONE",
+      "promptPreview": "You are working alone on a task in a controlled study run (S-T2). Workspace: C:/Users/wii/AppData/Local/Temp/claude/F--git-rqgm-loop--claude-worktrees-peer-agent-input-review-514dab/3a60f828-5f3b-4323-b9f2-0b1275b1d45f/scratchpad/pilot/S-T2. Read C:/Users/wii/AppData/Local/Temp/claude/F--git-rqgm-loop--claude-worktrees-peer-agent-input-review-514dab/3a60f828-5f3b-4323-b9f2-0b1275b1d45f/scratchpad/…",
+      "promptFramed": true,
+      "lastProgressAt": 1790408912869,
+      "tokens": 72823,
+      "toolCalls": 16,
+      "durationMs": 154526,
+      "resultPreview": "{\"status\":\"DONE\",\"open_items\":[],\"cycles\":3,\"summary\":\"All four required criteria and the optional clarity criterion now hold in the revised report.md. My scratch checker passes on it, and the same checker catches every original defect when run on a copy of the original report. The workspace had no public check files (only DONE.json, the corpus and report.md), so the only checks run were mine. Onl…"
+    }
+  ],
+  "totalTokens": 72823,
+  "totalToolCalls": 16
+}

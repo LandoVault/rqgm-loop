@@ -1,0 +1,67 @@
+{
+  "summary": "One pilot run (arm x task): V/P = orchestrator-in-the-loop relay of a frozen protocol; S = single strong agent; B = best-of-N with the same checks. The harness decides nothing; it relays, journals, runs the sealed human proxy and caps calls.",
+  "agentCount": 1,
+  "logs": [],
+  "result": {
+    "runId": "S-T1",
+    "arm": "S",
+    "task": "T1",
+    "cap": 49,
+    "calls": 1,
+    "proxyCalls": 0,
+    "final": {
+      "status": "DONE",
+      "claims_done": true,
+      "output": "Status: DONE. All three required criteria now hold, after 3 revise-and-check cycles.\n\n**What was wrong.** The original intervals.py passed the 5 public tests but broke three spec rules:\n- Rule 3: intervals that touch (b1 == a2) were not merged, because the test used `<` instead of `<=`.\n- Rule 4: empty intervals such as (5, 5) appeared in the output.\n- Rule 5: `intervals.sort()` sorted the caller's own list.\n\nIt also passed int subclasses such as bool through unchanged, so rule 7 (plain ints out) did not always hold. A 26-test spec suite I wrote in scratch confirmed this: 13 of its tests failed on the original.\n\n**What changed.** The fix is only in C:/Users/wii/AppData/Local/Temp/claude/F--git-rqgm-loop--claude-worktrees-peer-agent-input-review-514dab/3a60f828-5f3b-4323-b9f2-0b1275b1d45f/scratchpad/pilot/S-T1/intervals.py. `merge` now works like this:\n- It copies the input into a new list, so the caller's list is never changed (rule 5).\n- It checks every interval for a > b and raises ValueError before building any output (rule 6).\n- It converts endpoints to plain ints through a small `_as_int` helper (rule 7).\n- It drops empty intervals (rule 4).\n- It sorts the copy, then walks it once, merging when the next start is `<=` the current end, so touching intervals merge (rules 2 and 3).\n\nThe signature `merge(intervals)` is unchanged.\n\n**Checks.**\n- t1-public: `python -m unittest test_public` passes (5/5).\n- t1-spec: the scratch suite scratch/test_spec.py passes 26/26. It covers each rule plus 3,000 random cases compared against a brute-force answer. A second fuzz test, scratch/fuzz_wide.py, passes 20,000 cases, including duplicates and endpoints around ±10^30.\n- t1-interface: `inspect.signature(merge)` still reads `(intervals)`.\n- t1-clarity (optional): each block in the code carries a comment naming the spec rule it implements.\n\n**Other notes.** spec.md, test_public.py and DONE.json were not edited; their timestamps are unchanged. Nothing in the target needed an [OPEN] marker. I deleted the `__pycache__` folders that the test runs created. The one open item is behaviour for inputs outside the spec's int-only domain, which is my choice rather than the spec's."
+    },
+    "journal": [
+      {
+        "t": "S",
+        "result": {
+          "status": "DONE",
+          "open_items": [
+            "Behaviour outside the spec's declared input domain (list[tuple[int, int]]) is my own choice, not something spec.md states. Integer subclasses (bool, IntEnum, numpy ints) become plain int, as rule 7 requires. Non-integer endpoints such as floats raise TypeError. The a > b check (rule 6) runs first, so a reversed float interval still raises ValueError. A verifier who expects floats to be accepted would see a difference."
+          ],
+          "cycles": 3,
+          "summary": "Status: DONE. All three required criteria now hold, after 3 revise-and-check cycles.\n\n**What was wrong.** The original intervals.py passed the 5 public tests but broke three spec rules:\n- Rule 3: intervals that touch (b1 == a2) were not merged, because the test used `<` instead of `<=`.\n- Rule 4: empty intervals such as (5, 5) appeared in the output.\n- Rule 5: `intervals.sort()` sorted the caller's own list.\n\nIt also passed int subclasses such as bool through unchanged, so rule 7 (plain ints out) did not always hold. A 26-test spec suite I wrote in scratch confirmed this: 13 of its tests failed on the original.\n\n**What changed.** The fix is only in C:/Users/wii/AppData/Local/Temp/claude/F--git-rqgm-loop--claude-worktrees-peer-agent-input-review-514dab/3a60f828-5f3b-4323-b9f2-0b1275b1d45f/scratchpad/pilot/S-T1/intervals.py. `merge` now works like this:\n- It copies the input into a new list, so the caller's list is never changed (rule 5).\n- It checks every interval for a > b and raises ValueError before building any output (rule 6).\n- It converts endpoints to plain ints through a small `_as_int` helper (rule 7).\n- It drops empty intervals (rule 4).\n- It sorts the copy, then walks it once, merging when the next start is `<=` the current end, so touching intervals merge (rules 2 and 3).\n\nThe signature `merge(intervals)` is unchanged.\n\n**Checks.**\n- t1-public: `python -m unittest test_public` passes (5/5).\n- t1-spec: the scratch suite scratch/test_spec.py passes 26/26. It covers each rule plus 3,000 random cases compared against a brute-force answer. A second fuzz test, scratch/fuzz_wide.py, passes 20,000 cases, including duplicates and endpoints around ±10^30.\n- t1-interface: `inspect.signature(merge)` still reads `(intervals)`.\n- t1-clarity (optional): each block in the code carries a comment naming the spec rule it implements.\n\n**Other notes.** spec.md, test_public.py and DONE.json were not edited; their timestamps are unchanged. Nothing in the target needed an [OPEN] marker. I deleted the `__pycache__` folders that the test runs created. The one open item is behaviour for inputs outside the spec's int-only domain, which is my choice rather than the spec's."
+        }
+      }
+    ]
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Run"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 2,
+      "title": "Proxy"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "S:agent",
+      "phaseIndex": 1,
+      "phaseTitle": "Run",
+      "agentId": "a7741a4a041643fb8",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790408754657,
+      "queuedAt": 1790408754636,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "DONE",
+      "promptPreview": "You are working alone on a task in a controlled study run (S-T1). Workspace: C:/Users/wii/AppData/Local/Temp/claude/F--git-rqgm-loop--claude-worktrees-peer-agent-input-review-514dab/3a60f828-5f3b-4323-b9f2-0b1275b1d45f/scratchpad/pilot/S-T1. Read C:/Users/wii/AppData/Local/Temp/claude/F--git-rqgm-loop--claude-worktrees-peer-agent-input-review-514dab/3a60f828-5f3b-4323-b9f2-0b1275b1d45f/scratchpad/…",
+      "promptFramed": true,
+      "lastProgressAt": 1790408876416,
+      "tokens": 67003,
+      "toolCalls": 10,
+      "durationMs": 121759,
+      "resultPreview": "{\"status\":\"DONE\",\"open_items\":[\"Behaviour outside the spec's declared input domain (list[tuple[int, int]]) is my own choice, not something spec.md states. Integer subclasses (bool, IntEnum, numpy ints) become plain int, as rule 7 requires. Non-integer endpoints such as floats raise TypeError. The a > b check (rule 6) runs first, so a reversed float interval still raises ValueError. A verifier who …"
+    }
+  ],
+  "totalTokens": 67003,
+  "totalToolCalls": 10
+}
