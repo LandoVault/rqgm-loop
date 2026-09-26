@@ -63,13 +63,13 @@ unchecked. UNKNOWN is never a tie, pass or support. Never re-ask a returned verd
    anything worse. Keep at most one (most support, then shorter, then first); apply exactly the judged
    text. If it (nearly) restores an earlier *best*'s section → **HALT(OSCILLATION)**: the human picks
    *best*.
-5. **Log** the round, any `version` and `substrate`, then write `TARGET`. A round keeping nothing is
+5. **Log** the round and any `version` and `substrate`, then write `TARGET`. A round keeping nothing is
    a **stall** unless every variant ended ERROR (two such in a row → **HALT(ERROR)**). **Check** after 3
-   stalls since the last keep, or a `DONE` claim: each criterion by its check on *best*, with 3 fresh
-   judges per `judges` criterion (majority; strict: 3/3). A Check or held-out result stands until
-   *best*, the rung or `DONE` changes. All required `pass` → Boundary; else, after 3 stalls,
-   **HALT(STALL)**, naming what each non-`pass` required criterion needs (source, approved
-   restructure or human input); else the next round.
+   stall rounds since the last keep, or a `DONE` claim: each criterion by its check on *best*, with 3
+   fresh judges per `judges` criterion (majority; strict: 3/3). A Check or held-out result stands until
+   *best*, the rung or `DONE` changes. All required pass → Boundary; else, after 3 stalls,
+   **HALT(STALL)**, naming what each non-passing required criterion needs: a source, an approved
+   restructure, or human input.
 
 ## Boundary
 Below the final rung, **pause**: the human escalates or stops (PARTIAL); at it, **Stop**. **E1**
@@ -95,6 +95,6 @@ Lines `{"t":name,…fields}`: `setup{loop:"v3",done,models,budget:{rounds,minute
 `round{n,best,t0,t1,tokens,variants[{id,section,words,diff,gates:{apply,commands,verifier,screen},verdicts[{slot,model,orders:[overallAB,overallBA],overall:variant|best|tie|UNKNOWN|ERROR,criteria,confidence,retries}],outcome:kept|rejected|dropped}],kept}`,
 `citation{claim,locator,status,criterion}`, `probe{rung,mode,identity,seeded:{criterion,pair,check},misses}`,
 `check{version,rung,trigger:setup|stall|claim|budget,results{id:{kind,value,votes}}}`, `amend{what,why,done}`,
-`rung{name}`, `substrate{gap,owner,required,status}`, `heldout{attempt,set,version,pass}`, `exit{status,reason}`.
+`rung{name}`, `substrate{gap,owner,required,status:open|closed|waived,evidence}`, `heldout{attempt,set,version,pass}`, `exit{status,reason}`.
 Count from records, never recollection. If `rqgm_check.py` runs here, audit `MEMORY` each round; a
 violation pauses for the human.

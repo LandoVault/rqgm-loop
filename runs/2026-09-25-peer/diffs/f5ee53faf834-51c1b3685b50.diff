@@ -1,0 +1,21 @@
+--- A/skills/rqgm-loop/SKILL.md
++++ B/skills/rqgm-loop/SKILL.md
+@@ -95,6 +95,6 @@
+ `round{n,best,t0,t1,tokens,variants[{id,section,words,diff,gates:{apply,commands,verifier,screen},verdicts[{slot,model,orders:[overallAB,overallBA],overall:variant|best|tie|UNKNOWN|ERROR,criteria,confidence,retries}],outcome:kept|rejected|dropped}],kept}`,
+ `citation{claim,locator,status,criterion}`, `probe{rung,mode,identity,seeded:{criterion,pair,check},misses}`,
+ `check{version,rung,trigger:setup|stall|claim|budget,results{id:{kind,value,votes}}}`, `amend{what,why,done}`,
+-`rung{name}`, `substrate{gap,owner,required,status}`, `heldout{attempt,set,version,pass}`, `exit{status,reason}`.
++`rung{name}`, `substrate{gap,owner,required,status:open|closed|waived,evidence}`, `heldout{attempt,set,version,pass}`, `exit{status,reason}`.
+ Count from records, never recollection. If `rqgm_check.py` runs here, audit `MEMORY` each round; a
+ violation pauses for the human.
+--- A/INITIATOR.md
++++ B/INITIATOR.md
+@@ -49,7 +49,7 @@
+ round{n,best,t0,t1,tokens,variants:[{id,section,words,diff,gates:{apply,commands,verifier,screen},verdicts:[{slot,model,orders:[overallAB,overallBA],overall:variant|best|tie|UNKNOWN|ERROR,criteria,confidence,retries}],outcome:kept|rejected|dropped}],kept},
+ citation{claim,locator,status,criterion}, probe{rung,mode,identity,seeded:{criterion,pair,check},misses},
+ check{version,rung,trigger:setup|stall|claim|budget,results:{<id>:{kind,value,votes}}}, amend{what,why,done},
+-rung{name}, substrate{gap,owner,required,status}, heldout{attempt,set,version,pass}, exit{status,reason}.
++rung{name}, substrate{gap,owner,required,status:open|closed|waived,evidence}, heldout{attempt,set,version,pass}, exit{status,reason}.
+ Count rounds, stalls and spend from these records, never from recollection. If rqgm_check.py runs here,
+ audit {{MEMORY}} each round; a violation pauses for the human.
+ 

@@ -68,8 +68,8 @@ unchecked. UNKNOWN is never a tie, pass or support. Never re-ask a returned verd
    stalls since the last keep, or a `DONE` claim: each criterion by its check on *best*, with 3 fresh
    judges per `judges` criterion (majority; strict: 3/3). A Check or held-out result stands until
    *best*, the rung or `DONE` changes. All required `pass` → Boundary; else, after 3 stalls,
-   **HALT(STALL)**, naming what each non-`pass` required criterion needs (source, approved
-   restructure or human input); else the next round.
+   **HALT(STALL)**, naming what each non-`pass` required criterion needs: a source, approved
+   restructure or human input; else the next round.
 
 ## Boundary
 Below the final rung, **pause**: the human escalates or stops (PARTIAL); at it, **Stop**. **E1**

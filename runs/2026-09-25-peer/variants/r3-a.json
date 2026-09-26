@@ -1,0 +1,20 @@
+{
+ "id": "r3-a",
+ "edits": [
+  {
+   "file": "skills/rqgm-loop/SKILL.md",
+   "old": "5. **Log** the round and any `version` and `substrate`, then write `TARGET`. A round keeping nothing is\n   a **stall** unless every variant ended ERROR (two such in a row → **HALT(ERROR)**). **Check** after 3\n   stall rounds since the last keep, or a `DONE` claim: each criterion by its check on *best*, with 3\n   fresh judges per `judges` criterion (majority; strict: 3/3). A Check or held-out result stands until\n   *best*, the rung or `DONE` changes. All required pass → Boundary; else, after 3 stalls,\n   **HALT(STALL)**, naming what each non-passing required criterion needs: a source, an approved\n   restructure, or human input.",
+   "new": "5. **Log** the round, any `version` and `substrate`, then write `TARGET`. A round keeping nothing is\n   a **stall** unless every variant ended ERROR (two such in a row → **HALT(ERROR)**). **Check** after 3\n   stalls since the last keep, or a `DONE` claim: each criterion by its check on *best*, with 3 fresh\n   judges per `judges` criterion (majority; strict: 3/3). A Check or held-out result stands until\n   *best*, the rung or `DONE` changes. All required `pass` → Boundary; else, after 3 stalls,\n   **HALT(STALL)**, naming what each non-`pass` required criterion needs (source, approved\n   restructure or human input); else the next round."
+  },
+  {
+   "file": "INITIATOR.md",
+   "old": "5. LOG the round and any version and substrate, then write {{TARGET}}. A round keeping nothing is a\n   stall unless every variant ended ERROR (two such in a row → HALT(ERROR)). CHECK after 3 stall rounds\n   since the last keep, or when you believe {{DONE}} holds: each criterion by its check on *best*, with\n   3 fresh judges per judges criterion (majority; strict: 3/3). A Check or held-out result stands until\n   *best*, the rung or {{DONE}} changes. All required pass → Boundary; else, after 3 stalls,\n   HALT(STALL), naming what each non-passing required criterion needs: a source, an approved\n   restructure, or human input.",
+   "new": "5. LOG the round, any version and substrate, then write {{TARGET}}. A round keeping nothing is a\n   stall unless every variant ended ERROR (two such in a row → HALT(ERROR)). CHECK after 3 stalls\n   since the last keep, or when you believe {{DONE}} holds: each criterion by its check on *best*, with\n   3 fresh judges per judges criterion (majority; strict: 3/3). A Check or held-out result stands until\n   *best*, the rung or {{DONE}} changes. All required pass → Boundary; else, after 3 stalls,\n   HALT(STALL), naming what each non-pass required criterion needs (source, approved restructure\n   or human input); else the next round."
+  },
+  {
+   "file": "DESIGN.md",
+   "old": "Non-passing required criteria after 3 stalls → HALT(STALL)",
+   "new": "Non-`pass` required criteria after 3 stalls → HALT(STALL)"
+  }
+ ]
+}
