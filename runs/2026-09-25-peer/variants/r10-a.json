@@ -1,0 +1,20 @@
+{
+ "id": "r10-a",
+ "edits": [
+  {
+   "file": "skills/rqgm-loop/SKILL.md",
+   "old": "Otherwise the human runs the held-out judges, reporting only\nmajority-failed criteria (`heldout.pass{id:false}`). Fail → those (none named: all required) fail\n*best*'s Check; rerun rounds on them; spares run only once a changed *best* passes Check; a second\nfail → **HALT(OVERFIT)**.",
+   "new": "Otherwise the human runs held-out judges, reporting only\nmajority-failed criteria (`heldout.pass{id:false}`; `{}`: none; unnamed/non-criterion: all\nrequired); they fail *best*'s Check. Fail (any required) → rounds on them; spares run only once a\nchanged *best* passes Check; a second fail → **HALT(OVERFIT)**."
+  },
+  {
+   "file": "INITIATOR.md",
+   "old": "Otherwise have the human alone run and see the held-out judges, reporting only\nmajority-failed criteria (heldout.pass{id:false}). Fail → those (none named: all required) fail\n*best*'s Check; rerun rounds on them; spares run only once a changed *best* passes Check; a second\nfail → HALT(OVERFIT).",
+   "new": "Otherwise the human alone runs and sees held-out judges, reporting only\nmajority-failed criteria (heldout.pass{id:false}; {}: none; unnamed/non-criterion: all\nrequired); they fail *best*'s Check. Fail (any required) → rounds on them; spares run only once a\nchanged *best* passes Check; a second fail → HALT(OVERFIT)."
+  },
+  {
+   "file": "DESIGN.md",
+   "old": "Rungs E1 fair → E2 adversarial → E3 a human-added objective, only with the human. Final check: 3 human-written held-out judges, stored outside `TARGET`, `GROUNDING`, `MEMORY` and the repo (unauditable), spent per `TARGET`; majority-failed criteria fail *best*'s Check (`rqgm_check.py` `result()`). The first result is reported; spares run only on a changed *best* passing Check; a second fail → HALT(OVERFIT). | Literature: RQGM 2606.26294 uses no majority vote, so ours is an uncited design choice;",
+   "new": "Rungs (human-only): E1 fair → E2 adversarial → E3 a human-added objective. Final check: 3 human-written held-out judges, stored outside `TARGET`, `GROUNDING`, `MEMORY` and the repo (unauditable), spent per `TARGET`; majority-failed criteria (`heldout.pass`; unnamed/non-criterion: all required) fail *best*'s Check (`rqgm_check.py` `result()`; `r_heldout` must change). The first result is reported; spares run only on a changed *best* passing Check; a second fail → HALT(OVERFIT). | Literature: RQGM 2606.26294 uses no majority vote; ours is design-only;"
+  }
+ ]
+}
