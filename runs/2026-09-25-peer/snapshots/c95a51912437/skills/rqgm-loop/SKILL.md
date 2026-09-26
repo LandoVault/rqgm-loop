@@ -81,10 +81,9 @@ objective (`amend`). On escalation: log `rung`, rerun the probe, reset the stall
 
 ## Stop
 A required `[OPEN]` → **HALT(OPEN)**: name each gap and owner; the human closes it with Verifier-checked
-evidence or waives it by `amend`. Otherwise the human runs the held-out judges, reporting only
-majority-failed criteria (`heldout.pass{id:false}`). Fail → those (none named: all required) fail
-*best*'s Check; rerun rounds on them; spares run only once a changed *best* passes Check; a second
-fail → **HALT(OVERFIT)**.
+evidence or waives it by `amend`. Otherwise the human runs the held-out judges (pass/fail by majority),
+reporting only failing IDs (`heldout.pass`). Fail → those IDs fail *best*'s Check; rerun rounds on
+them; spares run only once a changed *best* passes Check; a second fail → **HALT(OVERFIT)**.
 
 **Output** at every exit: *best*; COMPLETE (final rung, held-out pass) or PARTIAL; each criterion as
 pass/fail/unchecked/waived and how decided (command, source, judges with model families, same family =

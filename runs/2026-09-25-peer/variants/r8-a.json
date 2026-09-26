@@ -1,0 +1,20 @@
+{
+ "id": "r8-a",
+ "edits": [
+  {
+   "file": "skills/rqgm-loop/SKILL.md",
+   "old": "evidence or waives it by `amend`. Otherwise the human runs the held-out judges (pass/fail by majority),\nreporting only failing IDs (`heldout.pass`). Fail → those IDs fail *best*'s Check; rerun rounds on\nthem; spares run only once a changed *best* passes Check; a second fail → **HALT(OVERFIT)**.",
+   "new": "evidence or waives it by `amend`. Otherwise the human runs the held-out judges, reporting only\nmajority-failed criteria (`heldout.pass{id:false}`). Fail → those (none named: all required) fail\n*best*'s Check; rerun rounds on them; spares run only once a changed *best* passes Check; a second\nfail → **HALT(OVERFIT)**."
+  },
+  {
+   "file": "INITIATOR.md",
+   "old": "evidence or waives it by amend. Otherwise ask the human to run the held-out judges (pass/fail by\nmajority) and report only failing IDs (heldout.pass). Fail → those IDs fail *best*'s Check; rerun\nrounds on them; spares run only once a changed *best* passes Check; a second fail → HALT(OVERFIT).",
+   "new": "evidence or waives it by amend. Otherwise ask the human to run the held-out judges and report only\nmajority-failed criteria (heldout.pass{id:false}). Fail → those (none named: all required) fail\n*best*'s Check; rerun rounds on them; spares run only once a changed *best* passes Check; a second\nfail → HALT(OVERFIT)."
+  },
+  {
+   "file": "DESIGN.md",
+   "old": "spent per `TARGET`, pass/fail by majority. The first result is always reported; spares run only on a changed *best* passing a Check; a second fail → HALT(OVERFIT). | Literature: RQGM 2606.26294 uses no majority vote, so the majority rule is an uncited design choice;",
+   "new": "spent per `TARGET`; majority-failed criteria fail *best*'s Check (`rqgm_check.py` `result()`). The first result is always reported; spares run only on a changed *best* passing Check; a second fail → HALT(OVERFIT). | Literature: RQGM 2606.26294 uses no majority vote, so ours is an uncited design choice;"
+  }
+ ]
+}

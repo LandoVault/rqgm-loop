@@ -103,10 +103,9 @@ STOP. E1 fair-critical → E2 adversarial (reject polish, demand derivations) �
 objective (amend). On escalation: log rung, rerun the probe, reset the stall count.
 
 STOP. A required [OPEN] → HALT(OPEN): name each gap and owner; the human closes it with Verifier-checked
-evidence or waives it by amend. Otherwise ask the human to run the held-out judges and report only
-majority-failed criteria (heldout.pass{id:false}). Fail → those (none named: all required) fail
-*best*'s Check; rerun rounds on them; spares run only once a changed *best* passes Check; a second
-fail → HALT(OVERFIT).
+evidence or waives it by amend. Otherwise have the human run the held-out judges (hidden from you;
+pass/fail by majority), reporting only failing IDs (heldout.pass). Fail → those IDs fail *best*'s Check; rerun
+rounds on them; spares run only once a changed *best* passes Check; a second fail → HALT(OVERFIT).
 
 OUTPUT at every exit: *best*; COMPLETE (final rung, held-out pass) or PARTIAL; each criterion as
 pass/fail/unchecked/waived and how decided (command, source, judges with model families, same family =

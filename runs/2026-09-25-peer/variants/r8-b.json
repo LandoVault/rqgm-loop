@@ -1,0 +1,10 @@
+{
+ "id": "r8-b",
+ "edits": [
+  {
+   "file": "INITIATOR.md",
+   "old": "evidence or waives it by amend. Otherwise ask the human to run the held-out judges (pass/fail by\nmajority) and report only failing IDs (heldout.pass). Fail → those IDs fail *best*'s Check; rerun\nrounds on them; spares run only once a changed *best* passes Check; a second fail → HALT(OVERFIT).",
+   "new": "evidence or waives it by amend. Otherwise have the human run the held-out judges (hidden from you;\npass/fail by majority), reporting only failing IDs (heldout.pass). Fail → those IDs fail *best*'s\nCheck; rerun rounds on them; spares run only once a changed *best* passes Check; a second fail →\nHALT(OVERFIT)."
+  }
+ ]
+}
