@@ -23,7 +23,8 @@
      "c1": "pass"
     },
     "verifier": [],
-    "screen": "pass"
+    "screen": "pass",
+    "retries": 0
    },
    "verdicts": [
     {
@@ -34,7 +35,11 @@
       "variant"
      ],
      "overall": "variant",
-     "criteria": {},
+     "criteria": {
+      "c1": "tie",
+      "c2": "tie",
+      "c3": "tie"
+     },
      "confidence": "med",
      "retries": 0
     },
@@ -42,7 +47,11 @@
      "slot": 2,
      "model": "m-j",
      "overall": "tie",
-     "criteria": {},
+     "criteria": {
+      "c1": "tie",
+      "c2": "tie",
+      "c3": "tie"
+     },
      "confidence": "med",
      "retries": 0
     },
@@ -50,7 +59,11 @@
      "slot": 3,
      "model": "m-j",
      "overall": "variant",
-     "criteria": {},
+     "criteria": {
+      "c1": "tie",
+      "c2": "tie",
+      "c3": "tie"
+     },
      "confidence": "med",
      "retries": 0
     }
@@ -73,7 +86,8 @@
      "c1": "pass"
     },
     "verifier": [],
-    "screen": "pass"
+    "screen": "pass",
+    "retries": 0
    },
    "verdicts": [
     {
@@ -84,7 +98,11 @@
       "variant"
      ],
      "overall": "variant",
-     "criteria": {},
+     "criteria": {
+      "c1": "tie",
+      "c2": "tie",
+      "c3": "tie"
+     },
      "confidence": "med",
      "retries": 0
     },
@@ -92,7 +110,11 @@
      "slot": 2,
      "model": "m-j",
      "overall": "variant",
-     "criteria": {},
+     "criteria": {
+      "c1": "tie",
+      "c2": "tie",
+      "c3": "tie"
+     },
      "confidence": "med",
      "retries": 0
     }

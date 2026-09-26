@@ -1,0 +1,262 @@
+{
+ "ok": false,
+ "state": {
+  "best": "9d07665dde77",
+  "rung": "E2",
+  "final_rung": "E2",
+  "probe_modes": {
+   "E2": "normal"
+  },
+  "stall": 0,
+  "error_streak": 0,
+  "rounds": 10,
+  "minutes": null,
+  "tokens": null,
+  "standing_checks": [
+   {
+    "version": "9d07665dde77",
+    "rung": "E2",
+    "epoch": 0
+   }
+  ],
+  "open_required_gaps": [],
+  "heldout": [],
+  "amends": 0,
+  "next_due": null,
+  "status": "PARTIAL"
+ },
+ "violations": [
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 1,
+   "expected": "DONE.criteria[].files (\"listing every file it runs\")",
+   "actual": [
+    "d7-caps"
+   ]
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 3,
+   "expected": "check.models",
+   "actual": null
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 6,
+   "expected": "gates.retries",
+   "actual": "r1-a"
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 6,
+   "expected": "gates.retries",
+   "actual": "r1-b"
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 7,
+   "expected": "gates.retries",
+   "actual": "r2-a"
+  },
+  {
+   "code": "KEEP_VETOED",
+   "class": "VIOLATION",
+   "record_index": 7,
+   "expected": "rejected",
+   "actual": "kept"
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 7,
+   "expected": "gates.retries",
+   "actual": "r2-b"
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 9,
+   "expected": "gates.retries",
+   "actual": "r3-a"
+  },
+  {
+   "code": "KEEP_VETOED",
+   "class": "VIOLATION",
+   "record_index": 9,
+   "expected": "rejected",
+   "actual": "kept"
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 9,
+   "expected": "gates.retries",
+   "actual": "r3-b"
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 11,
+   "expected": "gates.retries",
+   "actual": "r4-a"
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 11,
+   "expected": "gates.retries",
+   "actual": "r4-b"
+  },
+  {
+   "code": "KEEP_VETOED",
+   "class": "VIOLATION",
+   "record_index": 11,
+   "expected": "rejected",
+   "actual": "kept"
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 13,
+   "expected": "gates.retries",
+   "actual": "r5-a"
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 13,
+   "expected": "gates.retries",
+   "actual": "r5-b"
+  },
+  {
+   "code": "KEEP_VETOED",
+   "class": "VIOLATION",
+   "record_index": 13,
+   "expected": "rejected",
+   "actual": "kept"
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 15,
+   "expected": "gates.retries",
+   "actual": "r6-a"
+  },
+  {
+   "code": "KEEP_VETOED",
+   "class": "VIOLATION",
+   "record_index": 15,
+   "expected": "rejected",
+   "actual": "kept"
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 15,
+   "expected": "gates.retries",
+   "actual": "r6-b"
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 17,
+   "expected": "gates.retries",
+   "actual": "r7-a"
+  },
+  {
+   "code": "KEEP_VETOED",
+   "class": "VIOLATION",
+   "record_index": 17,
+   "expected": "rejected",
+   "actual": "kept"
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 17,
+   "expected": "gates.retries",
+   "actual": "r7-b"
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 19,
+   "expected": "gates.retries",
+   "actual": "r8-a"
+  },
+  {
+   "code": "KEEP_VETOED",
+   "class": "VIOLATION",
+   "record_index": 19,
+   "expected": "rejected",
+   "actual": "kept"
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 19,
+   "expected": "gates.retries",
+   "actual": "r8-b"
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 21,
+   "expected": "gates.retries",
+   "actual": "r9-a"
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 21,
+   "expected": "gates.retries",
+   "actual": "r9-b"
+  },
+  {
+   "code": "KEEP_VETOED",
+   "class": "VIOLATION",
+   "record_index": 21,
+   "expected": "rejected",
+   "actual": "kept"
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 23,
+   "expected": "gates.retries",
+   "actual": "r10-a"
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 23,
+   "expected": "gates.retries",
+   "actual": "r10-b"
+  },
+  {
+   "code": "KEEP_VETOED",
+   "class": "VIOLATION",
+   "record_index": 23,
+   "expected": "rejected",
+   "actual": "kept"
+  },
+  {
+   "code": "RECORD_MISSING",
+   "class": "VIOLATION",
+   "record_index": 25,
+   "expected": "check.models",
+   "actual": null
+  }
+ ],
+ "unauditable": [],
+ "warnings": [],
+ "torn_tail": false,
+ "torn_line": null,
+ "set_aside": [],
+ "integrity": null
+}

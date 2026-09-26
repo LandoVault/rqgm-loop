@@ -1,0 +1,838 @@
+{
+  "summary": "Human-proxy-approved restructure after HALT(BUDGET): one multi-section variant per iteration fixing the failing Check reasons, judged under the frozen v3 keep rule, then auditor conformance and a fresh 3-judge Check (max 2 iterations)",
+  "agentCount": 21,
+  "logs": [
+    "it1: kept 4428a0fc753e; Check fails d2-executable,d4-auditable",
+    "it2: kept 8332bed570f1; Check fails d2-executable,d4-auditable"
+  ],
+  "result": {
+    "best": "8332bed570f1",
+    "history": [
+      {
+        "it": 1,
+        "cand": "4428a0fc753e",
+        "words": {
+          "skills/rqgm-loop/SKILL.md": 1000,
+          "INITIATOR.md": 1295,
+          "README.md": 1209,
+          "DESIGN.md": 2199
+        },
+        "verdicts": [
+          {
+            "slot": 1,
+            "overall": "variant",
+            "confidence": "high",
+            "criteria": {
+              "d1-guardrails": "variant",
+              "d2-executable": "variant",
+              "d3-parity": "variant",
+              "d4-auditable": "variant",
+              "d5-honest": "variant",
+              "d6-cost": "variant"
+            },
+            "orders": [
+              "variant",
+              "variant"
+            ],
+            "flaws": [
+              "A has a gap during the checker lag. Its prose now requires records that the shipped rqgm_check.py does not read: heldout.results, approve, substrate.evidence and check.models. The current r_heldout reads only heldout.pass, so a heldout record that follows A's spec raises RECORD_MISSING, which the checker classes as a VIOLATION. It is also never credited as a held-out pass, so a correct COMPLETE is flagged as false. Under A's own rule ('audit MEMORY each round; a violation pauses for the human'), every audited run pauses for no reason until DESIGN's pending checker changes land. A does disclose this ('lags this spec') and lists the fixtures, but the prose applies the audit rule now with no exception while the checker lags.",
+              "A's SKILL.md frontmatter description was cut to one line. It drops the trigger phrases: 'run the RQGM loop', 'harden / pressure-test a proposal, paper, spec, design, or codebase until it's fundable, defensible, correct, or publishable'. The skill may then fail to activate on the requests it exists for. This is a usability regression that buys no rule or guardrail. A smaller point: A drops B's 'Check and held-out results stand until *best*, the rung or DONE changes' for held-out results. After a DONE amend, A's prose no longer says whether an earlier held-out pass still counts, though the checker's epoch logic does handle it."
+            ]
+          },
+          {
+            "slot": 2,
+            "overall": "variant",
+            "confidence": "high",
+            "criteria": {
+              "d1-guardrails": "variant",
+              "d2-executable": "variant",
+              "d3-parity": "variant",
+              "d4-auditable": "variant",
+              "d5-honest": "variant",
+              "d6-cost": "variant"
+            },
+            "flaws": [
+              "The spec is ahead of its auditor. A's own record, heldout{results}, has no `pass` field, so the current rqgm_check.py r_heldout (line 616) marks it RECORD_MISSING. Under the rule 'audit each round; a violation pauses', a run that follows the spec stalls at Stop until the pending changes land. That checker also treats a missing ID as a pass. So an orchestrator that logs both a stale `pass:true` and `results` with a fail would have COMPLETE credited by today's audit. A declares the lag in DESIGN, INITIATOR and README, but the fail-open path stays live meanwhile.",
+              "The held-out report is tied to 'the Check rule' (majority pass; strict: 3/3; any ERROR: unchecked). The human is never told whether strict mode is on, so they cannot decide whether 2 of 3 passes count at Stop. Separately, the new veto on a protected item rated UNKNOWN also fires on judge 1's per-criterion AB/BA disagreement. With the cited 55.4% order-reversal rate, that can early-reject most variants and push runs toward HALT(STALL). DESIGN notes the cost only as 'costs some keeps'."
+            ]
+          }
+        ],
+        "outcome": "kept",
+        "impl": {
+          "tool_output": "{\"ok\": true, \"class\": \"OK\", \"hash\": \"4428a0fc753e\", \"base\": \"9d07665dde77\", \"diff\": \"diffs/9d07665dde77-4428a0fc753e.diff\", \"words\": {\"skills/rqgm-loop/SKILL.md\": 1000, \"INITIATOR.md\": 1295, \"README.md\": 1209, \"DESIGN.md\": 2199}}",
+          "addressed": [],
+          "not_addressed": [],
+          "checker_changes": [
+            "r_heldout: on v3, require `heldout.results{id:pass|fail|unchecked}`. A boolean `pass` or a missing results map is RECORD_MISSING and not credited. Every required ID not 'pass' (fail, unchecked or absent) goes into hofail, so it fails best's Check. Fixtures: b01_heldout_pass_bool flips to a violation; fn21 stays; migrate every held-out fixture (p13/p14/p17/p23*, fn16, fn26, a26-a28, etc.) from `pass` to `results`.",
+            "r_setup / budget() / budget_out(): accept `budget.minutes: null`, and null round t0/t1 when budget.minutes is null, with no RECORD_MISSING. t0/t1 stay required when minutes is a number. Add a new positive fixture; p22_v3_record_missing (minutes 600) stays. This clears the 11 RECORD_MISSING in archive-meta.v3.audit.json.",
+            "r_amend: `amend.budget` replaces the live budget read by bud() (BUDGET_OVERRUN/BUDGET_START/budget_out use the amended budget); add a fixture.",
+            "New r_approve for approve{what:restructure|pick,sections?,version?}. keep_checks: MULTI_SECTION becomes a VIOLATION unless a prior approve{what:restructure} covers those sections (fn29 expected codes change). take_pick reads approve{what:pick,version} instead of inferring the pick from the next round or Check (fp11a/fp11b and p21_oscillation_pick_check gain approve records).",
+            "pre(): remove the ('version','OSCILLATION') exemption so the kept round's version must be logged before exit OSCILLATION. Rewrite fp11b, p21_oscillation_pick_check and p21_oscillation_rerun, which halt before the version.",
+            "worse(): treat UNKNOWN on a protected criterion as a veto, in panel() pbest/xobj and in judge 1's early rejection. fn10 and the p03 positive stay; add a negative (protected criterion rated UNKNOWN, kept -> KEEP_VETOED) and an early-rejection positive (judge 1 UNKNOWN on protected, no judges 2-3, no JUDGE_MISSING).",
+            "r_substrate: read `substrate.criterion`. required = the criterion is required in DONE (no criterion -> required). status closed needs `evidence` equal to the locator of a verified citation, else a VIOLATION on v3 (fn34 flips from unauditable; a24 stays).",
+            "r_check: `check.models` required on v3 (RECORD_MISSING if absent); votes vocabulary pass|fail|UNKNOWN|ERROR is unchanged.",
+            "r_round / r_probe: when DONE has no judges criterion, no probe record is required. The rung is strict, with no PROBE_MISSING (new positive). fn05 (empty probe with a judges criterion) stays.",
+            "r_resume / feed: any record after exit OVERFIT is a VIOLATION (new negative).",
+            "Update expected.json and the module docstring ('recomputes every keep, drop, Check value, halt and exit') to the new records. Record the unauditable rules: held-out secrecy, role separation, relay authenticity, the cosmetic-differences judgment (the difflib 0.9 ratio stays advisory; an exact undo stays a VIOLATION per a38)."
+          ]
+        },
+        "commit": "e99b778 v3.1 restructure 1 (human-proxy approved after HALT(BUDGET))",
+        "conform": {
+          "changes": [
+            "r_heldout (SKILL Stop: \"the human reports only `heldout.results` (Check rule). Each non-pass is non-pass in *best*'s Check\"; Memory `heldout{attempt,set:primary|spare,version,results{id:pass|fail|unchecked}}`): on v3 a missing `results` map, or a bare `pass`, is now RECORD_MISSING and the attempt is not credited. Every required ID whose value is not 'pass' (fail, unchecked, UNKNOWN, an off-vocabulary value, or absent) goes into hofail, and passed = no such ID. A second non-pass sets halt:OVERFIT. Fixtures: b01 flips to [RECORD_MISSING, FALSE_COMPLETE]. fn21 is migrated to results {c3: true} and still gives FALSE_COMPLETE. Every held-out fixture moved from pass to results (44 files).",
+            "r_setup / budget() / new bcheck() (Setup: \"`BUDGET` (max rounds; minutes and tokens only if the host reports them, never estimated)\"; Memory \"unreported values `null`\"): rounds must be a finite number. minutes may be a finite number or an explicit null. Round t0/t1 are required (RECORD_MISSING if null) only while the live minutes is a number. New positive fixture p11_minutes_unreported. p22_v3_record_missing (minutes 600) is unchanged. Clears the 11 budget/t0/t1 RECORD_MISSING in archive-meta.v3.",
+            "r_amend / bud() (Memory `amend{what,why,done,budget?,gap?}`; Human only: \"amend `DONE`, the rubric or `BUDGET`\"): `amend.budget` is validated like setup.budget and becomes the live budget read by bud(), so BUDGET_OVERRUN, BUDGET_START, budget_out and exit BUDGET all use it. It applies even when DONE is unchanged. New fixture p11_amend_budget: setup allows 1 round, the amend raises it to 3, and round 4 gives exactly one BUDGET_OVERRUN.",
+            "New r_approve (Human only: \"approve restructures and OSCILLATION picks (`approve`)\"; step 1: \"one change to one section of *best* (or one human-approved restructure)\"; Memory `approve{what:restructure|pick,sections?,version?}`). An approve{what:restructure} is stored in rs['appr']: its sections, or no sections meaning it covers any. In keep_checks, a multi-section keep now spends one prior approval that covers all its sections; without one it is MULTI_SECTION, moved from AMBIGUOUS to VIOLATION. approve{what:pick,version} sets best and restores that version's latest results. It replaces take_pick, which used to infer the pick from the next round or Check and has been removed. A pick with no OSCILLATION halt gives PICK_WITHOUT_HALT but is still applied. After HALT(OSCILLATION), any round, check, held-out or rung record before the pick is RECORD_MISSING. A malformed approve is RECORD_MISSING or unauditable. Fixtures: fn29 now gives MULTI_SECTION as a VIOLATION. fp11a, fp11b and p21_oscillation_pick_check gain approve records. New: p02_restructure_approved_once (one approval covers one keep; a second keep is MULTI_SECTION), p21_pick_missing [RECORD_MISSING, PICK_WITHOUT_HALT].",
+            "pre() (step 5: \"**Log** the round, any `version` and `substrate`, then write `TARGET`. Kept text restoring an earlier *best*'s section ... → HALT(OSCILLATION)\"; DESIGN row 7: \"HALT(OSCILLATION) after its `version`\"): removed the ('version','OSCILLATION') exemption, the resume branch that relied on it, and the pick branch in r_version. Rewrote fp11b, p21_oscillation_pick_check and p21_oscillation_rerun so the version is logged before the exit; the rerun now expects best v3 at record indexes [10,12]. New negative p21_oscillation_halt_before_version, the pre-v3.1 order: [VERSION_MISSING (RECORD), VERSION_WITHOUT_KEEP].",
+            "worse() (step 3: \"rejecting the variant if it ... rates a **protected** item ... worse or UNKNOWN\"; step 4: \"none rates a protected item worse or UNKNOWN\"): UNKNOWN is now a veto in xobj, pbest and judge 1's early rejection. fn10 and the p03 positives are unchanged. New negative p03_protected_unknown_kept gives KEEP_VETOED. New positive p03_judge1_unknown_protected_early: judge 1 prefers the variant but rates c2 UNKNOWN, the variant is rejected with no judges 2-3, and there is no JUDGE_MISSING.",
+            "r_substrate / open_required (Stop: \"An `[OPEN]` is required unless its criterion is optional.\"; Human only: \"close an `[OPEN]` with Verifier-checked evidence (`substrate.evidence`)\"; Memory `substrate{gap,owner,criterion,required,status,evidence?:locator}`): a gap now stores its criterion, and whether it is required is read from the current DONE each time (no criterion, or one not in DONE, means required). The logged `required` flag is ignored. A closure counts only when `evidence` equals the locator of an earlier citation whose status is verified. Otherwise, on v3, it gives CLOSED_UNVERIFIED (VIOLATION) and the gap stays open; on non-v3 it is unauditable as before. Fixtures: fn34 flips to [CLOSED_UNVERIFIED, OPEN_AT_HELDOUT, OPEN_AT_COMPLETE]. a24 is unchanged. p23_complete_spare gains optional criterion c4 and substrate.criterion c4. New: p17_gap_closed_with_evidence (positive), p17_gap_closed_unverified_locator (negative).",
+            "r_check (Memory `check{version,rung,trigger,models,results{...}}`; Output: \"judges (one source per named model family)\"): on v3 a Check with no `models` key is RECORD_MISSING. An empty or null `models` is also RECORD_MISSING when the Check has a judges result; null is allowed on a Check with no judges result, such as the setup Check. Votes are still counted, since no recomputed decision reads the families. The vote vocabulary is unchanged. Every v3 fixture's check records gained models (147 files). New: p22_check_models_missing.",
+            "r_round (Probe: \"No `judges` criterion (skip it), a non-tie, miss or ERROR → **strict mode**\"): when every DONE criterion is command or source, a rung with no probe becomes strict silently, with no PROBE_MISSING. fn05 is unchanged. New positive p12_no_judges_criterion (probe_modes {E1: strict}, COMPLETE).",
+            "feed / r_exit / r_resume (Resume: \"after a halt, the human's decision leads (all gaps waived → Stop; OVERFIT ends the archive; else the next round)\"): after exit OVERFIT, every later record, resume included, is AFTER_OVERFIT (VIOLATION). The archive stays exited, so status is PARTIAL and next_due is None. New negative p14_after_overfit: a second held-out attempt with c3 unchecked, then 3 AFTER_OVERFIT findings.",
+            "Docstring (DESIGN row 11: \"recomputes the keeps, drops, Checks, halts and exits its records allow, lists the rest as unauditable\"; DESIGN: \"Unauditable: held-out secrecy, role separation, relay authenticity, the cosmetic-differences judgment.\"): reworded to \"the keeps, drops, Check values, halts and exits its records allow\". It now documents the null-minutes, t0/t1, check.models and no-judges-probe rules and adds approve to the human waits. It lists the four unauditable rules: the difflib >= 0.9 restore stays advisory and an exact undo stays a VIOLATION per a38. CANON gains restructure, pick and verified.",
+            "tests/checker: expected.json now has 165 cases (13 new), with notes and rulings updated for fn29, fn34, b01, fn21, fp11a, fp11b, p21_oscillation_pick_check, p21_oscillation_rerun, p23_complete_spare and a24. The `about` text records the schema migration, and a `migrated` field marks the fixtures rewritten beyond it. 145 existing fixtures changed, through line-level edits only: other lines, the BOM, torn tails and corrupt lines are kept byte-for-byte. The v2 and no-t fixtures (p22_v2_format, p22_v2_loop_lenient, cr01, p18_no_t_records) are untouched.",
+            "Not implemented, and flagged for follow-up: \"all gaps waived → Stop\" after HALT(OPEN). A round logged after every gap is waived is not flagged, because \"else the next round\" makes a round legitimate when the human supplies data instead. A logged substrate.required that disagrees with DONE is not reported. verdicts[].model is still not enforced, since the task did not ask for it."
+          ],
+          "selftest": "All four required commands pass or complete. `rqgm_check.py selftest` returns {ok: true, cases: 165, failed: []} and exits 0. `python -m unittest discover -s tests/checker` runs 5 tests, OK, exit 0. `gen_attacks.py` and `round2/gen_round2.py` both exit 0; they rewrote the archives in runs/2026-09-25-peer/checker-attack/, and the regenerated files are byte-identical to the 110 verbatim fixture copies taken before any change. The checker is 826 lines (limit 850), with no line over 120 characters. It is still stdlib only and read-only. Fuzzing 12 malformed approve, heldout, substrate, amend.budget, check.models and exit records at 3 positions each produced no crash.\n\nRe-audit of runs/2026-09-25-peer/archive-meta.v3.jsonl (report only; archive-meta.v3.audit.json was not rewritten): exit 1, status PARTIAL, best 9d07665dde77, 10 rounds, minutes and tokens null, exit PARTIAL BUDGET still accepted. The 11 earlier RECORD_MISSING findings (setup.budget.minutes null at line 1, round t0/t1 null at lines 6-23) are cleared. Three new findings follow from the v3.1 rules:\n(1) RECORD_MISSING check.models at line 3, the setup Check, which has no models key.\n(2) RECORD_MISSING check.models at line 25, the BUDGET Check with judges votes.\n(3) KEEP_VETOED at line 17: round 7 kept r7-a while judge 1 rated guardrail d1-guardrails UNKNOWN. Under the new step 3 that is an early rejection. r7-b (2/2, no protected UNKNOWN) would have been the keep.\nAll three apply the new text to a run made under the old text. Rounds 6, 8 and 9 have UNKNOWN only on d2-d6, which were not protected then (no pass result before the final Check), so they are not flagged.",
+          "attacks": "Flagged archives: no archive flagged by the old checker is unflagged by the new one, 0 of 143 (75 in round 1, 68 in round 2), whether audited as generated or migrated.\n\nValid archives, as generated: 28 archives that exited 0 before now exit 1, only because the generators still write the pre-v3.1 schema. Their check records lack `models`, and the COMPLETE archives log heldout `pass`, not `results`, which adds RECORD_MISSING and FALSE_COMPLETE.\n- Round 1: fn19, fn25, fn30, fp01, fp03, fp05, fp05b, fp06-fp09, fp12-fp14, cr02-cr04.\n- Round 2: b01, b02, b03, b05, c01, c02, c04, c05.\n- fn34, fp11a and fp11b are in the same exit-0-to-1 list but belong to the intended changes below.\nThe generator helpers are unchanged: SETUP_CHECK, chk and HO in gen_attacks.py still need `models` and `results` to emit v3.1 archives. I left them alone because they are the attack record, outside checker/tests.\n\nMigrated: after the same schema migration applied to tests/checker, 139 of 143 archives give exactly the old checker's codes and exit, and every valid one passes. The 4 that change are all intended:\n- fn29: MULTI_SECTION goes from AMBIGUOUS to VIOLATION (no approve{what:restructure}).\n- fn34: from exit 0 to [CLOSED_UNVERIFIED, OPEN_AT_HELDOUT, OPEN_AT_COMPLETE] (closed with no evidence).\n- fp11a: from exit 0 to [RECORD_MISSING (no approve pick), STALE_PARENT]. The pick is no longer inferred from the next round.\n- fp11b: from exit 0 to [VERSION_MISSING (RECORD), VERSION_WITHOUT_KEEP, RECORD_MISSING]. It halts before the version, which pre() no longer exempts.\nThe tests/checker copies of fp11a and fp11b were rewritten to the v3.1 flow and pass. b01 as a fixture is kept unmigrated as the intended negative. Scratch outputs are in the w514 folder of the session scratchpad (compare.final.txt, attacks{1,2}.{before,final}.txt).",
+          "lines": 826
+        },
+        "check": {
+          "version": "4428a0fc753e",
+          "results": {
+            "d1-guardrails": {
+              "votes": [
+                "pass",
+                "fail",
+                "pass"
+              ],
+              "value": "pass"
+            },
+            "d2-executable": {
+              "votes": [
+                "fail",
+                "fail",
+                "pass"
+              ],
+              "value": "fail"
+            },
+            "d3-parity": {
+              "votes": [
+                "pass",
+                "pass",
+                "pass"
+              ],
+              "value": "pass"
+            },
+            "d4-auditable": {
+              "votes": [
+                "fail",
+                "fail",
+                "pass"
+              ],
+              "value": "fail"
+            },
+            "d5-honest": {
+              "votes": [
+                "pass",
+                "pass",
+                "pass"
+              ],
+              "value": "pass"
+            },
+            "d6-cost": {
+              "votes": [
+                "pass",
+                "pass",
+                "pass"
+              ],
+              "value": "pass"
+            }
+          },
+          "failing_reasons": [
+            "d2-executable: The protected veto does not fail closed when a rating is missing. The keep rule (SKILL step 4, paste KEEP) vetoes only when a judge 'rates a protected item worse or UNKNOWN'. The judge JSON template never says every protected id must be rated, and must_not_change items ({id:text}) are not criteria, so nothing tells judges to rate them. A judge that leaves out a guardrail therefore does not object. Reproduced: a synthetic v3 archive has a judges guardrail g1, and both judges return criteria {\"c1\":\"variant\"}. The variant is kept and `rqgm_check.py audit` reports ok with no finding. The checker's own positive fixture p23_complete_spare also keeps a variant with criteria {} while c1 and c2 are protected (last result pass). A missing rating should count as UNKNOWN under 'When unsure, fail closed'.",
+            "d2-executable: The next state after a waiver is undefined if the rules are read literally. Resume says 'all gaps waived → Stop'. Stop then says 'An [OPEN] is required unless its criterion is optional. A required [OPEN] → HALT(OPEN)' and never exempts a waived gap. A waiver (amend with gap) neither removes the marker from best nor makes its criterion optional. A literal orchestrator therefore cycles HALT(OPEN) → waive → Stop → HALT(OPEN). Only DESIGN row 5, a sidecar, says a waiver unblocks Stop. The checker quietly assumes that reading: an archive with exit OPEN, then amend{gap}, resume, substrate waived, a held-out pass and exit COMPLETE audits ok.",
+            "d2-executable: A human stop below the final rung has no defined procedure. Boundary now says only 'pause for the human'; the earlier 'stops (PARTIAL)' was removed from SKILL and the paste. 'Stop' is the only exit procedure, so a literal orchestrator runs the held-out judges at E1 and spends them. The checker instead expects a direct exit: a synthetic archive (all-pass Check at E1 of E2, then held-out, then exit PARTIAL) gets VIOLATIONs BOUNDARY_MISSED and HELDOUT_UNCHECKED.",
+            "d2-executable: Several terms and decision rules are undefined. (a) 'Section' is never defined, yet it is the unit of 'one change to one section' and decides whether a human approve{restructure} is required. The generator's own labelling decides it. (b) How a `source` criterion becomes pass or fail at a Check is never stated. The Verifier has no return format (judges and Check judges do), and its only stated behaviour, strip or [OPEN], applies to 'each new claim' at the Gate. (c) What happens to contradicted or not-found claims in v0 is undefined. SKILL says only 'run its commands and Verifier (check{trigger:setup})'. DESIGN row 5 says strip or [OPEN], which would change v0 without a version or round. (d) Judge 1 returns a confidence per order, but the rule 'prefers best with high confidence' never says which one counts.",
+            "d4-auditable: A round-1 prune keep cannot be recomputed from the records the prose requires. The 'if shorter' test needs best's word count, but setup{} has no words field and no rule says to log a version record for v0. Reproduced: in a v3 archive with no v0 version record, a 500-word variant replaces the 100-word v0 through three ties and is kept. The audit reports ok and lists the rule only as unauditable ('prune: version.words / variant.words'). This is a wrong keep with no finding. The gap is neither declared in DESIGN's 'Unauditable:' line nor listed in the pending-changes table. The checker's fixtures log a v0 version record that the prose never asks for.",
+            "d4-auditable: The rule texts changed in this version but name no record or checker change for these paths. (1) Stop below the final rung: a prose-permitted path (Stop, then held-out) gets checker VIOLATIONs, and no pending row or unauditable declaration covers it. (2) Gate retries: 'Retry an ERROR once, then drop its variant', but round.variants[].gates{apply,commands,verifier,screen} has no retry field. Whether a gate ERROR was retried before the drop cannot be recomputed; the checker reads an undocumented gates.retries. (3) Source-criterion Check values: the checker's CHECK_MISCOUNT rule ('a verified citation for <id>') has no basis in the prose. (4) Waiver: 'substrate waived after an amend unblocks Stop' is a checker assumption that SKILL and the paste do not state.",
+            "d4-auditable (minor): The 'Pending rqgm_check.py changes' table does not match the checker it points to (the uncommitted working copy). It names `take_pick`, which no longer exists; pick handling is now in r_approve. It puts the post-OVERFIT rule in `r_resume`, but the rule is enforced in feed() as AFTER_OVERFIT. Most rows (worse() counting UNKNOWN, MULTI_SECTION as a VIOLATION, CLOSED_UNVERIFIED, bcheck allowing null minutes, check.models RECORD_MISSING) are already implemented, while INITIATOR, README and DESIGN still say the checker 'lags this spec until DESIGN's pending changes land'. The synthetic test archives are in C:/Users/wii/AppData/Local/Temp/claude/F--git-rqgm-loop--claude-worktrees-peer-agent-input-review-514dab/3a60f828-5f3b-4323-b9f2-0b1275b1d45f/scratchpad/judge/ (t1_stop_below_final, t2_waive_then_stop, t3c_guardrail_unrated, t4b_prune_longer_no_v0_version).",
+            "d1-guardrails: The anchor for the check-file guardrail is gone. The parent INITIATOR DONE slot said `kind` = `command` must be used 'naming every file it runs'. This version drops that phrase and makes RECORDS' `setup.done` shape explicit as `criteria:[{id,required,kind,guardrail?}]`, which has no `files` field. Nothing now tells anyone to record which files a command runs, so 'Never add, edit or delete check files' and 'check files as at setup' come down to orchestrator judgment. I tested this: a schema-conformant v3 archive whose kept variant rewrites tests/test_x.py to `assert True` (turning a failing command into a pass) gets only an unauditable 'check_files' note from the worktree's rqgm_check.py, with no CHECK_FILE_EDIT. Under the parent guidance the file would have been named in DONE and flagged. This reopens the 'edit a check file' gaming path.",
+            "d1-guardrails: Human-only authority is narrower. The parent INITIATOR and README lists included 'resuming after an audit pause'. The new HUMAN ONLY list in SKILL and the paste, and the README list that points to it, leave it out. The paste now says only 'a violation pauses for the human', with no statement that only the human may resume.",
+            "d1-guardrails: The rubric says only the human picks, and SKILL step 5 used to say 'HALT(OSCILLATION): the human picks *best*'. Both SKILL and the paste now say only that the human may 'approve restructures and OSCILLATION picks'. Read in parallel with 'approve restructures', this lets an agent choose the version and the human merely approve it. README ('you pick') and DESIGN ('the human picks') are stricter than the operative texts.",
+            "d2-executable: Waived gaps contradict the Stop rule. After a halt, 'all gaps waived → Stop', but Stop's own rule is 'A required [OPEN] → HALT(OPEN)', and nothing says a closed or waived gap no longer counts. The Screen also rejects 'unevidenced [OPEN] removals', and a waiver is not evidence, so the marker stays in *best*. Read literally, waive → Stop → HALT(OPEN) repeats forever. restructure-resume.json `not_addressed` lists this as left unfixed for word budget.",
+            "d2-executable: Some states have no defined next step. (a) 'a violation pauses for the human' says nothing about what the human decides or what happens next. (b) Suppose the first held-out attempt is non-pass and the human then amends DONE while *best* is unchanged. Results no longer stand, a fresh Check can pass and Stop is reached, but the primaries are spent and the spares run 'only once a changed *best* passes Check'. Stop then has no runnable held-out set. (c) Neither the set of versions an OSCILLATION pick chooses from nor who proposes the pick is defined.",
+            "d2-executable: SKILL tells the orchestrator to propose DONE in the 'shape: setup.done', but that shape (`{id,required,kind,guardrail?}`, `must_not_change`, `final_rung`) has no field for a criterion's test text, a command criterion's command, or the files it runs. The Gate says 'Run every command yourself … (check files as at setup)' and judges mark criteria, yet the SKILL-only path never defines where that command, text or file list lives. Only INITIATOR's example link supplies `command` and `test`.",
+            "d4-auditable: A new rule is neither mapped to the checker nor declared unauditable: 'after a halt, the human's decision leads (all gaps waived → Stop; OVERFIT ends the archive; else the next round)'. DESIGN's pending table maps only the OVERFIT part (r_resume). I tested this: an archive at the final rung with an all-pass Check → exit PARTIAL OPEN → resume → amend → substrate waived gets `next_due: \"round\"` from rqgm_check.py, not Stop/held-out. The Stage-1 answer key (`audit --pending`/next_due) therefore contradicts the prose. Appending a round instead of the held-out step audits `ok: true` with no finding.",
+            "d4-auditable: The prose-required records do not carry which files are check files: `setup.done` has no `files` and the schema has no `setup.check_files`. As a result, 'Never add, edit or delete check files', 'check files as at setup' and 'a check editing files is ERROR' cannot be recomputed. The checker reports only `unauditable: check_files`, and DESIGN's Unauditable line (held-out secrecy, role separation, relay authenticity, cosmetic differences) does not declare it.",
+            "d4-auditable: Two retry and aggregation rules cannot be recomputed from the required records, and neither is declared unauditable. (a) The gates record `{apply,commands,verifier,screen}` has no retry field, so 'Retry an ERROR once, then drop' and 'Never re-ask a verdict' cannot be checked for the Screen, Verifier or apply. A Screen rejection relabelled as an ERROR and re-asked leaves no trace. (b) `heldout.results` holds only the human's aggregate per criterion, so whether the Check rule was applied (for example, any ERROR giving unchecked) cannot be checked, yet DESIGN row 8 asserts 'so UNKNOWN or ERROR never passes'.",
+            "d4-auditable (note): the audit-status statements are out of date. DESIGN's 'Pending rqgm_check.py changes' table and the 'lags this spec until DESIGN's pending changes land' lines in DESIGN row 11, INITIATOR and README describe changes that the worktree's rqgm_check.py already implements: r_heldout reads `results`, null minutes are accepted, amend.budget, r_approve/MULTI_SECTION, the protected-UNKNOWN veto, CLOSED_UNVERIFIED, check.models, the no-judges probe and AFTER_OVERFIT. Its `selftest` passes 165/165. The docs therefore misstate what the audit covers."
+          ]
+        }
+      },
+      {
+        "it": 2,
+        "cand": "8332bed570f1",
+        "words": {
+          "skills/rqgm-loop/SKILL.md": 1000,
+          "INITIATOR.md": 1300,
+          "README.md": 1231,
+          "DESIGN.md": 2199
+        },
+        "verdicts": [
+          {
+            "slot": 1,
+            "overall": "variant",
+            "confidence": "low",
+            "criteria": {
+              "d1-guardrails": "variant",
+              "d2-executable": "variant",
+              "d3-parity": "tie",
+              "d4-auditable": "variant",
+              "d5-honest": "variant",
+              "d6-cost": "best"
+            },
+            "orders": [
+              "variant",
+              "variant"
+            ],
+            "flaws": [
+              "A's new rules name no record field or checker entry and are not declared unauditable. These are: 'resume after halts or violations' is human-only, 'a violation pauses until the human resumes or stops', and setup's 'only rounds fix failures'. A's pending table also says only 'Each change adds a fixture' and names just p23_complete_spare. Its 'Stop below the final rung (exit) | none' row does not say whether that means no checker change is needed or that the rule cannot be audited.",
+              "A drops some explicit bounds and adds held-out signal. heldout.results{id:{value,votes}} passes per-judge held-out votes to loop agents, where B passes only one result per criterion. Output's 'spend' replaces B's defined 'rounds, time and tokens'. HALT(STALL) no longer names each non-pass criterion's need. The judge schema loses its '(<=2 winner flaws)' cap. It is also about 27 words longer than B for the same number of model calls."
+            ]
+          },
+          {
+            "slot": 2,
+            "overall": "variant",
+            "confidence": "med",
+            "criteria": {
+              "d1-guardrails": "variant",
+              "d2-executable": "variant",
+              "d3-parity": "tie",
+              "d4-auditable": "variant",
+              "d5-honest": "variant",
+              "d6-cost": "best"
+            },
+            "flaws": [
+              "A's DESIGN pending table traces its new rules less well than B's. 'Stop below the final rung (exit) | none' names no checker change and does not declare the rule unauditable. 'Each change adds a fixture' names no fixtures, where B named them per row. Two new SKILL/INITIATOR rules have neither a pending row nor an unauditable entry: 'only rounds fix failures' (v0) and 'a violation pauses until the human resumes or stops'.",
+              "A's SKILL and INITIATOR drop some explicit wording that B kept: 'never estimated' for BUDGET (only DESIGN row 9 keeps it), HALT(STALL)'s 'naming each non-pass required criterion's need', and 'rounds, time and tokens' in Output, now the undefined 'spend'. A's 'confidence: the lower' makes judge 1's early rejection rarer, so more judge calls run; this does not change keeps. A also uses more words than B: INITIATOR 1300, exactly at the cap, vs 1295; README 1231 vs 1209."
+            ]
+          }
+        ],
+        "outcome": "kept",
+        "impl": {
+          "tool_output": "{\"ok\": true, \"class\": \"OK\", \"hash\": \"8332bed570f1\", \"base\": \"4428a0fc753e\", \"words\": {\"skills/rqgm-loop/SKILL.md\": 1000, \"INITIATOR.md\": 1300, \"README.md\": 1231, \"DESIGN.md\": 2199}, \"words_delta\": {\"skills/rqgm-loop/SKILL.md\": 0, \"INITIATOR.md\": 5, \"README.md\": 22, \"DESIGN.md\": 0}, \"caps_ok\": true, \"over\": {}, \"diff\": \"diffs/4428a0fc753e-8332bed570f1.diff\", \"variant\": \"restructure-r2\"}  (variant: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/variants/restructure-r2.json, 13 edits: SKILL 2, INITIATOR 3, DESIGN 4, README 4)",
+          "addressed": [
+            "d2 protected veto with a missing rating (t3c, p23_complete_spare): SKILL Roles and the paste ROLES now say judges rate each criterion and must_not_change id. Step 3 defines a veto as 'a protected item (guardrails, must_not_change, criteria whose last result is pass) rated worse, UNKNOWN or not at all'. Judge 1's veto rejects early, and step 4 keeps only a variant without a veto, so a missing rating counts as UNKNOWN. DESIGN row 7 and the README keep rule match. The checker change is in DESIGN's pending table (panel(); p23_complete_spare gains ratings).",
+            "d2/d2 waiver cycle (Stop vs waived gaps, restructure-resume not_addressed): Stop now reads 'A required [OPEN] (in best, unwaived, criterion not optional) -> HALT(OPEN)', so a waived gap no longer blocks. The resume rule becomes 'after a halt, the human decides (OVERFIT ends the archive; OPEN with all gaps waived -> Stop; else the next round)', in SKILL and the paste. It is scoped to HALT(OPEN) so a halt with zero gaps is not vacuously 'all waived'. A closed gap stays required until a round writes the evidence in (DESIGN row 5). The pending rows are 'Waiver' (next_due/pre()) and 'Closed gap' (open_required).",
+            "d2 human stop below the final rung: Boundary now reads 'pause: the human escalates (log rung and probe, reset stalls) or stops (exit PARTIAL, no held-out)', in SKILL and the paste, so no held-out judges are spent at E1. This matches the checker's existing BOUNDARY_MISSED (rung or exit). The pending row says no change is needed. README says 'stop (PARTIAL, no held-out check)'.",
+            "d2 undefined terms: (a) section = '(one heading's text, else the file)' in step 1; the label-vs-heading match is declared unauditable. (b) The Verifier returns 'a citation each'. At a Check, '(source: pass only if all its claims verify)'. citation gains a `version` field, and r_check is named in the pending table. (c) v0 is logged as a `version` and is never edited; its failures stand ('only rounds fix failures'). DESIGN row 5 no longer implies stripping v0. (d) Judge 1 'confidence: the lower' of its two orders. Which confidence was logged is declared unauditable.",
+            "d4 round-1 prune with no v0 words (t4b): 'Else log setup and version v0 = TARGET = best' is in SKILL and the paste. The pending row is 'v0 length': on v3, a missing v0 version is RECORD_MISSING and a prune is then not credited.",
+            "d4 changed rules without records: (1) stop below the final rung is fixed as above. (2) Gate retries: `gates:{...,retries}` is added to the schema, 'Retry an ERROR once (retries)' is in the prose, and the pending row makes it RECORD_MISSING when absent. Relabelling a Screen or Verifier verdict as ERROR is declared unauditable. (3) The source Check rule now has a prose basis. (4) The waiver rule is stated in SKILL and the paste.",
+            "d4 stale pending table: rewritten to list only changes the working-copy checker does not yet make. take_pick, r_resume and the rows already implemented (worse() UNKNOWN, MULTI_SECTION/r_approve, CLOSED_UNVERIFIED, null minutes, amend.budget, check.models, the no-judges probe, AFTER_OVERFIT, pre() oscillation) are removed. 'lags this spec until DESIGN's pending changes land' is replaced in INITIATOR ('DESIGN lists its pending checks'), README and DESIGN row 11 ('rules it cannot or does not yet check are listed below').",
+            "d1/d4 check-file anchor: `setup.done.criteria` is now {id,required,kind,test,command?,files?,guardrail?}. SKILL and the paste say a command 'decides, listing every file it runs: its check files'. The INITIATOR DONE slot says 'naming every file it runs (files)'. DESIGN row 1 says 'its files are check files'. README says 'DONE lists the files each command runs, and the rules forbid touching them'. The pending row makes a command criterion without files RECORD_MISSING, which lets the existing cfe() raise CHECK_FILE_EDIT. 'A check editing files' is declared unauditable.",
+            "d1 resume authority: HUMAN ONLY in SKILL and the paste adds 'resume after halts or violations'. The Memory/RECORDS line now reads 'a violation pauses until the human resumes or stops', which also defines the next state (d2 12a). README's list and DESIGN row 10 ('After a halt or audit violation, only the human resumes (logged)') match.",
+            "d1/d2 OSCILLATION pick: HUMAN ONLY now reads 'after HALT(OSCILLATION), pick best among logged versions (approve)', in SKILL and the paste. This says the human picks and names the candidate set. DESIGN row 7 says 'the human picks a logged version'. README says 'picking the version to keep after an OSCILLATION halt'.",
+            "d2 held-out after a DONE amend with best unchanged: Stop now says 'Spares run only on a changed best passing Check; until then, rounds (or HALT(BUDGET))'. That gives a next state and prevents a Stop-Boundary-budget loop. The pending row is 'Spares' (next_due). The guardrail 'spares only on a changed best' is unchanged.",
+            "d2 DONE shape lacked test, command and files: the schema now has test, command? and files? in SKILL and the paste.",
+            "d4 held-out aggregation not recomputable: the schema is now heldout.results{id:{value,votes}}, and the human 'reports only the marks (heldout.results; Check rule)'. The pending row is r_heldout (recount by the Check rule). DESIGN row 8 now says 'The human reports the marks and votes (heldout.results; Check rule), so UNKNOWN or ERROR never passes', which is recomputable.",
+            "d4 after-halt rule unmapped (next_due returns 'round' after a waiver): now mapped in the pending table (next_due/pre(): all required gaps waived after exit OPEN -> Stop; a round instead is a VIOLATION).",
+            "d5 claims: DESIGN row 7 'catch regressions' becomes 'target regressions' (no efficacy claim). The audit-coverage statements are corrected as above. No evidence label was changed.",
+            "Parity: every new rule (HUMAN ONLY items, check files, v0 version, citation per claim, retries, file-editing ERROR, section, veto incl. unrated, lower confidence, source Check rule, Boundary stop, Stop waiver/spares, violation pause, schema fields) appears in both SKILL.md and THE LOOP paste, with the same wording apart from slot braces."
+          ],
+          "not_addressed": [
+            "rqgm_check.py was not edited, per the task. The recomputation claims for the new records hold only once the pending-table changes land. Until then, the current checker marks some prose-required records unauditable and passes some prose violations (t2/t3c/t4b-style archives).",
+            "examples/worked-example.md is not a target file. Its `non-goals` command criterion has no `files` field, so it no longer matches the setup.done shape that INITIATOR's DONE slot points to. It needs \"files\": [] (grep runs no check file). Once the checker change lands, command-criterion fixtures also need `files`.",
+            "These things remain unauditable by design and are declared in DESIGN: whether a `section` label is one heading's text (checkable only with --target), which order's confidence judge 1 logged (orders record only overall values), whether a check edited files, a Screen or Verifier verdict relabelled ERROR and re-asked, held-out secrecy, role separation, relay authenticity (including who resumed after a violation), and the cosmetic-differences judgment.",
+            "The 'Closed gap' mapping is approximate. The checker counts [OPEN] markers in aggregate, not per gap, so 'required until a later keep removes an [OPEN]' cannot tie a removal to a specific gap.",
+            "It is still open whether held-out marks use the strict (3/3) or majority Check rule. The mode is the rung's probe mode by implication but is not stated.",
+            "Cuts made to pay for the additions. These are behaviour-adjacent but not guardrails: '(≤2 winner flaws)' is dropped from the judge format (SKILL and paste). HALT(STALL) no longer 'names each non-pass required criterion's need'; Output still lists each criterion's result and one next action. The budget slot drops 'never estimated' but keeps 'minutes and tokens only as the host reports them'; DESIGN row 9 keeps 'never estimated'. The Boundary no longer says 'rerun the probe' and says 'log rung and probe' instead. DESIGN 'What was removed' drops the 'gates G1–G6 as a list' note. 'Only you write best, TARGET' becomes 'Only you write TARGET and MEMORY' (best lives in TARGET).",
+            "INITIATOR is exactly at its 1300-word cap and SKILL at 1000, so the next change to either needs an equal cut."
+          ],
+          "checker_changes": [
+            "panel() and judge 1's early rejection: a protected id (guardrail, must_not_change, or a criterion whose last result is pass) missing from a completed verdict's criteria is a veto, like UNKNOWN. Add the veto to the prune shape too. p23_complete_spare gains ratings for c1/c2. New negative from t3c_guardrail_unrated (kept -> KEEP_VETOED).",
+            "v0 version: on v3, a round with no prior version record is RECORD_MISSING('version v0'). A prune whose `shorter` cannot be computed (best_words None) is then not credited (exp 'rejected', so a kept prune gives PRUNE_INCOMPLETE/KEEP_WITHOUT_SUPPORT) instead of unauditable. New negative from t4b_prune_longer_no_v0_version.",
+            "set_done(): on v3, a `command` criterion without a `files` list is RECORD_MISSING. cfe() then flags CHECK_FILE_EDIT on any kept diff touching those files. New negative: a kept variant rewriting a listed test file. Migrate command-criterion fixtures to carry `files`.",
+            "gate(): on v3, a gates object without `retries` is RECORD_MISSING (retries > 1 stays RETRY_EXCEEDED). Migrate round fixtures.",
+            "r_check(): a `source` criterion is pass only if there is at least one citation with criterion = id and version = the checked version, and all such citations are verified. Otherwise CHECK_MISCOUNT and the value is fail. Record the new `citation.version` field; with no version field the result is unauditable (v3: RECORD_MISSING).",
+            "r_heldout(): read results{id:{value,votes}}, recount each value by the Check rule (majority pass; strict 3/3; any ERROR -> unchecked), and flag CHECK_MISCOUNT on a mismatch. A bare value without votes on v3 is RECORD_MISSING and not credited. Migrate every held-out fixture (p13/p14/p17/p23*, fn16, fn21, fn26, a26-a28, b01).",
+            "next_due() and pre(): after exit PARTIAL OPEN followed by resume, when every required gap is waived (substrate waived after an amend{gap}), the due step is Stop: heldout if best's all-pass Check stands at the final rung, else halt:OPEN. A round appended instead is a VIOLATION (e.g. STOP_MISSED). New negative from t2_waive_then_stop with a round in place of the held-out step; the existing t2 stays a positive.",
+            "open_required() / r_substrate(): a `closed` gap stays required until a later kept diff removes an [OPEN] marker (opens(d) < 0). It is advisory because markers are counted in aggregate.",
+            "next_due(): after held-out attempt 1 is non-pass on version B, while best == B (including after an amend that changes DONE and restores an all-pass Check), the due step is 'round', or 'halt:BUDGET' when budget_out(), not 'heldout'. HELDOUT_REROLL for a second attempt on an unchanged best stays.",
+            "Boundary below the final rung: no code change. BOUNDARY_MISSED already expects `rung` or `exit`. Add a positive fixture from t1b_stop_below_final_noheldout; t1_stop_below_final stays a negative (BOUNDARY_MISSED / HELDOUT_UNCHECKED).",
+            "Update the module docstring's unauditable list to match DESIGN (section boundaries, judge 1's logged confidence, a check editing files, relabelled Screen/Verifier verdicts), and update expected.json for every migrated or new fixture."
+          ]
+        },
+        "commit": "17d91ec v3.1 restructure 2 (human-proxy approved after HALT(BUDGET))",
+        "conform": {
+          "changes": [
+            "panel() veto, quoting SKILL Judge: \"A veto: a protected item (guardrails, must_not_change, criteria whose last result is pass) rated worse, UNKNOWN or not at all ... its veto or high-confidence preference for best rejects the variant\" and Keep: \"Keep a variant without a veto if ...\". New Audit.veto(): a protected id missing or null in a completed verdict's criteria is a veto, like UNKNOWN. It is used for extra verdicts, for pbest (so the prune shape too) and for judge 1's early rejection. It applies to v3 archives only, so p22_v2_loop_lenient stays a positive. New negative p03_t3c_guardrail_unrated gives KEEP_VETOED on the keep; its round 2 is an early rejection by judge 1 with no finding. p23_complete_spare and every migrated verdict now rate c1/c2 (see the migration entry).",
+            "v0 version, quoting \"Else log setup and version v0 = TARGET (draft if absent) = best\". In r_round, the first round with no prior version record gives miss('version', 'version v0 (logged at setup)'), which is RECORD_MISSING on v3. In panel(), on v3 a prune whose shorter is None now gets exp 'rejected' instead of None. New negative p05_t4b_prune_longer_no_v0_version gives RECORD_MISSING + KEEP_WITHOUT_SUPPORT.",
+            "Check files, quoting \"criteria checked by command (it decides, listing every file it runs: its check files)\" and the schema entry {id,required,kind,test,command?,files?,guardrail?}. set_done() gives RECORD_MISSING on v3 (unauditable on v2) for a command criterion with no files or an empty list. cfe() already reads DONE files; I removed its old 'none names a file' unauditable fallback. New negatives: p16_command_files_missing, and p16_kept_rewrites_listed_test_file (a kept unified diff rewrites a DONE-listed test file, giving CHECK_FILE_EDIT).",
+            "gate() retries, quoting gates:{apply,commands,verifier,screen,retries} and \"Retry an ERROR once (retries), then drop its variant\". A missing retries is RECORD_MISSING and the gate is not credited as 'ok'; a malformed value is unauditable; retries > 1 is still RETRY_EXCEEDED. One addition not in the author's list: a gate ERROR that stands with numeric retries summing to 0 gives RETRY_MISSING, as verdicts already do. New negative p06_gate_retries_missing gives RECORD_MISSING + RETRY_MISSING.",
+            "r_check source, quoting \"(source: pass only if all its claims verify)\", \"(a citation each)\" and citation{...,criterion,version,gap?}. A logged source pass needs at least one citation with criterion = id and version = the checked version, all verified. Otherwise CHECK_MISCOUNT and the value is fail. If a citation for the criterion, or one with no criterion field, lacks version or criterion, the result is RECORD_MISSING on v3 (value unchecked) and unauditable on v2; a v2 archive with no citations stays unauditable. A version of null means the citation is tied to no version (used for gap evidence). New negative p04_source_citation_version: CHECK_MISCOUNT on v1, then RECORD_MISSING on v2.",
+            "r_heldout, quoting \"the human reports only the marks (heldout.results; Check rule)\" and results{id:{value,votes}}. A new tally() is shared with r_check: votes are recounted (majority, strict 3/3 on a strict rung, any ERROR gives unchecked) and a mismatch is CHECK_MISCOUNT. A bare value without votes on v3 is RECORD_MISSING and not credited; a criterion missing from results is still non-pass. New negative p13_heldout_votes_miscount gives RECORD_MISSING + CHECK_MISCOUNT + FALSE_COMPLETE.",
+            "Waiver to Stop, quoting \"after a halt, the human decides (OVERFIT ends the archive; OPEN with all gaps waived -> Stop; else the next round)\". An exit reason OPEN followed by a resume sets self.waive = 0, and each valid waiver after it adds 1. When at least one gap was waived and no required gap remains, pre() gives the new code STOP_MISSED for a round or rung record (heldout, exit and check are allowed). next_due() returns 'heldout' if best has an all-pass Check at the final rung, else 'halt:OPEN', as the author specified. New fixtures: p17_t2_waive_then_stop (positive, COMPLETE), p17_t2_waive_next_due (positive, next_due heldout) and p17_t2_waive_then_round (STOP_MISSED).",
+            "Closed gap, quoting DESIGN row 5: \"until the human waives (amend) or closes it (substrate.evidence) and a round writes it in\". A closed substrate stays required until a kept diff removes [OPEN] markers (opens(d) < 0, counted in aggregate). Removals from the same round also credit a closure logged after that round (\"Log the round, any version and substrate\"). When only such closed gaps remain, OPEN_AT_HELDOUT and OPEN_AT_COMPLETE are AMBIGUOUS (advisory) via ocls(). p17_gap_closed_with_evidence was reordered so round 1 writes the evidence in. New fixtures: p17_gap_closed_not_written (two AMBIGUOUS findings, status PARTIAL) and p17_gap_closed_after_round (positive).",
+            "Spares, quoting \"Spares run only on a changed best passing Check; until then, rounds (or HALT(BUDGET))\". New spent(): held-out attempt 1 failed and best is unchanged. A due boundary at the final rung then gives next_due 'round' ('halt:BUDGET' once budget_out()). pre() accepts a round there, and a heldout is reported only as HELDOUT_REROLL (unchanged). New positives: p14_heldout_spent_next_due (next_due round after an amend that changes DONE and a fresh all-pass Check) and p14_heldout_spent_round (spares on v2, COMPLETE). Checked separately: budget_out gives halt:BUDGET.",
+            "Stop below the final rung, quoting \"pause: the human escalates (log rung and probe, reset stalls) or stops (exit PARTIAL, no held-out)\". No code change. New positive p12_t1b_stop_below_final_noheldout; new negative p13_t1_stop_below_final gives BOUNDARY_MISSED + HELDOUT_UNCHECKED.",
+            "The docstring's unauditable list now matches DESIGN: held-out secrecy, role separation, relay authenticity, the cosmetic-differences judgment, section boundaries, judge 1's logged confidence, a check editing files, and a Screen or Verifier verdict relabelled ERROR. It also mentions the advisory closed-gap rule. Checker comments that quoted superseded prose were updated to the new sentences.",
+            "Fixture migration (158 v3 fixtures; expected.json 'about' documents it; record_indexes remapped for inserted lines): each command criterion gained files (setup.check_files if logged, else tests/test_<id>.py; cr03 uses tests/t.py; p15_done.json matches). Each gates object gained retries (1 after an ERROR, else 0). Each completed verdict, plus slot-1 order dicts, rates every missing DONE and must_not_change id as tie (a31 by hand, because its round comes before setup). Each citation gained version (the best at logging time; null for a gap's evidence). One verified citation was inserted before each Check logging a source pass with no citation for that version. Each bare held-out mark became {value, votes}. fn21's c3 is {value: true, votes: [true, true, true]}. p23_pending_r2.json gained retries and ratings.",
+            "expected.json changes beyond line remaps: fp08 now expects RECORD_MISSING (ruling 'v3 fail closed (supersedes the fixed ruling)', because a verified citation has no criterion field; still no false CHECK_MISCOUNT). a45 gains KEEP_VETOED, because verdicts with no criteria rate no protected id. b01 no longer lists check_files as unauditable. 16 new cases were added (165 to 181). Notes quoting superseded prose now quote the new sentences."
+          ],
+          "selftest": "`python skills/rqgm-loop/rqgm_check.py selftest` passes all 181 cases (exit 0). `python -m unittest discover -s tests/checker` runs 5 tests, all OK. pyflakes is clean, no line is over 120 characters, and the checker is 849 lines.\n\nI also tried extra edge cases by editing fixtures in memory:\n- The spent case with budget.rounds 1 gives next_due halt:BUDGET.\n- A second held-out attempt on an unchanged best gives HELDOUT_REROLL without BOUNDARY_MISSED.\n- A round after an OPEN resume with no waiver, or with one required gap still open, gives no STOP_MISSED.\n- A 2/3 held-out pass on a strict rung gives CHECK_MISCOUNT.\n- A v2 archive with an unrated guardrail gives no veto.\n\nFiles changed:\n- F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/skills/rqgm-loop/rqgm_check.py\n- F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/tests/checker/expected.json\n- tests/checker/fixtures/*.jsonl, plus p23_pending_r2.json and p15_done.json\n\nThe prose files were not edited and git was not run.",
+          "attacks": "Both generators ran with exit 0 and rewrote their archives byte-identical. No archive that was flagged before is now unflagged. Every fn*, a*, k*, ctl_* and c* archive still exits 1, except a34, which exits 2 (integrity). cr05 exits 2 (usage) and cr01 (v2) exits 0, both as before.\n\nThe raw generator archives use the old schema: no check.models, files, gates.retries, citations or heldout votes. So the valid ones (fp*, b02-b05) already exited 1 before this change (RECORD_MISSING for check.models) and still do. Their migrated copies in tests/checker exit 0, and selftest checks this. The one exception is fp08: its migrated copy now expects RECORD_MISSING under v3 fail-closed (a verified citation has no criterion field). It still gets no false CHECK_MISCOUNT.\n\nWhat changed in the raw archives, and why:\n- **Findings added:**\n  - RECORD_MISSING for the DONE files and for gates.retries.\n  - CHECK_MISCOUNT, because c2 is logged pass with no citation for that version.\n  - KEEP_VETOED on most keeps, because the generator's verdicts have criteria {} and so leave protected c1/c2 unrated.\n- **Codes replaced by KEEP_VETOED:** the veto takes precedence over the codes these archives expected.\n  - KEEP_WITHOUT_SUPPORT becomes KEEP_VETOED in fn02, fn27, fn31, a18, b04 and ctl_fn02.\n  - STRICT_KEEP becomes KEEP_VETOED in fn03, fn04, fn05, a13, a43, k43, ctl_fn03 and ctl_fn04.\n- **Codes lost:**\n  - fn01 and ctl_fn01 lose JUDGE_MISSING. Judge 1's own unrated veto now rejects early, so judges 2-3 were not due.\n  - fn24 and ctl_fn24 lose BOUNDARY_MISSED. The uncited c2 now fails the claim Check, so no boundary is due; FALSE_COMPLETE stays.\n\n**Re-audit of runs/2026-09-25-peer/archive-meta.v3.jsonl:** it exits 1 (ok false) with 32 VIOLATION findings and nothing listed unauditable.\n- RECORD_MISSING at line 1: d7-caps has no files.\n- RECORD_MISSING for check.models at lines 3 and 25 (an existing rule).\n- RECORD_MISSING for gates.retries 20 times, once for every variant in rounds 1-10.\n- KEEP_VETOED 9 times, on every kept variant in rounds 2-10. No verdict rates d7-caps, which is protected because its last result is pass.\n- Round 7's keep (r7-a, line 17) is also vetoed because judge 1 rated the guardrail d1-guardrails UNKNOWN. That was a veto under the old prose too, so it is a real past violation. The other eight vetoes come from rules this archive predates.\n- The state is unchanged: best 9d07665dde77, rung E2, status PARTIAL, the BUDGET exit is supported by the standing Check, no open gaps, next_due None.\n- The stored archive-meta.v3.audit.json is stale: it comes from an older checker that still flagged minutes null and round t0/t1. I did not overwrite it. The new report is at C:/Users/wii/AppData/Local/Temp/claude/F--git-rqgm-loop--claude-worktrees-peer-agent-input-review-514dab/3a60f828-5f3b-4323-b9f2-0b1275b1d45f/scratchpad/meta_last.json.",
+          "lines": 849
+        },
+        "check": {
+          "version": "8332bed570f1",
+          "results": {
+            "d1-guardrails": {
+              "votes": [
+                "pass",
+                "fail",
+                "pass"
+              ],
+              "value": "pass"
+            },
+            "d2-executable": {
+              "votes": [
+                "fail",
+                "fail",
+                "pass"
+              ],
+              "value": "fail"
+            },
+            "d3-parity": {
+              "votes": [
+                "pass",
+                "pass",
+                "pass"
+              ],
+              "value": "pass"
+            },
+            "d4-auditable": {
+              "votes": [
+                "fail",
+                "fail",
+                "pass"
+              ],
+              "value": "fail"
+            },
+            "d5-honest": {
+              "votes": [
+                "pass",
+                "pass",
+                "pass"
+              ],
+              "value": "pass"
+            },
+            "d6-cost": {
+              "votes": [
+                "pass",
+                "pass",
+                "fail"
+              ],
+              "value": "pass"
+            }
+          },
+          "failing_reasons": [
+            "d2-executable: HALT(OPEN) has two causes. One is a required [OPEN] at Stop; the other is 'Without subagents ... else HALT(OPEN)' when role separation fails. Both share one resume rule, 'after a halt, the human decides (...; OPEN with all gaps waived → Stop; else the next round)', at SKILL Setup and in the paste's SETUP. After a role-separation HALT(OPEN) with no substrate gaps, 'all gaps waived' is vacuously true. A literal orchestrator then enters Stop and spends the primary held-out set on an unimproved best, possibly at E1 with no all-pass Check. Stop has no guard of its own (final rung, all-pass Check) because it assumes entry only from Boundary. The checker quietly resolves this: r_resume sets waive=0, and next_due/pre() act only when waive is truthy, which requires at least one waiver; next_due then also requires the final rung and an all-pass Check, else halt:OPEN. None of these conditions is in the prose. The rule works only for an attentive orchestrator.",
+            "d2-executable: 'rerun an unfinished round' never defines 'unfinished'. Because of 'Log the round, any version and substrate, then write TARGET', a crash after logging but before the write leaves complete records and a stale TARGET. No next state is defined for that case: nothing says to rebuild TARGET from version diffs. The prose also never says that a halt logs an exit record (see d4).",
+            "d4-auditable: halts cannot be recomputed from the records the prose requires. The prose names halts HALT(STALL), HALT(OPEN) and so on. The schema is exit{status:COMPLETE|PARTIAL,reason}, with reason not enumerated, and no rule says a halt must log an exit or what its reason must be. rqgm_check.py compares reason exactly against STALL/OSCILLATION/ERROR/OVERFIT/BUDGET/OPEN (pre(), r_exit, r_resume). Verified: I changed only the exit reason in tests/checker/fixtures/p23_partial_stall.jsonl from 'STALL' to 'HALT(STALL)', the prose's own name. The checker went from ok:true to ok:false, reporting two STALL_HALT_MISSED VIOLATIONs. With 'HALT(OSCILLATION)' it would raise OSCILLATION_MISSED and stop requiring the pick. With 'HALT(OPEN)' the waiver→Stop audit is skipped. Either the prose must enumerate exit.reason and require an exit record at each halt, or the checker must accept the prose's names; neither is stated. The records also don't show which HALT(OPEN) cause fired, so the resume transition can't be recomputed (the checker infers it from a waiver count).",
+            "d4-auditable (secondary): DESIGN's 'Pending rqgm_check.py changes' table and README's 'DESIGN lists the rules it does not yet check' are out of date against the worktree rqgm_check.py. That checker already implements the unrated-protected veto (veto()), v0 RECORD_MISSING, check-file RECORD_MISSING (set_done), gates.retries, the source Check by citation.version, the held-out recount (tally in r_heldout), waiver→Stop, closed-gap and spare rules (selftest: 181 cases pass). So the prose's map of which rule the checker covers is wrong.",
+            "d1-guardrails: a generator can close an [OPEN] without the human, although SKILL.md line 13 and the INITIATOR paste (lines 36-37) say only the human may close one. The Screen rule in SKILL.md lines 59-60 (same text in INITIATOR lines 88-89) rejects only 'unevidenced [OPEN] removals', and the Screen sees only the diff and the rubric (SKILL.md line 40). So a variant that replaces an [OPEN] with a claim citing a source the generator found passes the Screen as 'evidenced'. The Verifier then verifies that citation, the judges prefer the fuller text, and the variant is kept. Stop's HALT(OPEN) looks only for a 'required [OPEN] (in *best*, ...)' (SKILL.md line 84), and none is left, so held-out marking and COMPLETE follow with no human closure or waiver. I reproduced this: an archive where the orchestrator logs substrate{status:closed, evidence:<the generator's verified locator>} audits ok=true, status COMPLETE. Secondary: nothing mechanical enforces 'Never add ... check files'. The command gate restores setup's check files but still runs a file the variant adds that the command loads, for example a root conftest.py outside the listed `files`. Only the LLM Screen stands in the way.",
+            "d2-executable: the Screen cannot decide 'unevidenced [OPEN] removals' from its inputs. It sees only the diff and the rubric, while the evidence that closes an [OPEN] is the human's substrate.evidence in MEMORY, which the Screen never sees. 'Evidenced' is not defined anywhere. Because Stop keys HALT(OPEN) on the text of best, while closure is recorded in substrate records, the two readings lead to different next states for the same run: the prose goes on to held-out and COMPLETE, and rqgm_check.py reports OPEN_AT_HELDOUT and OPEN_AT_COMPLETE violations (reproduced: the same archive without a logged closure gives ok=false). Also undefined: which check files the command gate uses after a human amend. The gate pins 'setup's check files' (SKILL.md lines 55-56), while DESIGN row 1 says check files change by human amend. Minor: the judge JSON's `flaws` field has no rule that uses it.",
+            "d4-auditable: a HALT(OPEN) owed on [OPEN] markers already in v0 (a pre-existing TARGET, or the orchestrator's own draft) cannot be recomputed. The prose requires substrate records only when a round logs them ('Log the round, any version and substrate'). It never says what v0's version.diff must contain, and rqgm_check.py counts [OPEN] markers only from kept diffs. I reproduced this: p12_no_judges_criterion with v0 carrying '[OPEN: pilot data needed]' and no substrate record audits ok=true, status COMPLETE. This is not on DESIGN's unauditable list. Second, the prose and the checker compute the OPEN halt from different inputs: the prose uses the text of best, the checker uses substrate status. So the checker does not recompute the decision the prose requires; it flags a prose-conforming run as a violation and passes a loop-logged closure. Third, a variant that adds a file a command runs, outside the listed `files` paths, is neither caught by CHECK_FILE_EDIT nor declared unauditable.",
+            "d6-cost: some judge calls cannot change the keep decision. Both keep paths in SKILL.md step 4 (and the matching step in the INITIATOR paste) require 'none prefers *best*'. So once any judge prefers *best* or casts a veto, the variant cannot be kept. Step 3 still calls more judges in three cases: (a) when judge 1 prefers *best* with low or medium confidence, judge 2 runs, and judge 3 as well if judge 2 prefers the variant; (b) when judge 1 prefers the variant and judge 2 prefers *best* or vetoes, judge 3 still runs because 1 and 2 disagree; (c) strict mode always runs all three. These 1 or 2 calls per variant feed only the ledger, which the checker treats as advisory (REJECTED_IDEA). The 'high-confidence' qualifier's only effect is to spend those calls, and DESIGN itself lists judge 1's confidence as unauditable. The rule does not pay for its words or its calls.",
+            "d6-cost: the judge output format still asks for \"flaws\":[] from every judge call (SKILL.md Roles; paste ROLES), but the parent's '(≤2 winner flaws)' limit was removed. Judge output is now unbounded, and nothing reads the flaws: no rule, role or record field (verdicts[] has no flaws field). That is output tokens on every judge call with no defined use.",
+            "d6-cost: this version uses more words than its parent snapshot 4428a0fc753e (INITIATOR.md 1295 to 1300 words, README.md 1209 to 1231; +27 in total) without fewer model calls per round, probe or Check. SKILL.md (1000/1000) and INITIATOR.md (1300/1300) now sit exactly at their word caps, so 'fewer words' is not met."
+          ]
+        }
+      }
+    ]
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Restructure"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 2,
+      "title": "Gate"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 3,
+      "title": "Judge"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 4,
+      "title": "Conform"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 5,
+      "title": "Check"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "it1:screen",
+      "phaseIndex": 2,
+      "phaseTitle": "Gate",
+      "agentId": "ab18c4d7f8b02f950",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790422377258,
+      "queuedAt": 1790422377233,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "pass",
+      "promptPreview": "You are the SCREEN for a human-approved restructure (a multi-section change is allowed here). You did not write it; do not edit files. Diff: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/diffs/9d07665dde77-4428a0fc753e.diff; best F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/snapshots/9d07665dde77; candidate F:/git/r…",
+      "promptFramed": true,
+      "lastProgressAt": 1790422709495,
+      "tokens": 128541,
+      "toolCalls": 21,
+      "durationMs": 332236,
+      "resultPreview": "{\"screen\":\"pass\",\"reasons\":[\"d7 caps pass (str.split on the candidate snapshot): SKILL.md 1000/1000, INITIATOR.md 1295/1300, README.md 1209/1250, DESIGN.md 2199/2200. SKILL is exactly at its cap.\",\"d1 guardrails are preserved or made stricter. (1) A 'Human only' block, identical in SKILL and the paste, lists escalate/stop, amend of DONE, the rubric and BUDGET, approval of restructures and OSCILLAT…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "it1:verify",
+      "phaseIndex": 2,
+      "phaseTitle": "Gate",
+      "agentId": "ac66b1f2de2963cd9",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790422711080,
+      "queuedAt": 1790422711045,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are the VERIFIER. Check each claim only against its cited primary source (files under F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/ are primary for run facts; open papers' arXiv/DOI pages with WebFetch via ToolSearch). Loop-written summaries are not primary sources. Claims: [{\"claim\":\"DESIGN 'What was removed': items rejected with reasons in runs/2026-09-25-peer/bluep…",
+      "promptFramed": true,
+      "lastProgressAt": 1790422844755,
+      "tokens": 115965,
+      "toolCalls": 15,
+      "durationMs": 133674,
+      "resultPreview": "{\"results\":[{\"claim\":\"DESIGN 'What was removed': items rejected with reasons in runs/2026-09-25-peer/blueprint.json `rejected`: the paraphrase probe control and judge replacement on a miss; the least-recently-changed fallback; model-written hashes, per-call usage and keys; the exact-text oscillation test; an owning controller; sidecar rule files\",\"status\":\"verified\",\"locator\":\"runs/2026-09-25-peer…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 3,
+      "label": "it1:j1ab",
+      "phaseIndex": 3,
+      "phaseTitle": "Judge",
+      "agentId": "afe524b1058152e30",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790422846714,
+      "queuedAt": 1790422846626,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "A",
+      "promptPreview": "You are a JUDGE in an RQGM loop. Persona: Protocol implementer who has built LLM-agent orchestrators: every rule must be decidable from the inputs at that step, fail closed, have a next state, and be recomputable from the records; you distrust rules that only an attentive orchestrator would apply correctly.\nYou did not write either version. Do not edit files. Version A: F:/git/rqgm-loop/.claude/wo…",
+      "promptFramed": true,
+      "lastProgressAt": 1790423023895,
+      "tokens": 110117,
+      "toolCalls": 15,
+      "durationMs": 177180,
+      "resultPreview": "{\"criteria\":{\"d1-guardrails\":\"A\",\"d2-executable\":\"A\",\"d3-parity\":\"A\",\"d4-auditable\":\"A\",\"d5-honest\":\"A\",\"d6-cost\":\"A\"},\"overall\":\"A\",\"confidence\":\"high\",\"flaws\":[\"A has a gap during the checker lag. Its prose now requires records that the shipped rqgm_check.py does not read: heldout.results, approve, substrate.evidence and check.models. The current r_heldout reads only heldout.pass, so a heldout r…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 4,
+      "label": "it1:j1ba",
+      "phaseIndex": 3,
+      "phaseTitle": "Judge",
+      "agentId": "a6d857e9d17c54c1b",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790423025287,
+      "queuedAt": 1790423025278,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "B",
+      "promptPreview": "You are a JUDGE in an RQGM loop. Persona: Protocol implementer who has built LLM-agent orchestrators: every rule must be decidable from the inputs at that step, fail closed, have a next state, and be recomputable from the records; you distrust rules that only an attentive orchestrator would apply correctly.\nYou did not write either version. Do not edit files. Version A: F:/git/rqgm-loop/.claude/wo…",
+      "promptFramed": true,
+      "lastProgressAt": 1790423218429,
+      "tokens": 96216,
+      "toolCalls": 8,
+      "durationMs": 193141,
+      "resultPreview": "{\"criteria\":{\"d1-guardrails\":\"B\",\"d2-executable\":\"B\",\"d3-parity\":\"B\",\"d4-auditable\":\"B\",\"d5-honest\":\"B\",\"d6-cost\":\"B\"},\"overall\":\"B\",\"confidence\":\"high\",\"flaws\":[\"The SKILL.md description is cut to one generic line. It drops the when-to-use triggers (harden or pressure-test a proposal, paper, spec, design or codebase until it is fundable, defensible, correct or publishable) so that SKILL fits at e…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 5,
+      "label": "it1:j2",
+      "phaseIndex": 3,
+      "phaseTitle": "Judge",
+      "agentId": "a4b08bb4291448847",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790423219899,
+      "queuedAt": 1790423219891,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "A",
+      "promptPreview": "You are a JUDGE in an RQGM loop. Persona: Red-team reviewer: for each rule, you look for how a generator, an orchestrator or a lenient judge could game it or slip through it (support from UNKNOWN, laundering a regression through pruning, reusing a held-out result, editing a check file), and whether a change weakens any guardrail.\nYou did not write either version. Do not edit files. Version A: F:/g…",
+      "promptFramed": true,
+      "lastProgressAt": 1790423440365,
+      "tokens": 112239,
+      "toolCalls": 14,
+      "durationMs": 220465,
+      "resultPreview": "{\"criteria\":{\"d1-guardrails\":\"A\",\"d2-executable\":\"A\",\"d3-parity\":\"A\",\"d4-auditable\":\"A\",\"d5-honest\":\"A\",\"d6-cost\":\"A\"},\"overall\":\"A\",\"confidence\":\"high\",\"flaws\":[\"The spec is ahead of its auditor. A's own record, heldout{results}, has no `pass` field, so the current rqgm_check.py r_heldout (line 616) marks it RECORD_MISSING. Under the rule 'audit each round; a violation pauses', a run that follows…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 6,
+      "label": "it1:write",
+      "phaseIndex": 3,
+      "phaseTitle": "Judge",
+      "agentId": "a6a5b6d5b33e43875",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790423441875,
+      "queuedAt": 1790423441848,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "{\"ok\": true, \"promoted\": \"4428a0fc753e\", \"from\": \"9d07665dd…",
+      "promptPreview": "You are the single WRITER. Run in order and return outputs verbatim:\n1. python \"F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/tools/meta_tool.py\" promote 4428a0fc753e 9d07665dde77\n2. Only if step 1 printed \"ok\": true: cd \"F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab\" && git add skills/rqgm-loop/SKILL.md INITIATOR.md DESIGN.md README.md …",
+      "promptFramed": true,
+      "lastProgressAt": 1790423456047,
+      "tokens": 53154,
+      "toolCalls": 3,
+      "durationMs": 14171,
+      "resultPreview": "{\"promote_output\":\"{\\\"ok\\\": true, \\\"promoted\\\": \\\"4428a0fc753e\\\", \\\"from\\\": \\\"9d07665dde77\\\", \\\"words\\\": {\\\"skills/rqgm-loop/SKILL.md\\\": 1000, \\\"INITIATOR.md\\\": 1295, \\\"README.md\\\": 1209, \\\"DESIGN.md\\\": 2199}}\",\"commit\":\"e99b778 v3.1 restructure 1 (human-proxy approved after HALT(BUDGET))\"}"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 7,
+      "label": "it1:conform",
+      "phaseIndex": 4,
+      "phaseTitle": "Conform",
+      "agentId": "aabbf8229bfd9e530",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790423457630,
+      "queuedAt": 1790423457607,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "All four required commands pass or complete. `rqgm_check.py…",
+      "promptPreview": "You maintain the read-only auditor F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/skills/rqgm-loop/rqgm_check.py (stdlib, no network/model/clock, <=850 lines). The protocol text just changed (diff F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/diffs/9d07665dde77-4428a0fc753e.diff; new SKILL.md at F:/git/rqgm-loop/.claude/worktrees/peer-age…",
+      "promptFramed": true,
+      "lastProgressAt": 1790425530065,
+      "tokens": 358379,
+      "toolCalls": 88,
+      "durationMs": 2072433,
+      "resultPreview": "{\"changes\":[\"r_heldout (SKILL Stop: \\\"the human reports only `heldout.results` (Check rule). Each non-pass is non-pass in *best*'s Check\\\"; Memory `heldout{attempt,set:primary|spare,version,results{id:pass|fail|unchecked}}`): on v3 a missing `results` map, or a bare `pass`, is now RECORD_MISSING and the attempt is not credited. Every required ID whose value is not 'pass' (fail, unchecked, UNKNOWN,…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 8,
+      "label": "it1:check:j1",
+      "phaseIndex": 5,
+      "phaseTitle": "Check",
+      "agentId": "ab3b0b61c1f2744df",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790425533684,
+      "queuedAt": 1790425533495,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are a fresh CHECK judge (persona: Protocol implementer who has built LLM-agent orchestrators: every rule must be decidable from the inputs at that step, fail closed, have a next state, and be recomputable from the records; you distrust rules that only an attentive orchestrator would apply correctly.). You did not write this. Do not edit files. Read F:/git/rqgm-loop/.claude/worktrees/peer-agent…",
+      "promptFramed": true,
+      "lastProgressAt": 1790426194109,
+      "tokens": 175003,
+      "toolCalls": 24,
+      "durationMs": 660396,
+      "resultPreview": "{\"results\":{\"d1-guardrails\":\"pass\",\"d2-executable\":\"fail\",\"d3-parity\":\"pass\",\"d4-auditable\":\"fail\",\"d5-honest\":\"pass\",\"d6-cost\":\"pass\"},\"failing_reasons\":[\"d2-executable: The protected veto does not fail closed when a rating is missing. The keep rule (SKILL step 4, paste KEEP) vetoes only when a judge 'rates a protected item worse or UNKNOWN'. The judge JSON template never says every protected id …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 9,
+      "label": "it1:check:j2",
+      "phaseIndex": 5,
+      "phaseTitle": "Check",
+      "agentId": "afcf999df1c8011a2",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790425533704,
+      "queuedAt": 1790425533497,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are a fresh CHECK judge (persona: Red-team reviewer: for each rule, you look for how a generator, an orchestrator or a lenient judge could game it or slip through it (support from UNKNOWN, laundering a regression through pruning, reusing a held-out result, editing a check file), and whether a change weakens any guardrail.). You did not write this. Do not edit files. Read F:/git/rqgm-loop/.clau…",
+      "promptFramed": true,
+      "lastProgressAt": 1790426097195,
+      "tokens": 196223,
+      "toolCalls": 19,
+      "durationMs": 560792,
+      "resultPreview": "{\"results\":{\"d1-guardrails\":\"fail\",\"d2-executable\":\"fail\",\"d3-parity\":\"pass\",\"d4-auditable\":\"fail\",\"d5-honest\":\"pass\",\"d6-cost\":\"pass\"},\"failing_reasons\":[\"d1-guardrails: The anchor for the check-file guardrail is gone. The parent INITIATOR DONE slot said `kind` = `command` must be used 'naming every file it runs'. This version drops that phrase and makes RECORDS' `setup.done` shape explicit as `c…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 10,
+      "label": "it1:check:j3",
+      "phaseIndex": 5,
+      "phaseTitle": "Check",
+      "agentId": "a51cde94560f7a0b5",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790425533711,
+      "queuedAt": 1790425533497,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are a fresh CHECK judge (persona: Cost-and-parity maintainer: you run this loop in a plain chat and in small agent hosts; you check that SKILL.md and the INITIATOR paste say the same thing, that nothing essential lives only in DESIGN.md or README.md, and that each rule earns its words and model calls.). You did not write this. Do not edit files. Read F:/git/rqgm-loop/.claude/worktrees/peer-age…",
+      "promptFramed": true,
+      "lastProgressAt": 1790426210498,
+      "tokens": 183714,
+      "toolCalls": 23,
+      "durationMs": 674093,
+      "resultPreview": "{\"results\":{\"d1-guardrails\":\"pass\",\"d2-executable\":\"pass\",\"d3-parity\":\"pass\",\"d4-auditable\":\"pass\",\"d5-honest\":\"pass\",\"d6-cost\":\"pass\"},\"failing_reasons\":[]}"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 11,
+      "label": "it2:restructure",
+      "phaseIndex": 1,
+      "phaseTitle": "Restructure",
+      "agentId": "a4dad4815f82cf9ba",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790426211972,
+      "queuedAt": 1790426211942,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "{\"ok\": true, \"class\": \"OK\", \"hash\": \"8332bed570f1\", \"base\":…",
+      "promptPreview": "You are the GENERATOR for a HUMAN-APPROVED RESTRUCTURE of the RQGM v3 protocol text (approved by the orchestrating session acting as the human's proxy under the user's instruction to continue autonomously; recorded as such). Best: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/snapshots/4428a0fc753e/skills/rqgm-loop/SKILL.md, F:/git/rqgm-loop/.claude/worktre…",
+      "promptFramed": true,
+      "lastProgressAt": 1790427895417,
+      "tokens": 330885,
+      "toolCalls": 69,
+      "durationMs": 1683444,
+      "resultPreview": "{\"tool_output\":\"{\\\"ok\\\": true, \\\"class\\\": \\\"OK\\\", \\\"hash\\\": \\\"8332bed570f1\\\", \\\"base\\\": \\\"4428a0fc753e\\\", \\\"words\\\": {\\\"skills/rqgm-loop/SKILL.md\\\": 1000, \\\"INITIATOR.md\\\": 1300, \\\"README.md\\\": 1231, \\\"DESIGN.md\\\": 2199}, \\\"words_delta\\\": {\\\"skills/rqgm-loop/SKILL.md\\\": 0, \\\"INITIATOR.md\\\": 5, \\\"README.md\\\": 22, \\\"DESIGN.md\\\": 0}, \\\"caps_ok\\\": true, \\\"over\\\": {}, \\\"diff\\\": \\\"diffs/4428a0fc753e-833…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 12,
+      "label": "it2:screen",
+      "phaseIndex": 2,
+      "phaseTitle": "Gate",
+      "agentId": "a6b469f7fdcaf5bad",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790427898513,
+      "queuedAt": 1790427898488,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "pass",
+      "promptPreview": "You are the SCREEN for a human-approved restructure (a multi-section change is allowed here). You did not write it; do not edit files. Diff: F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/diffs/4428a0fc753e-8332bed570f1.diff; best F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/snapshots/4428a0fc753e; candidate F:/git/r…",
+      "promptFramed": true,
+      "lastProgressAt": 1790428240034,
+      "tokens": 156123,
+      "toolCalls": 17,
+      "durationMs": 341520,
+      "resultPreview": "{\"screen\":\"pass\",\"reasons\":[\"PASS. I found no rubric echo, no text aimed at judges, no compliance claim without a mechanism, and no inert text. No [OPEN] marker was removed: both snapshots carry the same [OPEN: what is needed] and [OPEN: source needed] templates in SKILL and in the paste, and no substantive marker exists in either.\",\"Guardrails are kept or strengthened. The writer still never judg…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 13,
+      "label": "it2:verify",
+      "phaseIndex": 2,
+      "phaseTitle": "Gate",
+      "agentId": "a1c5327984834c4b6",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790428241837,
+      "queuedAt": 1790428241805,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are the VERIFIER. Check each claim only against its cited primary source (files under F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/ are primary for run facts; open papers' arXiv/DOI pages with WebFetch via ToolSearch). Loop-written summaries are not primary sources. Claims: [{\"claim\":\"DESIGN pending row: 'panel(): a veto (p23_complete_spare gains ratings)', which impl…",
+      "promptFramed": true,
+      "lastProgressAt": 1790428408498,
+      "tokens": 115934,
+      "toolCalls": 20,
+      "durationMs": 166661,
+      "resultPreview": "{\"results\":[{\"claim\":\"DESIGN pending row: 'panel(): a veto (p23_complete_spare gains ratings)', which implies that fixture's kept variant does not rate the protected items\",\"status\":\"verified\",\"locator\":\"tests/checker/fixtures/p23_complete_spare.jsonl (working tree): the setup check at line 3 has c1=pass and c2=pass, and the v1 checks at lines 7/10 have c1-c3=pass. Those ids are protected per rqgm…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 14,
+      "label": "it2:j1ab",
+      "phaseIndex": 3,
+      "phaseTitle": "Judge",
+      "agentId": "abe3e1058171f959f",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790428410782,
+      "queuedAt": 1790428410773,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "A",
+      "promptPreview": "You are a JUDGE in an RQGM loop. Persona: Protocol implementer who has built LLM-agent orchestrators: every rule must be decidable from the inputs at that step, fail closed, have a next state, and be recomputable from the records; you distrust rules that only an attentive orchestrator would apply correctly.\nYou did not write either version. Do not edit files. Version A: F:/git/rqgm-loop/.claude/wo…",
+      "promptFramed": true,
+      "lastProgressAt": 1790428565310,
+      "tokens": 108776,
+      "toolCalls": 12,
+      "durationMs": 154527,
+      "resultPreview": "{\"criteria\":{\"d1-guardrails\":\"A\",\"d2-executable\":\"A\",\"d3-parity\":\"tie\",\"d4-auditable\":\"A\",\"d5-honest\":\"A\",\"d6-cost\":\"B\"},\"overall\":\"A\",\"confidence\":\"high\",\"flaws\":[\"A's new rules name no record field or checker entry and are not declared unauditable. These are: 'resume after halts or violations' is human-only, 'a violation pauses until the human resumes or stops', and setup's 'only rounds fix fail…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 15,
+      "label": "it2:j1ba",
+      "phaseIndex": 3,
+      "phaseTitle": "Judge",
+      "agentId": "a6a5647febb856923",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790428566876,
+      "queuedAt": 1790428566865,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "B",
+      "promptPreview": "You are a JUDGE in an RQGM loop. Persona: Protocol implementer who has built LLM-agent orchestrators: every rule must be decidable from the inputs at that step, fail closed, have a next state, and be recomputable from the records; you distrust rules that only an attentive orchestrator would apply correctly.\nYou did not write either version. Do not edit files. Version A: F:/git/rqgm-loop/.claude/wo…",
+      "promptFramed": true,
+      "lastProgressAt": 1790428724726,
+      "tokens": 129923,
+      "toolCalls": 12,
+      "durationMs": 157849,
+      "resultPreview": "{\"criteria\":{\"d1-guardrails\":\"B\",\"d2-executable\":\"B\",\"d3-parity\":\"tie\",\"d4-auditable\":\"B\",\"d5-honest\":\"B\",\"d6-cost\":\"A\"},\"overall\":\"B\",\"confidence\":\"med\",\"flaws\":[\"B's Output replaces 'rounds, time and tokens' with the undefined 'spend', and HALT(STALL) no longer names each non-pass required criterion's need, so the exit report is less specific and less decidable than A's.\",\"B's DESIGN pending tab…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 16,
+      "label": "it2:j2",
+      "phaseIndex": 3,
+      "phaseTitle": "Judge",
+      "agentId": "a06c9e08bc05803d7",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790428726521,
+      "queuedAt": 1790428726508,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "A",
+      "promptPreview": "You are a JUDGE in an RQGM loop. Persona: Red-team reviewer: for each rule, you look for how a generator, an orchestrator or a lenient judge could game it or slip through it (support from UNKNOWN, laundering a regression through pruning, reusing a held-out result, editing a check file), and whether a change weakens any guardrail.\nYou did not write either version. Do not edit files. Version A: F:/g…",
+      "promptFramed": true,
+      "lastProgressAt": 1790428958491,
+      "tokens": 119272,
+      "toolCalls": 13,
+      "durationMs": 231967,
+      "resultPreview": "{\"criteria\":{\"d1-guardrails\":\"A\",\"d2-executable\":\"A\",\"d3-parity\":\"tie\",\"d4-auditable\":\"A\",\"d5-honest\":\"A\",\"d6-cost\":\"B\"},\"overall\":\"A\",\"confidence\":\"med\",\"flaws\":[\"A's DESIGN pending table traces its new rules less well than B's. 'Stop below the final rung (exit) | none' names no checker change and does not declare the rule unauditable. 'Each change adds a fixture' names no fixtures, where B named…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 17,
+      "label": "it2:write",
+      "phaseIndex": 3,
+      "phaseTitle": "Judge",
+      "agentId": "ab4535fb4a39f49c6",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790428960578,
+      "queuedAt": 1790428960503,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "{\"ok\": true, \"promoted\": \"8332bed570f1\", \"from\": \"4428a0fc7…",
+      "promptPreview": "You are the single WRITER. Run in order and return outputs verbatim:\n1. python \"F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/tools/meta_tool.py\" promote 8332bed570f1 4428a0fc753e\n2. Only if step 1 printed \"ok\": true: cd \"F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab\" && git add skills/rqgm-loop/SKILL.md INITIATOR.md DESIGN.md README.md …",
+      "promptFramed": true,
+      "lastProgressAt": 1790428977260,
+      "tokens": 54813,
+      "toolCalls": 3,
+      "durationMs": 16681,
+      "resultPreview": "{\"promote_output\":\"{\\\"ok\\\": true, \\\"promoted\\\": \\\"8332bed570f1\\\", \\\"from\\\": \\\"4428a0fc753e\\\", \\\"words\\\": {\\\"skills/rqgm-loop/SKILL.md\\\": 1000, \\\"INITIATOR.md\\\": 1300, \\\"README.md\\\": 1231, \\\"DESIGN.md\\\": 2199}}\",\"commit\":\"17d91ec v3.1 restructure 2 (human-proxy approved after HALT(BUDGET))\"}"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 18,
+      "label": "it2:conform",
+      "phaseIndex": 4,
+      "phaseTitle": "Conform",
+      "agentId": "adf2716f6897d192d",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790428978719,
+      "queuedAt": 1790428978674,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "`python skills/rqgm-loop/rqgm_check.py selftest` passes all…",
+      "promptPreview": "You maintain the read-only auditor F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/skills/rqgm-loop/rqgm_check.py (stdlib, no network/model/clock, <=850 lines). The protocol text just changed (diff F:/git/rqgm-loop/.claude/worktrees/peer-agent-input-review-514dab/runs/2026-09-25-peer/diffs/4428a0fc753e-8332bed570f1.diff; new SKILL.md at F:/git/rqgm-loop/.claude/worktrees/peer-age…",
+      "promptFramed": true,
+      "lastProgressAt": 1790431202110,
+      "tokens": 449626,
+      "toolCalls": 145,
+      "durationMs": 2223389,
+      "resultPreview": "{\"changes\":[\"panel() veto, quoting SKILL Judge: \\\"A veto: a protected item (guardrails, must_not_change, criteria whose last result is pass) rated worse, UNKNOWN or not at all ... its veto or high-confidence preference for best rejects the variant\\\" and Keep: \\\"Keep a variant without a veto if ...\\\". New Audit.veto(): a protected id missing or null in a completed verdict's criteria is a veto, like…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 19,
+      "label": "it2:check:j1",
+      "phaseIndex": 5,
+      "phaseTitle": "Check",
+      "agentId": "ae78c9bd509b02406",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790431205332,
+      "queuedAt": 1790431205328,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are a fresh CHECK judge (persona: Protocol implementer who has built LLM-agent orchestrators: every rule must be decidable from the inputs at that step, fail closed, have a next state, and be recomputable from the records; you distrust rules that only an attentive orchestrator would apply correctly.). You did not write this. Do not edit files. Read F:/git/rqgm-loop/.claude/worktrees/peer-agent…",
+      "promptFramed": true,
+      "lastProgressAt": 1790431676121,
+      "tokens": 162520,
+      "toolCalls": 25,
+      "durationMs": 470784,
+      "resultPreview": "{\"results\":{\"d1-guardrails\":\"pass\",\"d2-executable\":\"fail\",\"d3-parity\":\"pass\",\"d4-auditable\":\"fail\",\"d5-honest\":\"pass\",\"d6-cost\":\"pass\"},\"failing_reasons\":[\"d2-executable: HALT(OPEN) has two causes. One is a required [OPEN] at Stop; the other is 'Without subagents ... else HALT(OPEN)' when role separation fails. Both share one resume rule, 'after a halt, the human decides (...; OPEN with all gaps w…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 20,
+      "label": "it2:check:j2",
+      "phaseIndex": 5,
+      "phaseTitle": "Check",
+      "agentId": "a3441987571d0b90d",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790431205334,
+      "queuedAt": 1790431205328,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are a fresh CHECK judge (persona: Red-team reviewer: for each rule, you look for how a generator, an orchestrator or a lenient judge could game it or slip through it (support from UNKNOWN, laundering a regression through pruning, reusing a held-out result, editing a check file), and whether a change weakens any guardrail.). You did not write this. Do not edit files. Read F:/git/rqgm-loop/.clau…",
+      "promptFramed": true,
+      "lastProgressAt": 1790431834576,
+      "tokens": 178588,
+      "toolCalls": 23,
+      "durationMs": 627932,
+      "resultPreview": "{\"results\":{\"d1-guardrails\":\"fail\",\"d2-executable\":\"fail\",\"d3-parity\":\"pass\",\"d4-auditable\":\"fail\",\"d5-honest\":\"pass\",\"d6-cost\":\"pass\"},\"failing_reasons\":[\"d1-guardrails: a generator can close an [OPEN] without the human, although SKILL.md line 13 and the INITIATOR paste (lines 36-37) say only the human may close one. The Screen rule in SKILL.md lines 59-60 (same text in INITIATOR lines 88-89) rej…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 21,
+      "label": "it2:check:j3",
+      "phaseIndex": 5,
+      "phaseTitle": "Check",
+      "agentId": "a0e801ca733e71933",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1790431205337,
+      "queuedAt": 1790431205328,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are a fresh CHECK judge (persona: Cost-and-parity maintainer: you run this loop in a plain chat and in small agent hosts; you check that SKILL.md and the INITIATOR paste say the same thing, that nothing essential lives only in DESIGN.md or README.md, and that each rule earns its words and model calls.). You did not write this. Do not edit files. Read F:/git/rqgm-loop/.claude/worktrees/peer-age…",
+      "promptFramed": true,
+      "lastProgressAt": 1790431696444,
+      "tokens": 163852,
+      "toolCalls": 21,
+      "durationMs": 489800,
+      "resultPreview": "{\"results\":{\"d1-guardrails\":\"pass\",\"d2-executable\":\"pass\",\"d3-parity\":\"pass\",\"d4-auditable\":\"pass\",\"d5-honest\":\"pass\",\"d6-cost\":\"fail\"},\"failing_reasons\":[\"d6-cost: some judge calls cannot change the keep decision. Both keep paths in SKILL.md step 4 (and the matching step in the INITIATOR paste) require 'none prefers *best*'. So once any judge prefers *best* or casts a veto, the variant cannot be …"
+    }
+  ],
+  "totalTokens": 3499863,
+  "totalToolCalls": 590
+}

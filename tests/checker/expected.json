@@ -1,5 +1,5 @@
 {
- "about": "rqgm_check.py selftest: each case runs 'audit' on one fixture and must match exactly. codes = [code, class] multiset of all findings; [] = no findings of any class. Cases with a source field are archives from runs/2026-09-25-peer/checker-attack/ (copied verbatim); ruling says whether the checker was changed for them or the break was ruled not a checker defect.",
+ "about": "rqgm_check.py selftest: each case runs 'audit' on one fixture and must match exactly. codes = [code, class] multiset of all findings; [] = no findings of any class. Cases with a source field are archives from runs/2026-09-25-peer/checker-attack/ (copied verbatim, then migrated to the v3.1 SKILL.md Memory schema: every v3 fixture's check records gained models (the setup's judge models) and each held-out pass map became results over the required criteria (false -> fail); a migrated field names any further rewrite); ruling says whether the checker was changed for them or the break was ruled not a checker defect. Every v3 fixture was then migrated to the 8332bed570f1 schema (SKILL.md Memory: criteria[].files, gates.retries, citation.version, heldout.results{id:{value,votes}}; judges rate \"each criterion and must_not_change id\"): a command criterion gained files (setup.check_files, else tests/test_<id>.py), each gates object gained retries (1 after an ERROR, else 0), each completed verdict rates every DONE criterion and must_not_change id it left unrated as tie, each citation gained version (the best it was logged under; null for a gap's evidence), each Check logging a source criterion pass gained one verified citation for that criterion and version just before it, and each bare held-out mark became {value, votes} (three equal votes; unchecked: an ERROR vote). record_indexes follow the inserted lines.",
  "cases": [
   {
    "invariant": "P01",
@@ -24,10 +24,10 @@
    ],
    "note": "r1: slot-1 orders disagree (UNKNOWN), slot 2 variant, slot 3 skipped, kept. r2: UNKNOWN/UNKNOWN skips slot 3; r2-b logs slot 1 'variant' for orders [variant, tie] (recomputed UNKNOWN; still 2 of 3, kept)",
    "record_indexes": [
-    5,
-    5,
-    7,
-    7
+    6,
+    6,
+    8,
+    8
    ]
   },
   {
@@ -41,7 +41,7 @@
    ],
    "note": "two variants with outcome kept in one round",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
@@ -59,8 +59,8 @@
    ],
    "note": "r1: slot 2 rates protected c2 (passed at setup) best; r2: slots variant, variant, best",
    "record_indexes": [
-    5,
-    7
+    6,
+    8
    ]
   },
   {
@@ -82,9 +82,9 @@
    ],
    "note": "strict probe; keep on 2 variant + 1 tie; strict Check votes pass,pass,fail logged pass; source c2 logged pass while its only citation is contradicted",
    "record_indexes": [
-    5,
-    8,
-    8
+    6,
+    9,
+    9
    ]
   },
   {
@@ -106,9 +106,9 @@
    ],
    "note": "shorter variant kept on tie,tie with no slot 3; then on 3 ties with a slot-3 per-criterion UNKNOWN; r3: tie,tie never skips judge 3 (a shorter variant could have been pruned)",
    "record_indexes": [
-    5,
-    7,
-    9
+    6,
+    8,
+    10
    ]
   },
   {
@@ -138,11 +138,11 @@
    ],
    "note": "slot 1 retried twice; slot 2 ERROR after one retry with no completed objection logged as rejected; a gate retried twice; HALT(ERROR) after a single all-ERROR round; the round proposes 3 variants (VARIANT_COUNT, RECORD: none kept)",
    "record_indexes": [
-    5,
-    5,
-    5,
-    5,
-    6
+    6,
+    6,
+    6,
+    6,
+    7
    ]
   },
   {
@@ -168,10 +168,10 @@
    ],
    "note": "best passes c1 (setup check), variant fails c1, judged and kept (paired positive: p23_imperfect_v0 r1); screen-rejected variants: judged anyway, logged dropped, kept",
    "record_indexes": [
-    5,
-    7,
-    7,
-    8
+    6,
+    8,
+    8,
+    9
    ]
   },
   {
@@ -201,11 +201,11 @@
    ],
    "note": "v2.parent = v0 while v1 was kept; r3 keeps with round.kept null and logs no version; next round is n=5; a version follows a round that kept nothing",
    "record_indexes": [
-    8,
     9,
     10,
-    10,
-    11
+    11,
+    11,
+    12
    ]
   },
   {
@@ -239,12 +239,12 @@
    ],
    "note": "r1-3 all dropped (r3 logged instead of HALT(ERROR)); exit STALL at s=0; resume names round 5; s reaches 3 and r7 runs with no Check; the Check fails at s=4 and r8 runs instead of HALT(STALL); the exit at record 8 names STALL while HALT(ERROR) is still due after a third all-ERROR round (two or more in a row halt: checker-attack round2 a37)",
    "record_indexes": [
-    7,
-    8,
     8,
     9,
-    13,
-    15
+    9,
+    10,
+    14,
+    16
    ]
   },
   {
@@ -270,10 +270,10 @@
    ],
    "note": "second Check on v1/E1 with no version, rung or amend between; a Check on v0 while v1 is best; exit STALL on the standing failing Check at s=0; the record-12 amend leaves DONE byte-identical, so the record-13 Check is still a re-roll (checker-attack fn14; a DONE-changing amend reopens it, fn16)",
    "record_indexes": [
-    8,
-    9,
     10,
-    13
+    11,
+    12,
+    15
    ]
   },
   {
@@ -295,9 +295,9 @@
    ],
    "note": "rounds=5, round 6 starts with 10 of 70 minutes left (longest round 10); exit BUDGET with no standing Check",
    "record_indexes": [
-    15,
-    15,
-    17
+    16,
+    16,
+    18
    ]
   },
   {
@@ -331,12 +331,12 @@
    ],
    "note": "a round after an all-pass Check below the final rung; rung E2 then a round with no probe{rung:E2}; rung E3 with no earlier amend; the E3 probe misses the seeded defect but is logged normal; v3: with no E2 probe the rung is strict (fail closed), so the record-12 2/2 keep is STRICT_KEEP with slot 3 missing",
    "record_indexes": [
-    8,
-    12,
-    12,
-    12,
+    10,
     15,
-    16
+    15,
+    15,
+    19,
+    20
    ]
   },
   {
@@ -366,11 +366,11 @@
    ],
    "note": "COMPLETE at E1 with final_rung E2; held-out run at E2 before any E2 Check; COMPLETE reusing the E1 pass; after the E2 Check every COMPLETE condition holds but PARTIAL is logged; a record after exit without resume",
    "record_indexes": [
-    8,
-    12,
-    13,
-    16,
-    17
+    10,
+    14,
+    15,
+    18,
+    19
    ]
   },
   {
@@ -388,8 +388,8 @@
    ],
    "note": "held-out attempt 2 on the same version as failed attempt 1; it fails and a round runs instead of HALT(OVERFIT)",
    "record_indexes": [
-    9,
-    10
+    11,
+    12
    ]
   },
   {
@@ -407,7 +407,8 @@
    ],
    "args": {
     "done": "p15_done.json"
-   }
+   },
+   "migrated": "8332bed570f1 schema (SKILL.md Memory: criteria[].files, gates.retries, citation.version, heldout.results{id:{value,votes}}; judges rate \"each criterion and must_not_change id\"): p15_done.json c1 gained the same files, so DONE still differs only in c2 required"
   },
   {
    "invariant": "P16",
@@ -425,7 +426,7 @@
    "note": "kept diff edits check file test_public.py; --target hash differs from setup.check_hashes",
    "record_indexes": [
     1,
-    5
+    6
    ],
    "args": {
     "target": "p16_target"
@@ -446,8 +447,8 @@
    ],
    "note": "held-out run and exit COMPLETE while a required substrate is open; the optional-gap positive is in p23_complete_spare",
    "record_indexes": [
-    9,
-    10
+    11,
+    12
    ]
   },
   {
@@ -483,7 +484,7 @@
    "codes": [],
    "note": "line 7 of 20 corrupt: integrity error, nothing after it audited",
    "exit": 2,
-   "integrity": 7
+   "integrity": 8
   },
   {
    "invariant": "P19",
@@ -496,7 +497,7 @@
    ],
    "note": "version.diff differs from the judged diff",
    "record_indexes": [
-    6
+    7
    ]
   },
   {
@@ -514,8 +515,8 @@
    ],
    "note": "two eligible variants, equal support and words, the second kept; then two eligible variants and none kept",
    "record_indexes": [
-    5,
-    7
+    6,
+    8
    ]
   },
   {
@@ -533,8 +534,8 @@
    ],
    "note": "r2 undoes r1's kept edit of S1 exactly and r3 runs with no HALT(OSCILLATION): an exact undo needs no \"(nearly)\" judgment, so a VIOLATION (checker-attack round2 a38; a near restore stays AMBIGUOUS, fp13); a later HALT(OSCILLATION) on unrelated text is advisory",
    "record_indexes": [
-    7,
-    12
+    8,
+    13
    ],
    "exit": 1,
    "ok": false
@@ -588,7 +589,8 @@
     "r2-a": "rejected",
     "r2-b": "kept"
    },
-   "next_due": "round"
+   "next_due": "round",
+   "migrated": "8332bed570f1 schema (SKILL.md Memory: criteria[].files, gates.retries, citation.version, heldout.results{id:{value,votes}}; judges rate \"each criterion and must_not_change id\"): p23_pending_r2.json gates gained retries 0 and its verdicts rate c1-c3 tie"
   },
   {
    "invariant": "P23",
@@ -617,7 +619,7 @@
    "invariant": "P23",
    "fixture": "p23_complete_spare.jsonl",
    "codes": [],
-   "note": "held-out fails on v1, v2 kept and Checked at E2, spare passes, COMPLETE; optional gap open (P17 positive)",
+   "note": "held-out fails on v1, v2 kept and Checked at E2, spare passes, COMPLETE; an open gap on optional c4 (P17 positive: \"A required [OPEN] (in best, unwaived, criterion not optional)\"; c4 and substrate.criterion added in the v3.1 migration); its verdicts rate c1/c2 (migration), since an unrated protected id is a veto",
    "exit": 0,
    "state": {
     "best": "v2",
@@ -631,7 +633,7 @@
    "note": "torn version line set aside, resume, round 2 rerun from v1",
    "exit": 0,
    "set_aside": [
-    8
+    9
    ],
    "state": {
     "best": "v2"
@@ -652,8 +654,8 @@
    ],
    "note": "without --first both violations (records 12 and 30) are reported",
    "record_indexes": [
-    12,
-    30
+    13,
+    31
    ]
   },
   {
@@ -670,7 +672,7 @@
     "first": true
    },
    "record_indexes": [
-    12
+    13
    ]
   },
   {
@@ -694,9 +696,9 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn01_duplicate_slot_reask.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5,
-    5,
-    5
+    6,
+    6,
+    6
    ]
   },
   {
@@ -716,8 +718,8 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn02_fourth_judge_support.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5,
-    5
+    6,
+    6
    ]
   },
   {
@@ -737,8 +739,8 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn03_strict_fourth_judge.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5,
-    5
+    6,
+    6
    ]
   },
   {
@@ -762,9 +764,9 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn04_probe_reroll.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5,
     6,
-    6
+    7,
+    7
    ]
   },
   {
@@ -784,13 +786,13 @@
      "VIOLATION"
     ]
    ],
-   "note": "v3 archive: probe with identity [] and seeded.pair [] logs no comparison (SKILL Probe: \"judge 1 compares *best*, in both orders\"): RECORD_MISSING, and the E1 rung is strict (fail closed), so the 2/2 keep is STRICT_KEEP with slot 3 missing",
+   "note": "v3 archive: probe with identity [] and seeded.pair [] logs no comparison (SKILL Probe: \"judge 1 compares *best*, both orders\"): RECORD_MISSING, and the E1 rung is strict (fail closed), so the 2/2 keep is STRICT_KEEP with slot 3 missing",
    "source": "runs/2026-09-25-peer/checker-attack/fn05_probe_empty.jsonl",
    "ruling": "v3 fail closed (was unauditable)",
    "record_indexes": [
-    4,
     5,
-    5
+    6,
+    6
    ],
    "state": {
     "probe_modes": {
@@ -819,9 +821,9 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn06_setup_check_launders_regression.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    7,
-    7,
-    8
+    8,
+    8,
+    9
    ]
   },
   {
@@ -841,8 +843,8 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn07_setup_check_evades_stall.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    8,
-    9
+    9,
+    10
    ]
   },
   {
@@ -854,11 +856,11 @@
      "VIOLATION"
     ]
    ],
-   "note": "v3 archive: kept variant has gates.commands {} while c1 is a DONE command (\"run every command there yourself\"): RECORD_MISSING, and the keep is not credited",
+   "note": "v3 archive: kept variant has gates.commands {} while c1 is a DONE command (\"Run every command yourself on a fresh copy\"): RECORD_MISSING, and the keep is not credited",
    "source": "runs/2026-09-25-peer/checker-attack/fn08_command_not_run.jsonl",
    "ruling": "v3 fail closed (was unauditable)",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
@@ -874,7 +876,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn09_screen_missing.jsonl",
    "ruling": "v3 fail closed (was unauditable)",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
@@ -890,7 +892,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn10_unknown_slot_rates_protected_worse.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
@@ -934,14 +936,14 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn11_same_rung_resets_stall.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    8,
     9,
     10,
     11,
     12,
     13,
     14,
-    15
+    15,
+    16
    ]
   },
   {
@@ -969,10 +971,10 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn12_check_extra_votes.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    7,
-    7,
-    8,
-    9
+    9,
+    9,
+    10,
+    11
    ]
   },
   {
@@ -1000,10 +1002,10 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn13_strict_check_extra_votes.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    7,
-    7,
-    8,
-    9
+    9,
+    9,
+    10,
+    11
    ]
   },
   {
@@ -1027,9 +1029,9 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn14_noop_amend_rerolls_check.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    9,
-    10,
-    11
+    11,
+    12,
+    13
    ]
   },
   {
@@ -1045,7 +1047,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn15_noop_amend_cancels_halt_error.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    8
+    9
    ]
   },
   {
@@ -1061,7 +1063,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn16_heldout_survives_done_change.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    14
+    16
    ]
   },
   {
@@ -1081,8 +1083,8 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn17_version_id_reuse.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    10,
-    11
+    12,
+    13
    ]
   },
   {
@@ -1110,10 +1112,10 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn18_round_number_reuse_hides_budget.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    11,
-    11,
-    13,
-    15
+    12,
+    12,
+    14,
+    16
    ]
   },
   {
@@ -1129,7 +1131,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn19_second_keep_in_round_2.jsonl",
    "ruling": "not a checker defect",
    "record_indexes": [
-    9
+    10
    ],
    "exit": 0
   },
@@ -1150,8 +1152,8 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn20_clock_restart_hides_time_budget.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    17,
-    19
+    18,
+    20
    ]
   },
   {
@@ -1163,12 +1165,13 @@
      "VIOLATION"
     ]
    ],
-   "note": "heldout.pass {c3: \"fail\"}: any value other than true fails closed",
+   "note": "heldout.results c3 {value: true, votes: [true, true, true]}: a mark outside the vocabulary never passes (the Check rule counts pass votes), so the COMPLETE rests on no held-out pass: FALSE_COMPLETE",
    "source": "runs/2026-09-25-peer/checker-attack/fn21_heldout_nonbool_counts_as_pass.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    9
-   ]
+    11
+   ],
+   "migrated": "v3.1 schema (SKILL.md Memory: check{...,models,...}, heldout{...,results{id:pass|fail|unchecked}}): check records gained models; the held-out pass map became results; c3 is logged true, a value outside the vocabulary; 8332bed570f1 schema (SKILL.md Memory: criteria[].files, gates.retries, citation.version, heldout.results{id:{value,votes}}; judges rate \"each criterion and must_not_change id\"): c3 is {value: true, votes: [true, true, true]}"
   },
   {
    "invariant": "P17",
@@ -1187,8 +1190,8 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn22_gap_waived_without_amend.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    10,
-    11
+    12,
+    13
    ]
   },
   {
@@ -1208,8 +1211,8 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn23_gap_status_case.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    9,
-    10
+    11,
+    12
    ]
   },
   {
@@ -1238,9 +1241,9 @@
    "ruling": "fixed",
    "record_indexes": [
     1,
-    8,
-    8,
-    9
+    10,
+    10,
+    11
    ]
   },
   {
@@ -1272,8 +1275,8 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn26_spare_set_first.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    8,
-    9
+    10,
+    11
    ]
   },
   {
@@ -1289,7 +1292,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn27_empty_diff_prune_launders_spare.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    9
+    11
    ]
   },
   {
@@ -1305,7 +1308,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn28_check_file_path_case.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
@@ -1318,15 +1321,15 @@
     ],
     [
      "MULTI_SECTION",
-     "AMBIGUOUS"
+     "VIOLATION"
     ]
    ],
-   "note": "six variants in one round, the sixth kept (VIOLATION; extra proposals kept nothing would be RECORD); its diff edits two sections (advisory: an approved restructure is not recorded)",
+   "note": "six variants in one round, the sixth kept (VIOLATION; extra proposals kept nothing would be RECORD); its diff edits two sections with no prior approve{what:restructure} (\"one change to one section (one heading's text, else the file) of *best*, or one human-approved restructure\"): a VIOLATION since v3.1 logs approve (advisory before)",
    "source": "runs/2026-09-25-peer/checker-attack/fn29_six_variants_two_sections.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5,
-    5
+    6,
+    6
    ]
   },
   {
@@ -1342,7 +1345,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn30_rejected_idea_reproposed.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    6
+    7
    ],
    "exit": 0
   },
@@ -1371,10 +1374,10 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn31_slot1_three_orders.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5,
-    5,
-    5,
-    5
+    6,
+    6,
+    6,
+    6
    ]
   },
   {
@@ -1394,8 +1397,8 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn32_budget_rounds_float.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    11,
-    13
+    12,
+    14
    ]
   },
   {
@@ -1435,28 +1438,37 @@
    "source": "runs/2026-09-25-peer/checker-attack/fn33_stall_with_unchecked_runs_on.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    9,
     10,
     11,
     12,
     13,
     14,
-    15
+    15,
+    16
    ]
   },
   {
    "invariant": "P17",
    "fixture": "fn34_gap_closed_without_evidence.jsonl",
-   "codes": [],
-   "note": "a required gap closed with no evidence field. Rechecked for v3 fail closed: SKILL.md's substrate{gap,owner,required,status} has no evidence field and no record ties a citation to a gap (\"the human closes it with evidence the Verifier checks\" names no record), so the closure stays unauditable even on a v3 archive",
-   "source": "runs/2026-09-25-peer/checker-attack/fn34_gap_closed_without_evidence.jsonl",
-   "ruling": "fixed",
-   "exit": 0,
-   "unauditable_includes": [
-    "substrate"
+   "codes": [
+    [
+     "CLOSED_UNVERIFIED",
+     "VIOLATION"
+    ],
+    [
+     "OPEN_AT_HELDOUT",
+     "VIOLATION"
+    ],
+    [
+     "OPEN_AT_COMPLETE",
+     "VIOLATION"
+    ]
    ],
+   "note": "a required gap closed with no evidence field. v3.1 logs substrate{...,evidence?:locator} and the human closes an [OPEN] \"with Verifier-checked evidence (substrate.evidence)\": on a v3 archive a closure whose evidence is not a verified citation's locator is CLOSED_UNVERIFIED and not credited, so the gap stays open (OPEN_AT_HELDOUT, OPEN_AT_COMPLETE)",
+   "source": "runs/2026-09-25-peer/checker-attack/fn34_gap_closed_without_evidence.jsonl",
+   "ruling": "v3 fail closed (supersedes the unauditable ruling)",
    "state": {
-    "status": "COMPLETE"
+    "status": "PARTIAL"
    }
   },
   {
@@ -1484,14 +1496,14 @@
    "source": "runs/2026-09-25-peer/checker-attack/fp02_early_drop_logged_dropped.jsonl",
    "ruling": "not a checker defect",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
    "invariant": "P06",
    "fixture": "fp03_error_after_objection_halt_error.jsonl",
    "codes": [],
-   "note": "judge 1 best (med), judge 2 ERROR after one retry: \"Retry an ERROR once, then drop the variant (not a rejection)\", so two such rounds support HALT(ERROR)",
+   "note": "judge 1 best (med), judge 2 ERROR after one retry: \"Retry an ERROR once (retries), then drop its variant (not a rejection)\", so two such rounds support HALT(ERROR)",
    "source": "runs/2026-09-25-peer/checker-attack/fp03_error_after_objection_halt_error.jsonl",
    "ruling": "fixed",
    "exit": 0,
@@ -1516,8 +1528,8 @@
    "source": "runs/2026-09-25-peer/checker-attack/fp04_skill_schema_amend.jsonl",
    "ruling": "v3 fail closed (supersedes the unauditable ruling)",
    "record_indexes": [
-    8,
-    11
+    10,
+    13
    ],
    "unauditable_includes": [
     "required"
@@ -1556,14 +1568,20 @@
   {
    "invariant": "P22",
    "fixture": "fp08_citation_mixed_criterion_field.jsonl",
-   "codes": [],
-   "note": "a verified citation without a criterion field: whether c2 has a verified source is unauditable, not failed",
+   "codes": [
+    [
+     "RECORD_MISSING",
+     "VIOLATION"
+    ]
+   ],
+   "note": "a verified citation without a criterion field before the Check on v1: citation{claim,locator,status,criterion,version,gap?} lists criterion, and \"source: pass only if all its claims verify\" cannot be decided when a citation might be c2's, so RECORD_MISSING and c2 is not credited (never a false CHECK_MISCOUNT)",
    "source": "runs/2026-09-25-peer/checker-attack/fp08_citation_mixed_criterion_field.jsonl",
-   "ruling": "fixed",
-   "exit": 0,
-   "unauditable_includes": [
-    "check_source"
-   ]
+   "ruling": "v3 fail closed (supersedes the fixed ruling)",
+   "exit": 1,
+   "record_indexes": [
+    10
+   ],
+   "migrated": "8332bed570f1 schema (SKILL.md Memory: criteria[].files, gates.retries, citation.version, heldout.results{id:{value,votes}}; judges rate \"each criterion and must_not_change id\"): the contradicted citation is v0's, the criterion-less one v1's"
   },
   {
    "invariant": "P22",
@@ -1590,32 +1608,34 @@
    "source": "runs/2026-09-25-peer/checker-attack/fp10_selection_missing_words.jsonl",
    "ruling": "v3 fail closed (supersedes the unauditable ruling)",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
    "invariant": "P21",
    "fixture": "fp11a_oscillation_human_picks_old_best.jsonl",
    "codes": [],
-   "note": "after exit OSCILLATION the human picks v1 over v2; the next round names v1 as best",
+   "note": "v2 (an exact undo) is logged before exit OSCILLATION; the human picks v1 (\"after HALT(OSCILLATION), pick *best* among logged versions (approve)\"), so the next round names v1 as best",
    "source": "runs/2026-09-25-peer/checker-attack/fp11a_oscillation_human_picks_old_best.jsonl",
    "ruling": "fixed",
    "exit": 0,
    "state": {
     "best": "v3"
-   }
+   },
+   "migrated": "v3.1 schema (SKILL.md Memory: check{...,models,...}, heldout{...,results{id:pass|fail|unchecked}}): check records gained models; the held-out pass map became results; the human's pick is logged as approve{what:pick,version:v1} after the resume"
   },
   {
    "invariant": "P21",
    "fixture": "fp11b_oscillation_human_picks_variant.jsonl",
    "codes": [],
-   "note": "HALT(OSCILLATION) before the version; the human picks the variant and its version follows the resume",
+   "note": "v2 is logged before HALT(OSCILLATION); the human picks it with approve{what:pick}; the pre-v3.1 order (halt, then the version) is p21_oscillation_halt_before_version",
    "source": "runs/2026-09-25-peer/checker-attack/fp11b_oscillation_human_picks_variant.jsonl",
    "ruling": "fixed",
    "exit": 0,
    "state": {
     "best": "v3"
-   }
+   },
+   "migrated": "v3.1 schema (SKILL.md Memory: check{...,models,...}, heldout{...,results{id:pass|fail|unchecked}}): check records gained models; the held-out pass map became results; rewritten for \"HALT(OSCILLATION) after its version\": v2 moved before the exit and the pick is approve{what:pick,version:v2}"
   },
   {
    "invariant": "P12",
@@ -1672,7 +1692,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/cr02_second_setup_record.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    7
+    8
    ],
    "exit": 0
   },
@@ -1689,7 +1709,8 @@
    ],
    "args": {
     "target": "."
-   }
+   },
+   "migrated": "8332bed570f1 schema (SKILL.md Memory: criteria[].files, gates.retries, citation.version, heldout.results{id:{value,votes}}; judges rate \"each criterion and must_not_change id\"): c1 files is [tests/t.py], the path check_hashes names (check_files keeps its non-string entry)"
   },
   {
    "invariant": "P18",
@@ -1745,12 +1766,12 @@
    ],
    "note": "v3 fail closed: a rejected variant with no gates and a kept variant whose slot-1 verdict has no orders (record 5); a round with no t0/t1 and a verdict with no retries (7); a judges Check pass with no votes, not credited (8); an exit with no status (9)",
    "record_indexes": [
-    5,
-    5,
-    7,
-    7,
+    6,
+    6,
     8,
-    9
+    8,
+    10,
+    11
    ]
   },
   {
@@ -1783,7 +1804,7 @@
    "invariant": "P03",
    "fixture": "p03_unknown_protected_rejected.jsonl",
    "codes": [],
-   "note": "PARITY-4 positive (fn10 is the negative): slot 2 overall UNKNOWN rates protected c2 best; \"none rates a protected item worse\" fails, so rejecting it is no MISSED_KEEP",
+   "note": "PARITY-4 positive (fn10 is the negative): slot 2 overall UNKNOWN rates protected c2 best; it is \"A veto: a protected item ... rated worse\", so rejecting it is no MISSED_KEEP",
    "exit": 0
   },
   {
@@ -1803,11 +1824,11 @@
      "VIOLATION"
     ]
    ],
-   "note": "PARITY-5 negative (fp03 is the positive): judge 1 prefers best (med), judge 2 ERRORs after one retry, logged rejected twice; \"then drop the variant (not a rejection)\", so round 3 runs where HALT(ERROR) was due",
+   "note": "PARITY-5 negative (fp03 is the positive): judge 1 prefers best (med), judge 2 ERRORs after one retry, logged rejected twice; \"then drop its variant (not a rejection)\", so round 3 runs where HALT(ERROR) was due",
    "record_indexes": [
-    5,
     6,
-    7
+    7,
+    8
    ]
   },
   {
@@ -1829,9 +1850,9 @@
    ],
    "note": "PARITY-6 negative: c3 votes [pass, pass, ERROR] logged pass; an ERROR vote leaves the criterion unchecked (\"or leave its criterion unchecked\"), never pass, so the held-out and COMPLETE rest on no all-pass Check",
    "record_indexes": [
-    7,
-    8,
-    9
+    9,
+    10,
+    11
    ]
   },
   {
@@ -1849,7 +1870,7 @@
    "invariant": "P21",
    "fixture": "p21_oscillation_pick_check.jsonl",
    "codes": [],
-   "note": "PARITY-11 positive: HALT(OSCILLATION) before round 2's version; after resume the human keeps v1 (\"the human picks *best*\"): no version follows, best stays v1, and a Check on v1 is on best",
+   "note": "PARITY-11 positive, rewritten for v3.1: round 2's version v2 precedes HALT(OSCILLATION) (\"Log the round, any version ... Kept text restoring ... -> HALT(OSCILLATION)\"); after resume the human's approve{what:pick,version:v1} makes v1 best, so a Check on v1 is on best",
    "exit": 0,
    "state": {
     "best": "v1",
@@ -1869,14 +1890,14 @@
      "RECORD"
     ]
    ],
-   "note": "PARITY-11 negative: after HALT(OSCILLATION) the halted round is finished by the pick, so the resume names round 3; resuming at 2 and logging round 2 again is RESUME_MISMATCH and ROUND_SEQUENCE (RECORD)",
+   "note": "PARITY-11 negative, rewritten for v3.1: round 2's version precedes HALT(OSCILLATION), so the round is finished and the resume names round 3; resuming at 2 and logging round 2 again (from v1, the human's pick) is RESUME_MISMATCH and ROUND_SEQUENCE (RECORD)",
    "record_indexes": [
-    9,
-    10
+    11,
+    13
    ],
    "exit": 0,
    "state": {
-    "best": "v2"
+    "best": "v3"
    }
   },
   {
@@ -1892,7 +1913,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a01_screen_unknown.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
@@ -1908,7 +1929,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a02_screen_rejected_capitalised.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
@@ -1924,7 +1945,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a03_command_FAIL_uppercase.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
@@ -1940,7 +1961,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a04_command_exit_code.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
@@ -1956,7 +1977,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a05_apply_synonym_skips_gate.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
@@ -1968,11 +1989,11 @@
      "VIOLATION"
     ]
    ],
-   "note": "gates.verifier ERROR after its one retry: the variant is dropped (\"Retry an ERROR once, then drop the variant\"), so the keep is GATE_KEPT",
+   "note": "gates.verifier ERROR after its one retry: the variant is dropped (\"Retry an ERROR once (retries), then drop its variant\"), so the keep is GATE_KEPT",
    "source": "runs/2026-09-25-peer/checker-attack/round2/a06_verifier_error_kept.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
@@ -1988,7 +2009,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a07_verifier_absent_v3.jsonl",
    "ruling": "v3 fail closed",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
@@ -2012,14 +2033,14 @@
      "VIOLATION"
     ]
    ],
-   "note": "every judge ERROR logs retries 0: \"Retry an ERROR once, then drop the variant\", so each drop without its retry is RETRY_MISSING",
+   "note": "every judge ERROR logs retries 0: \"Retry an ERROR once (retries), then drop its variant\", so each drop without its retry is RETRY_MISSING",
    "source": "runs/2026-09-25-peer/checker-attack/round2/a08_error_never_retried.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5,
-    5,
     6,
-    6
+    6,
+    7,
+    7
    ]
   },
   {
@@ -2035,7 +2056,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a09_protected_rated_Best_case.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
@@ -2051,7 +2072,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a10_judge1_Best_high_kept.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
@@ -2067,7 +2088,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a11_slot_string_hides_objection.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
@@ -2083,7 +2104,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a12_must_not_change_objects.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
@@ -2103,13 +2124,13 @@
      "VIOLATION"
     ]
    ],
-   "note": "the probe seeded its defect against c1, a command criterion (\"a named judges criterion\"): normal mode is unproven, so the rung is strict (PROBE_MODE_WRONG) and the 2/2 keep is STRICT_KEEP",
+   "note": "the probe seeded its defect against c1, a command criterion (\"seeded with one judges-criterion defect\"): normal mode is unproven, so the rung is strict (PROBE_MODE_WRONG) and the 2/2 keep is STRICT_KEEP",
    "source": "runs/2026-09-25-peer/checker-attack/round2/a13_probe_seeded_command_criterion.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    4,
     5,
-    5
+    6,
+    6
    ]
   },
   {
@@ -2129,8 +2150,8 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a14_unified_diff_string.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5,
-    6
+    6,
+    7
    ]
   },
   {
@@ -2146,7 +2167,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a15_version_adds_check_file.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    6
+    7
    ]
   },
   {
@@ -2158,11 +2179,11 @@
      "VIOLATION"
     ]
    ],
-   "note": "no setup.check_files; DONE c1 lists files [tests/test_public.py] (\"Files a command runs belong to DONE\"): a criterion's files are check files. With no file list anywhere the rule is listed unauditable (check_files); command strings are not parsed, since a command may name TARGET files it only checks",
+   "note": "no setup.check_files; DONE c1 lists files [tests/test_public.py] (\"listing every file it runs: its check files\"): a criterion's files are check files. On v3 a command criterion without files is RECORD_MISSING (p16_command_files_missing); command strings are not parsed, since a command may name TARGET files it only checks",
    "source": "runs/2026-09-25-peer/checker-attack/round2/a16_check_file_declared_in_DONE.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
@@ -2178,7 +2199,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a17_prune_words_split_records.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    6
+    7
    ]
   },
   {
@@ -2194,7 +2215,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a18_noop_diff_launders_spare.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    9
+    11
    ]
   },
   {
@@ -2210,7 +2231,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a19_second_root_version.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
@@ -2234,9 +2255,9 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a20_votes_null.jsonl",
    "ruling": "v3 fail closed",
    "record_indexes": [
-    7,
-    8,
-    9
+    9,
+    10,
+    11
    ]
   },
   {
@@ -2260,9 +2281,9 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a21_votes_as_object.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    7,
-    8,
-    9
+    9,
+    10,
+    11
    ]
   },
   {
@@ -2290,10 +2311,10 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a22_done_kind_capitalised.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5,
-    7,
-    8,
-    9
+    6,
+    9,
+    10,
+    11
    ]
   },
   {
@@ -2350,12 +2371,12 @@
      "VIOLATION"
     ]
    ],
-   "note": "a required open gap re-logged required:false with no amend: un-requiring a gap needs a later amend, like waiving it (fn22), so it stays required",
+   "note": "a required open gap re-logged required:false with no amend stays required: since v3.1 a gap is required unless DONE makes its criterion optional, and a gap naming no criterion is required (fail closed)",
    "source": "runs/2026-09-25-peer/checker-attack/round2/a24_gap_required_flipped.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    10,
-    11
+    12,
+    13
    ]
   },
   {
@@ -2375,8 +2396,8 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a25_open_marker_unlogged.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    8,
-    9
+    10,
+    11
    ]
   },
   {
@@ -2396,8 +2417,8 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a26_heldout_attempt1_spares.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    8,
-    9
+    10,
+    11
    ]
   },
   {
@@ -2417,8 +2438,8 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a27_heldout_attempt2_Primary.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    12,
-    13
+    15,
+    16
    ]
   },
   {
@@ -2438,8 +2459,8 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a28_heldout_attempt2_no_set.jsonl",
    "ruling": "v3 fail closed",
    "record_indexes": [
-    12,
-    13
+    15,
+    16
    ]
   },
   {
@@ -2455,7 +2476,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a29_exit_Complete_case.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    8
+    10
    ]
   },
   {
@@ -2471,7 +2492,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a30_setup_t_capitalised.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    8
+    10
    ]
   },
   {
@@ -2491,9 +2512,10 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a31_setup_logged_late.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    4,
-    6
-   ]
+    5,
+    7
+   ],
+   "migrated": "8332bed570f1 schema (SKILL.md Memory: criteria[].files, gates.retries, citation.version, heldout.results{id:{value,votes}}; judges rate \"each criterion and must_not_change id\"): the round precedes setup, so its verdicts were rated c1-c3 by hand"
   },
   {
    "invariant": "P22",
@@ -2508,7 +2530,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a32_loop_V3_case.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
@@ -2528,8 +2550,8 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a33_round_t_case_hides_budget.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    7,
-    9
+    8,
+    10
    ]
   },
   {
@@ -2539,7 +2561,7 @@
    "note": "a line repeating a key ({\"t\":\"round\",...,\"t\":\"note\"}) is ambiguous: which value counts depends on the parser, so it is an integrity error (exit 2) and nothing after it is audited",
    "source": "runs/2026-09-25-peer/checker-attack/round2/a34_duplicate_t_key_hides_stalls.jsonl",
    "ruling": "fixed",
-   "integrity": 5,
+   "integrity": 6,
    "exit": 2
   },
   {
@@ -2563,9 +2585,9 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a35_v2_variant_records_hide_budget.jsonl",
    "ruling": "v3 fail closed",
    "record_indexes": [
-    5,
     6,
-    7
+    7,
+    8
    ]
   },
   {
@@ -2609,14 +2631,14 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a36_rung_pingpong_skips_check.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    13,
     14,
     15,
     16,
     17,
     18,
     19,
-    20
+    20,
+    21
    ]
   },
   {
@@ -2640,9 +2662,9 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a37_error_streak_after_resume.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    10,
     11,
-    12
+    12,
+    13
    ]
   },
   {
@@ -2658,7 +2680,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a38_exact_restore_advisory_only.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    7
+    8
    ]
   },
   {
@@ -2674,7 +2696,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a39_restore_section_case.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    7
+    8
    ]
   },
   {
@@ -2686,11 +2708,11 @@
      "VIOLATION"
     ]
    ],
-   "note": "the only amend makes c2 optional: E3 is \"a second, human-added objective (amend)\", so it needs an amend adding a DONE criterion before the E3 probe or round",
+   "note": "the only amend makes c2 optional: E3 is \"a second, human-added objective\", so it needs an amend adding a DONE criterion before the E3 probe or round",
    "source": "runs/2026-09-25-peer/checker-attack/round2/a40_e3_without_objective.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    12
+    14
    ]
   },
   {
@@ -2714,9 +2736,9 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a41_reorder_amend_rerolls_check.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    9,
-    10,
-    11
+    11,
+    12,
+    13
    ]
   },
   {
@@ -2752,13 +2774,13 @@
      "VIOLATION"
     ]
    ],
-   "note": "probe.misses lists a missed defect: \"a missed defect -> strict mode\", so PROBE_MODE_WRONG and the 2/2 keep is STRICT_KEEP",
+   "note": "probe.misses lists a missed defect: \"A non-tie, miss or ERROR ... -> strict mode\", so PROBE_MODE_WRONG and the 2/2 keep is STRICT_KEEP",
    "source": "runs/2026-09-25-peer/checker-attack/round2/a43_probe_misses_ignored.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    4,
     5,
-    5
+    6,
+    6
    ]
   },
   {
@@ -2782,9 +2804,9 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/a44_no_probe_at_final_rung.jsonl",
    "ruling": "v3 fail closed",
    "record_indexes": [
-    9,
-    10,
-    11
+    11,
+    12,
+    13
    ]
   },
   {
@@ -2798,14 +2820,19 @@
     [
      "RECORD_MISSING",
      "VIOLATION"
+    ],
+    [
+     "KEEP_VETOED",
+     "VIOLATION"
     ]
    ],
-   "note": "v3 completed verdicts with no criteria key: the protected-item veto cannot be evaluated, so RECORD_MISSING and the keep is not credited (an empty criteria map is accepted as no per-criterion preference)",
+   "note": "v3 completed verdicts with no criteria key: RECORD_MISSING, and neither rates protected c1/c2 (\"A veto: a protected item ... rated worse, UNKNOWN or not at all\"), so the keep is KEEP_VETOED",
    "source": "runs/2026-09-25-peer/checker-attack/round2/a45_verdict_criteria_absent.jsonl",
    "ruling": "v3 fail closed",
    "record_indexes": [
-    5,
-    5
+    6,
+    6,
+    6
    ]
   },
   {
@@ -2817,28 +2844,37 @@
      "VIOLATION"
     ]
    ],
-   "note": "the same variant (same id and diff) logged twice in one round, rejected then kept: a re-ask (\"Never re-ask a returned verdict\"); keeping the repeat is VARIANT_REPEATED",
+   "note": "the same variant (same id and diff) logged twice in one round, rejected then kept: a re-ask (\"Never re-ask a verdict\"); keeping the repeat is VARIANT_REPEATED",
    "source": "runs/2026-09-25-peer/checker-attack/round2/a46_variant_split_reask.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5
+    6
    ]
   },
   {
    "invariant": "P13",
    "fixture": "b01_heldout_pass_bool.jsonl",
-   "codes": [],
-   "note": "heldout pass: true is a whole held-out pass (pass/fail by majority): accepted like a {criterion: bool} map",
+   "codes": [
+    [
+     "RECORD_MISSING",
+     "VIOLATION"
+    ],
+    [
+     "FALSE_COMPLETE",
+     "VIOLATION"
+    ]
+   ],
+   "note": "heldout pass: true (kept unmigrated): v3.1 logs heldout{...,results{id:{value,votes}}} and \"the human reports only the marks (heldout.results; Check rule)\", so a bare boolean pass is RECORD_MISSING and not credited: the COMPLETE rests on no held-out pass (FALSE_COMPLETE)",
    "source": "runs/2026-09-25-peer/checker-attack/round2/b01_heldout_pass_bool.jsonl",
-   "ruling": "fixed",
-   "record_indexes": [],
-   "exit": 0,
-   "unauditable_includes": [
-    "check_files"
+   "ruling": "v3 fail closed (supersedes the fixed ruling)",
+   "record_indexes": [
+    10,
+    11
    ],
    "state": {
-    "status": "COMPLETE"
-   }
+    "status": "PARTIAL"
+   },
+   "migrated": "8332bed570f1 schema (SKILL.md Memory: criteria[].files, gates.retries, citation.version, heldout.results{id:{value,votes}}; judges rate \"each criterion and must_not_change id\"): c1 gained files, so check_files is no longer unauditable"
   },
   {
    "invariant": "P14",
@@ -2890,9 +2926,9 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/b04_orders_raw_ab_letters.jsonl",
    "ruling": "not a checker defect",
    "record_indexes": [
-    5,
-    5,
-    5
+    6,
+    6,
+    6
    ]
   },
   {
@@ -2963,7 +2999,7 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/c04_deep_value_echoed_in_finding.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5
+    6
    ],
    "exit": 0
   },
@@ -2980,9 +3016,456 @@
    "source": "runs/2026-09-25-peer/checker-attack/round2/c05_deep_round_kept.jsonl",
    "ruling": "fixed",
    "record_indexes": [
-    5
+    6
    ],
    "exit": 0
+  },
+  {
+   "invariant": "P11",
+   "fixture": "p11_minutes_unreported.jsonl",
+   "codes": [],
+   "note": "positive: budget {rounds: 3, minutes: null} and round t0/t1 null (\"minutes and tokens only as the host reports them\"; \"unreported values null\"), and a setup Check with models null (no judge ran): no RECORD_MISSING (p22_v3_record_missing keeps minutes 600, so its missing t0/t1 still is one)",
+   "exit": 0,
+   "state": {
+    "status": "COMPLETE",
+    "minutes": null
+   }
+  },
+  {
+   "invariant": "P11",
+   "fixture": "p11_amend_budget.jsonl",
+   "codes": [
+    [
+     "BUDGET_OVERRUN",
+     "VIOLATION"
+    ]
+   ],
+   "note": "setup budget 1 round; amend{budget:{rounds:3}} (\"only amend{budget} changes it\") after round 1; rounds 2-3 are within the amended budget and round 4 overruns it once",
+   "record_indexes": [
+    13
+   ]
+  },
+  {
+   "invariant": "P02",
+   "fixture": "p02_restructure_approved_once.jsonl",
+   "codes": [
+    [
+     "MULTI_SECTION",
+     "VIOLATION"
+    ]
+   ],
+   "note": "approve{what:restructure,sections:[Intro,Method]} covers round 1's two-section keep; round 2 keeps another Intro/method change: \"one human-approved restructure\" is spent, so MULTI_SECTION",
+   "record_indexes": [
+    9
+   ]
+  },
+  {
+   "invariant": "P21",
+   "fixture": "p21_pick_missing.jsonl",
+   "codes": [
+    [
+     "RECORD_MISSING",
+     "VIOLATION"
+    ],
+    [
+     "PICK_WITHOUT_HALT",
+     "VIOLATION"
+    ]
+   ],
+   "note": "after HALT(OSCILLATION) round 3 runs with no approve{what:pick} (\"after HALT(OSCILLATION), pick *best* among logged versions (approve)\"): RECORD_MISSING; a later approve{what:pick} with no OSCILLATION halt is PICK_WITHOUT_HALT (the pick is still applied)",
+   "record_indexes": [
+    12,
+    14
+   ]
+  },
+  {
+   "invariant": "P21",
+   "fixture": "p21_oscillation_halt_before_version.jsonl",
+   "codes": [
+    [
+     "VERSION_MISSING",
+     "RECORD"
+    ],
+    [
+     "VERSION_WITHOUT_KEEP",
+     "VIOLATION"
+    ]
+   ],
+   "note": "the pre-v3.1 order: exit OSCILLATION before round 2's version (VERSION_MISSING: pre() no longer exempts it, \"HALT(OSCILLATION) after its version\"), so the version logged after the resume follows no keep",
+   "record_indexes": [
+    9,
+    11
+   ],
+   "state": {
+    "best": "v3"
+   }
+  },
+  {
+   "invariant": "P03",
+   "fixture": "p03_protected_unknown_kept.jsonl",
+   "codes": [
+    [
+     "KEEP_VETOED",
+     "VIOLATION"
+    ]
+   ],
+   "note": "slot 2 prefers the variant but rates protected c2 (passed at setup) UNKNOWN; kept: \"Keep a variant without a veto\" and \"A veto: a protected item ... rated worse, UNKNOWN or not at all\", so KEEP_VETOED (fn10 is the worse-rated negative)",
+   "record_indexes": [
+    6
+   ]
+  },
+  {
+   "invariant": "P03",
+   "fixture": "p03_judge1_unknown_protected_early.jsonl",
+   "codes": [],
+   "note": "positive: judge 1 prefers the variant but rates protected c2 UNKNOWN; \"A veto: a protected item ... rated worse, UNKNOWN or not at all. Judge 1 ... its veto ... rejects the variant\": rejected with no judges 2-3 and no JUDGE_MISSING",
+   "exit": 0
+  },
+  {
+   "invariant": "P17",
+   "fixture": "p17_gap_closed_with_evidence.jsonl",
+   "codes": [],
+   "note": "positive: a required gap on c2 in v0 closed with evidence equal to a verified citation's locator (\"close an [OPEN] with Verifier-checked evidence (substrate.evidence)\"), then round 1 writes it in (its kept diff removes the [OPEN]; DESIGN: \"until the human waives (amend) or closes it (substrate.evidence) and a round writes it in\"), then COMPLETE",
+   "exit": 0,
+   "state": {
+    "status": "COMPLETE"
+   },
+   "migrated": "8332bed570f1 schema (SKILL.md Memory: criteria[].files, gates.retries, citation.version, heldout.results{id:{value,votes}}; judges rate \"each criterion and must_not_change id\"): reordered so the gap is logged and closed before round 1, whose diff replaces the [OPEN]"
+  },
+  {
+   "invariant": "P17",
+   "fixture": "p17_gap_closed_unverified_locator.jsonl",
+   "codes": [
+    [
+     "CLOSED_UNVERIFIED",
+     "VIOLATION"
+    ],
+    [
+     "OPEN_AT_HELDOUT",
+     "VIOLATION"
+    ],
+    [
+     "OPEN_AT_COMPLETE",
+     "VIOLATION"
+    ]
+   ],
+   "note": "the closure's evidence names a not-found citation's locator: not Verifier-checked, so the gap stays open",
+   "record_indexes": [
+    11,
+    13,
+    14
+   ]
+  },
+  {
+   "invariant": "P22",
+   "fixture": "p22_check_models_missing.jsonl",
+   "codes": [
+    [
+     "RECORD_MISSING",
+     "VIOLATION"
+    ]
+   ],
+   "note": "v3 Check marking judges criterion c3 with no models (check{...,models,...}; Output: \"judges (one source per named model family)\"): RECORD_MISSING; the votes are still counted",
+   "record_indexes": [
+    9
+   ]
+  },
+  {
+   "invariant": "P12",
+   "fixture": "p12_no_judges_criterion.jsonl",
+   "codes": [],
+   "note": "positive: DONE has only command and source criteria and no probe is logged (\"or no judges criterion (no probe) -> strict mode\"): the rung is strict with no PROBE_MISSING, and the 3/3 keep stands (fn05 keeps a judges criterion, so its empty probe stays RECORD_MISSING)",
+   "exit": 0,
+   "state": {
+    "status": "COMPLETE",
+    "probe_modes": {
+     "E1": "strict"
+    }
+   }
+  },
+  {
+   "invariant": "P14",
+   "fixture": "p14_after_overfit.jsonl",
+   "codes": [
+    [
+     "AFTER_OVERFIT",
+     "VIOLATION"
+    ],
+    [
+     "AFTER_OVERFIT",
+     "VIOLATION"
+    ],
+    [
+     "AFTER_OVERFIT",
+     "VIOLATION"
+    ]
+   ],
+   "note": "held-out c3 fails on v1, then is unchecked on the spares on v2 (a second non-pass): HALT(OVERFIT) is logged; \"OVERFIT ends the archive\", so the resume, the round and the exit after it are each AFTER_OVERFIT",
+   "record_indexes": [
+    17,
+    18,
+    19
+   ],
+   "state": {
+    "status": "PARTIAL",
+    "next_due": null
+   }
+  },
+  {
+   "invariant": "P13",
+   "fixture": "p13_heldout_unreported.jsonl",
+   "codes": [
+    [
+     "FALSE_COMPLETE",
+     "VIOLATION"
+    ]
+   ],
+   "note": "held-out results leave required c3 unreported: every required ID not pass is non-pass in best's Check, so COMPLETE rests on no held-out pass",
+   "record_indexes": [
+    11
+   ]
+  },
+  {
+   "invariant": "P03",
+   "fixture": "p03_t3c_guardrail_unrated.jsonl",
+   "codes": [
+    [
+     "KEEP_VETOED",
+     "VIOLATION"
+    ]
+   ],
+   "note": "t3c: DONE adds guardrail c4; round 1's judge 2 prefers the variant but leaves c4 unrated (\"A veto: a protected item (guardrails, ...) rated worse, UNKNOWN or not at all\"), kept: KEEP_VETOED; round 2's judge 1 leaves c4 unrated, rejected with no judges 2-3 (\"its veto ... rejects the variant\"): no finding",
+   "record_indexes": [
+    6
+   ]
+  },
+  {
+   "invariant": "P05",
+   "fixture": "p05_t4b_prune_longer_no_v0_version.jsonl",
+   "codes": [
+    [
+     "RECORD_MISSING",
+     "VIOLATION"
+    ],
+    [
+     "KEEP_WITHOUT_SUPPORT",
+     "VIOLATION"
+    ]
+   ],
+   "note": "t4b: no version v0 (\"Else log setup and version v0 = TARGET\"): RECORD_MISSING at round 1; its 120-word variant kept on three ties is a prune whose \"if shorter\" cannot be computed, so it is not credited: KEEP_WITHOUT_SUPPORT",
+   "record_indexes": [
+    5,
+    5
+   ]
+  },
+  {
+   "invariant": "P16",
+   "fixture": "p16_command_files_missing.jsonl",
+   "codes": [
+    [
+     "RECORD_MISSING",
+     "VIOLATION"
+    ]
+   ],
+   "note": "command criterion c1 without files (\"criteria checked by command (it decides, listing every file it runs: its check files)\"; setup.done.criteria[{...,command?,files?,...}]): RECORD_MISSING",
+   "record_indexes": [
+    1
+   ]
+  },
+  {
+   "invariant": "P16",
+   "fixture": "p16_kept_rewrites_listed_test_file.jsonl",
+   "codes": [
+    [
+     "CHECK_FILE_EDIT",
+     "VIOLATION"
+    ]
+   ],
+   "note": "DONE c1 lists files [tests/test_score.py]; the kept variant, a unified diff, rewrites that file (\"Never add, edit or delete check files\"): CHECK_FILE_EDIT",
+   "record_indexes": [
+    6
+   ]
+  },
+  {
+   "invariant": "P06",
+   "fixture": "p06_gate_retries_missing.jsonl",
+   "codes": [
+    [
+     "RECORD_MISSING",
+     "VIOLATION"
+    ],
+    [
+     "RETRY_MISSING",
+     "VIOLATION"
+    ]
+   ],
+   "note": "round 1: gates without retries (gates{apply,commands,verifier,screen,retries}): RECORD_MISSING, the keep not credited; round 2: an apply ERROR with retries 0 (\"Retry an ERROR once (retries), then drop its variant\"): RETRY_MISSING",
+   "record_indexes": [
+    6,
+    8
+   ]
+  },
+  {
+   "invariant": "P04",
+   "fixture": "p04_source_citation_version.jsonl",
+   "codes": [
+    [
+     "CHECK_MISCOUNT",
+     "VIOLATION"
+    ],
+    [
+     "RECORD_MISSING",
+     "VIOLATION"
+    ]
+   ],
+   "note": "the Check on v1 logs source c2 pass with only v0's citation (\"source: pass only if all its claims verify\"; citation{...,criterion,version}): CHECK_MISCOUNT, c2 fail; the Check on v2 follows a c2 citation with no version: RECORD_MISSING, c2 not credited",
+   "record_indexes": [
+    8,
+    12
+   ]
+  },
+  {
+   "invariant": "P13",
+   "fixture": "p13_heldout_votes_miscount.jsonl",
+   "codes": [
+    [
+     "RECORD_MISSING",
+     "VIOLATION"
+    ],
+    [
+     "CHECK_MISCOUNT",
+     "VIOLATION"
+    ],
+    [
+     "FALSE_COMPLETE",
+     "VIOLATION"
+    ]
+   ],
+   "note": "held-out c1 is a bare \"pass\" (heldout{...,results{id:{value,votes}}}): RECORD_MISSING, not credited; c3 logs pass on votes pass,fail,fail (\"the human reports only the marks (heldout.results; Check rule)\"): CHECK_MISCOUNT; the COMPLETE rests on no held-out pass",
+   "record_indexes": [
+    10,
+    10,
+    11
+   ]
+  },
+  {
+   "invariant": "P17",
+   "fixture": "p17_t2_waive_then_stop.jsonl",
+   "codes": [],
+   "note": "t2 positive: exit PARTIAL OPEN at the final rung, resume, amend{gap} and the gap waived (\"after a halt, the human decides (... OPEN with all gaps waived -> Stop ...)\"), then held-out passes: COMPLETE",
+   "exit": 0,
+   "state": {
+    "status": "COMPLETE"
+   }
+  },
+  {
+   "invariant": "P17",
+   "fixture": "p17_t2_waive_next_due.jsonl",
+   "codes": [],
+   "note": "t2 up to the waiver: Stop is due, and best v1 has an all-pass Check at the final rung, so next_due is heldout (never round)",
+   "exit": 0,
+   "state": {
+    "status": "ACTIVE",
+    "next_due": "heldout"
+   }
+  },
+  {
+   "invariant": "P17",
+   "fixture": "p17_t2_waive_then_round.jsonl",
+   "codes": [
+    [
+     "STOP_MISSED",
+     "VIOLATION"
+    ]
+   ],
+   "note": "t2 with a round where the held-out step belongs (\"OPEN with all gaps waived -> Stop\"): STOP_MISSED",
+   "record_indexes": [
+    15
+   ]
+  },
+  {
+   "invariant": "P17",
+   "fixture": "p17_gap_closed_not_written.jsonl",
+   "codes": [
+    [
+     "OPEN_AT_HELDOUT",
+     "AMBIGUOUS"
+    ],
+    [
+     "OPEN_AT_COMPLETE",
+     "AMBIGUOUS"
+    ]
+   ],
+   "note": "a required gap closed with verified evidence but never written in (DESIGN: \"until the human waives (amend) or closes it (substrate.evidence) and a round writes it in\"): still required at held-out and COMPLETE; advisory, since [OPEN] markers are counted in aggregate",
+   "record_indexes": [
+    13,
+    14
+   ],
+   "exit": 0,
+   "state": {
+    "status": "PARTIAL"
+   }
+  },
+  {
+   "invariant": "P17",
+   "fixture": "p17_gap_closed_after_round.jsonl",
+   "codes": [],
+   "note": "positive: p17_gap_closed_with_evidence with the closure logged after the round that writes it in (\"Log the round, any version and substrate\"): the round's removed [OPEN] resolves it, so COMPLETE",
+   "exit": 0,
+   "state": {
+    "status": "COMPLETE"
+   }
+  },
+  {
+   "invariant": "P14",
+   "fixture": "p14_heldout_spent_next_due.jsonl",
+   "codes": [],
+   "note": "held-out attempt 1 fails c3 on v1; an amend rewords c3 and a new Check on v1 passes (\"Spares run only on a changed best passing Check; until then, rounds (or HALT(BUDGET))\"): next_due is round, not heldout",
+   "exit": 0,
+   "state": {
+    "status": "ACTIVE",
+    "next_due": "round"
+   }
+  },
+  {
+   "invariant": "P14",
+   "fixture": "p14_heldout_spent_round.jsonl",
+   "codes": [],
+   "note": "the same, then a round (no BOUNDARY_MISSED), v2 passes its Check and the spares pass on v2: COMPLETE",
+   "exit": 0,
+   "state": {
+    "status": "COMPLETE",
+    "best": "v2"
+   }
+  },
+  {
+   "invariant": "P12",
+   "fixture": "p12_t1b_stop_below_final_noheldout.jsonl",
+   "codes": [],
+   "note": "t1b positive: an all-pass Check at E1 below the final rung E2, then the human stops (\"stops (exit PARTIAL, no held-out)\"): no finding",
+   "exit": 0,
+   "state": {
+    "status": "PARTIAL"
+   }
+  },
+  {
+   "invariant": "P13",
+   "fixture": "p13_t1_stop_below_final.jsonl",
+   "codes": [
+    [
+     "BOUNDARY_MISSED",
+     "VIOLATION"
+    ],
+    [
+     "HELDOUT_UNCHECKED",
+     "VIOLATION"
+    ]
+   ],
+   "note": "t1 negative: held-out run at E1 below the final rung E2 (\"Below the final rung (default E2), pause: the human escalates ... or stops (exit PARTIAL, no held-out). At it, Stop\"): BOUNDARY_MISSED and HELDOUT_UNCHECKED",
+   "record_indexes": [
+    10,
+    10
+   ]
   }
  ]
 }

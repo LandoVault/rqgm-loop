@@ -5,20 +5,28 @@
   selftest [DIR]        (DIR holds expected.json and fixtures/; default <repo>/tests/checker)
   hash FILE... [--lf]   (the only source of setup.check_hashes)
 
-It recomputes every keep, drop, Check value, halt and exit from the records and reports findings
+It recomputes the keeps, drops, Check values, halts and exits its records allow and reports findings
 {code, class, record_index (file line), expected, actual}; it never decides. Classes: VIOLATION (a
 decision differs), RECORD (inconsistent, no decision changed), AMBIGUOUS (advisory). Record types and
 enumerated values match case-insensitively; a decision value outside its vocabulary is never a pass,
 support or keep. Fail closed on a v3 archive (its first setup record, wherever logged, has loop
 "v3..."): a field SKILL.md's Memory schema lists (no "?") that a decision needs, when absent or empty
-(a budget: not a finite number), is RECORD_MISSING (a VIOLATION) and the decision is not credited (a
-rung with no probe is strict). Otherwise (v2 or partial archives, a malformed label the checker
-recounts itself such as retries or attempt, a link the prose never logs) a rule whose inputs are
-missing is listed as unauditable. Rounds are counted from round records, never logged numbers; loop
-time excludes waits for the human (rung, amend, held-out, exit, resume); naive ISO times are UTC.
-Python >= 3.9 stdlib only; no network, model calls or clock; never writes a file. Exit: 0 no
-VIOLATION, 1 violations, 2 integrity (an interior line unparsable or repeating a key, or no line whose
-"t" names a record) or usage error.
+(budget.rounds: not a finite number; budget.minutes: neither that nor null, unreported; round t0/t1
+only while minutes is a number), is RECORD_MISSING (a VIOLATION) and the decision is not credited (a
+rung with no probe is strict; with no judges criterion in DONE no probe is due and every rung is
+strict; a prune whose length cannot be compared, as with no version v0, is not kept). check.models
+(absent, or empty beside a judges result) and a command criterion's files are RECORD_MISSING too.
+Otherwise (v2 or partial archives, a malformed label the checker recounts itself such as retries or
+attempt, a link the prose never logs) a rule whose inputs are missing is listed as unauditable.
+Unauditable from any record: held-out secrecy, role separation, relay authenticity, the
+cosmetic-differences judgment (a restore at difflib ratio >= 0.9 is advisory; an exact undo is a
+VIOLATION), section boundaries, judge 1's logged confidence, a check editing files, and a Screen or
+Verifier verdict relabelled ERROR. A closed gap stays required until a kept diff removes an [OPEN]
+(advisory: markers are counted in aggregate). Rounds are counted from round records, never logged
+numbers; loop time excludes waits for the human (rung, amend, approve, held-out, exit, resume);
+naive ISO times are UTC. Python >= 3.9 stdlib only; no network, model calls or clock; never writes
+a file. Exit: 0 no VIOLATION, 1 violations, 2 integrity (an interior line unparsable or repeating a
+key, or no line whose "t" names a record) or usage error.
 """
 import copy, difflib, hashlib, json, os, sys  # noqa: E401
 from datetime import datetime, timezone
@@ -26,20 +34,21 @@ from datetime import datetime, timezone
 RECORD = {'ORDER_MISMAP', 'KEPT_ID_MISMATCH', 'VERSION_MISSING', 'ROUND_SEQUENCE', 'MISLABEL', 'JUDGED_AFTER_GATE',
           'RESUME_MISMATCH', 'AFTER_EXIT', 'EXTRA_VERDICT', 'PROBE_REROLL', 'RUNG_REPEATED', 'SETUP_CHECK_LATE',
           'SETUP_REPEATED', 'VERSION_ID_REUSED', 'FINAL_RUNG_CONFLICT', 'SETUP_LATE'}
-AMBIGUOUS = {'OSCILLATION_MISSED', 'OSCILLATION_UNSUPPORTED', 'MULTI_SECTION', 'REJECTED_IDEA'}
+AMBIGUOUS = {'OSCILLATION_MISSED', 'OSCILLATION_UNSUPPORTED', 'REJECTED_IDEA'}
 DONE_VALS = ('variant', 'best', 'tie')          # "completed" judge values
 VALUES = DONE_VALS + ('UNKNOWN', 'ERROR')
 RUNGS = {'E1': 1, 'E2': 2, 'E3': 3}             # a rung record is an escalation only to a later rung
 CANON = dict({w.casefold(): w for w in VALUES + tuple(RUNGS) + tuple(
     'pass fail unchecked ok low med high primary spare COMPLETE PARTIAL command source judges open closed waived '
-    'kept rejected dropped strict normal setup STALL OVERFIT BUDGET OSCILLATION HUMAN'.split())}, spares='spare')
+    'kept rejected dropped strict normal setup STALL OVERFIT BUDGET OSCILLATION HUMAN restructure pick verified'
+    .split())}, spares='spare')
 BAD = (TypeError, AttributeError, ValueError, KeyError, OverflowError, RecursionError)  # malformed: unauditable
 EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)
 hid = lambda x: x if isinstance(x, (str, int, float, type(None))) else json.dumps(x)  # noqa: E731 (ids as keys)
 num = lambda x: type(x) in (int, float) and abs(x) < 1e300  # noqa: E731 (finite: never bool, NaN or a huge int)
 canon = lambda x: CANON.get(x.strip().casefold(), x) if isinstance(x, str) else x  # noqa: E731
 nf = lambda f: os.path.normpath(str(f).replace('\\', '/')).casefold()  # noqa: E731 (paths, case-insensitive FS)
-worse = lambda x: x is not None and x not in ('variant', 'tie', 'UNKNOWN')  # noqa: E731 (best, or unreadable)
+worse = lambda x: x is not None and x not in ('variant', 'tie')  # noqa: E731 (best, UNKNOWN or unreadable: a veto)
 
 class Stop(Exception):  """--first: raised at the first VIOLATION, so nothing later is evaluated."""
 
@@ -51,8 +60,7 @@ def minutes(x):  # a number, or an ISO time (naive = UTC, never the local clock)
     try:
         d = datetime.fromisoformat(x.replace('Z', '+00:00'))
         return ((d if d.tzinfo else d.replace(tzinfo=timezone.utc)) - EPOCH).total_seconds() / 60.0
-    except (AttributeError, TypeError, ValueError, OverflowError):
-        return None
+    except (AttributeError, TypeError, ValueError, OverflowError): return None
 
 def clip(x, d=48):  # echoed values are cut to a finite depth, so the report always serializes
     if isinstance(x, dict): return {str(k): clip(v, d - 1) for k, v in x.items()} if d else '{...}'
@@ -88,25 +96,21 @@ def dkey(d):  # DONE up to criteria order: the same criteria listed in another o
     return json.dumps(dict(d, criteria=crits(d)), sort_keys=True) if isinstance(d, dict) else d
 
 def sha(path, lf=False):
-    with open(path, 'rb') as f:
-        b = f.read()
+    with open(path, 'rb') as f: b = f.read()
     return hashlib.sha256(b.replace(b'\r\n', b'\n') if lf else b).hexdigest()
 
 def _obj(pairs):  # a repeated key makes a line ambiguous: which value counts depends on the parser
     if len({k for k, _ in pairs}) < len(pairs): raise ValueError('duplicate key')
     return dict(pairs)
 def parse(s):
-    try:
-        r = json.loads(s, object_pairs_hook=_obj)
-    except (ValueError, RecursionError):             # RecursionError: deeply nested garbage
-        return None
+    try: r = json.loads(s, object_pairs_hook=_obj)
+    except (ValueError, RecursionError): return None   # RecursionError: deeply nested garbage
     return r if isinstance(r, dict) else None
 
 def load(path, text=None):
     """-> (records [(line, dict)], torn_line, set_aside_lines, integrity_line)."""
     if text is None:
-        with open(path, 'rb') as f:
-            text = f.read().decode('utf-8', 'replace')
+        with open(path, 'rb') as f: text = f.read().decode('utf-8', 'replace')
     lines = (text[1:] if text[:1] == '\ufeff' else text).split('\n')   # a UTF-8 BOM is not content
     full = [i for i, s in enumerate(lines, 1) if s.strip()]
     recs, aside = [], []
@@ -115,8 +119,7 @@ def load(path, text=None):
         if k == len(full) - 1 and (rec is None or i == len(lines)):
             return recs, i, aside, None          # torn tail (unparsable or newline-less): excluded
         if rec is None:
-            nxt = parse(lines[full[k + 1] - 1])
-            if nxt and rtype(nxt) == 'resume':
+            if (nxt := parse(lines[full[k + 1] - 1])) and rtype(nxt) == 'resume':
                 aside.append(i)                  # a torn line that a resume set aside
                 continue
             return recs, None, aside, i          # interior corruption: nothing after it is audited
@@ -128,14 +131,16 @@ class Audit:
         self.first, self.idx, self.findings, self.unaud, self.warnings = first, 0, [], [], []
         self.setup, self.setup_idx, self.crit, self.done, self.final = None, 0, {}, None, 'E2'
         self.best, self.best_words, self.rung, self.probes = 'v0', None, 'E1', {}   # probes: rung -> mode
-        # Round-derived state; restored from a snapshot when an unfinished round is rerun on resume.
-        self.rs = dict(s=0, e=0, n=0, cnt=0, maxdur=None, tok=0.0, tok_all=True, maxtok=None, latest={},
-                       hist={}, ratio=0.0, any_round=False, marks=0)
+        # Round-derived state; restored from a snapshot when an unfinished round is rerun on resume. appr: unused
+        self.rs = dict(s=0, e=0, n=0, cnt=0, maxdur=None, tok=0.0, tok_all=True, maxtok=None, latest={},  # restructure
+                       hist={}, ratio=0.0, any_round=False, marks=0, appr=[], rm=0)   # approvals; rm: [OPEN]s removed
         self.snap = self.due = self.pend = self.osc = self.start = self.now = self.last_eval = self.e3 = None
         self.epoch, self.amends, self.standing, self.hofail, self.heldout = 0, [], {}, {}, []
-        self.subs, self.opened, self.cites, self.exited, self.exit_status = {}, {}, [], False, None
-        self.vers, self.ideas, self.done_known, self.pick, self.paused = {}, {}, True, False, False
-        self.v3, self.obj, self.nrec = False, False, 0   # v3: fail closed; obj: an amend added a criterion
+        self.subs, self.opened, self.cites, self.exited, self.exit_status, self.why = {}, {}, [], False, None, None
+        self.vers, self.ideas, self.done_known, self.pick, self.paused, self.waive = {}, {}, True, False, False, None
+        self.v3, self.obj, self.nrec, self.ended, self.budg = False, False, 0, False, None   # v3: fail closed; obj:
+        # an amend added a criterion; ended: an exit OVERFIT ended the archive; budg: the live BUDGET (bud());
+        # waive: after exit OPEN and a resume, the gaps waived since ("OPEN with all gaps waived -> Stop")
 
     def add(self, code, exp=None, act=None, cls=None, idx=None):
         cls = cls or ('RECORD' if code in RECORD else 'AMBIGUOUS' if code in AMBIGUOUS else 'VIOLATION')
@@ -162,10 +167,19 @@ class Audit:
         st, req = self.result(ver, rung), self.required()
         if st is not None and req is None: return None
         return st is not None and req is not None and all(st.get(c) == 'pass' for c in req)
-    def open_required(self):  # required open gaps, plus an [OPEN] kept into best that no substrate record logs
-        return [g for g, (req, st) in self.subs.items() if req and st == 'open'] + \
-            ['[OPEN] in best, no substrate record'] * (self.rs['marks'] > len(self.subs))
+    def open_required(self, hard=False):  # "A required [OPEN] (in best, unwaived, criterion not optional)"
+        req = lambda c: self.crit.get(c, {}).get('required', True) is not False  # noqa: E731  (none named: required)
+        return [g for g, (c, st) in self.subs.items() if req(c) and st in ('open',) + ('closed',) * (not hard)] + \
+            ['[OPEN] in best, no substrate record'] * (self.rs['marks'] > len(self.subs))   # an [OPEN] kept, unlogged
+    def ocls(self):  # only a closed gap not yet written in (no kept diff removed an [OPEN] since): advisory
+        return None if self.open_required(True) else 'AMBIGUOUS'
+    def spent(self):  # held-out attempt 1 failed on best: "Spares run only on a changed best passing Check"
+        return len(self.heldout) == 1 and not self.heldout[0]['passed'] and self.heldout[0]['version'] == self.best
 
+    # "A veto: a protected item ... rated worse, UNKNOWN or not at all"; not at all: a completed v3 verdict leaves it
+    # unrated (judges rate "each criterion and must_not_change id")
+    def veto(self, ov, cr, prot):
+        return any(worse(x := cr.get(c)) or x is None and self.v3 and ov in DONE_VALS for c in prot)
     def protected(self):
         mnc = [x.get('id') if isinstance(x, dict) else x for x in (self.done or {}).get('must_not_change') or []]
         ids = {c for c, v in self.crit.items() if v.get('guardrail') or v.get('must_not_change')}
@@ -181,8 +195,12 @@ class Audit:
             why.append('no held-out pass')           # a held-out result stands only until DONE changes
         return not why, not self.open_required(), '; '.join(why)
 
-    def bud(self):  # a budget logged as prose text is unauditable
-        return b if isinstance(b := (self.setup or {}).get('budget'), dict) else {}
+    def bud(self):  # the live budget ("only amend{budget} changes it"); one logged as prose text is unauditable
+        return b if isinstance(b := self.budg, dict) else {}
+    def bcheck(self, b, where):  # rounds: a finite number; minutes: one, or null when the host reports none
+        if not (type(b) is dict and num(b.get('rounds')) and (num(b.get('minutes')) or b.get('minutes', 0) is None)):
+            self.miss('budget', where + '.budget{rounds,minutes} (finite numbers; minutes null if unreported)', b)
+        return b
     def budget_out(self):
         b, rs = self.bud(), self.rs
         out = num(b.get('rounds')) and rs['cnt'] >= b['rounds']
@@ -195,18 +213,24 @@ class Audit:
         why = canon(rec.get('reason')) if kind == 'exit' else None
         if self.osc and why != 'OSCILLATION':        # an exact undo needs no judgment: a VIOLATION
             self.add('OSCILLATION_MISSED', 'exit PARTIAL OSCILLATION', kind, self.osc[2] and 'VIOLATION', self.osc[0])
-        self.osc = None
+        self.osc = None                              # "HALT(OSCILLATION) after its version": no exemption for it
+        if self.pick and kind != 'exit':             # "after HALT(OSCILLATION), pick best among logged versions"
+            self.pick = self.miss('pick', 'approve{what:pick,version} after HALT(OSCILLATION)', kind)
+        if self.waive and not self.open_required() and kind not in ('heldout', 'exit', 'check'):
+            self.add('STOP_MISSED', 'Stop (heldout or exit): "OPEN with all gaps waived -> Stop"', kind)
+        self.waive = self.waive if kind == 'check' else None   # else "the next round"
         k = self.due[0] if self.due else None
-        if k is None or (k, why) == ('version', 'OSCILLATION') or (kind == 'check' and k not in ('check', 'version')):
+        if k is None or (kind == 'check' and k not in ('check', 'version')):
             return                                  # nothing due; a Check never settles a boundary or halt
         if k == 'version':
             self.add('VERSION_MISSING', 'version for round %s' % self.pend['n'], kind)
             self.best, self.best_words = hid(self.pend['var'].get('id')), self.pend['var'].get('words')
         elif k == 'check':
             if kind == 'round': self.add('MISSED_CHECK', 'check (stall count %d)' % self.rs['s'], kind)
-        elif k == 'boundary':
-            want = 'heldout' if self.rung == self.final else 'rung'
-            if kind not in ('exit', want): self.add('BOUNDARY_MISSED', want + ' or exit', kind)
+        elif k == 'boundary':                        # after a failed attempt 1 on best: rounds (a heldout: REROLL)
+            want = 'rung' if self.rung != self.final else 'round' if self.spent() else 'heldout'
+            if kind not in ('exit', want, 'heldout' if want == 'round' else want):
+                self.add('BOUNDARY_MISSED', want + ' or exit', kind)
         elif not (kind == 'exit' and (why == k[5:] or (why == 'BUDGET' and self.budget_out()))):
             self.add(k[5:] + '_HALT_MISSED', 'exit PARTIAL ' + k[5:], '%s %s' % (kind, why or ''))
         self.due = self.pend = None
@@ -222,9 +246,8 @@ class Audit:
     # ---- records
     def feed(self, rec, idx):
         self.idx, t, self.nrec = idx, rtype(rec), self.nrec + 1
-        if self.exited and t != 'resume':
-            self.add('AFTER_EXIT', 'resume', t)
-            self.exited = False
+        if self.ended: self.add('AFTER_OVERFIT', 'no record: "OVERFIT ends the archive"', t)
+        elif self.exited and t != 'resume': self.exited = self.add('AFTER_EXIT', 'resume', t) or False
         fn = getattr(self, 'r_' + t, None) if t else None
         try:
             return fn(rec) if fn else self.warnings.append('line %d: unknown record type %r' % (self.idx, t))
@@ -237,6 +260,8 @@ class Audit:
         unk = [c for c in self.crit if self.kind(c) is None]   # which check decides these criteria is unknown
         if unk: self.miss('kind', 'DONE.criteria[].kind (command|source|judges)', unk,
                           any(not self.crit[c].get('kind') for c in unk))
+        nof = [c for c, v in self.crit.items() if self.kind(c) == 'command' and type(v.get('files') or 0) is not list]
+        if nof: self.miss('check_files', 'DONE.criteria[].files ("listing every file it runs")', nof)
 
     def r_setup(self, s):
         if self.setup is not None:                   # a resume logs `resume`: a second setup is ignored
@@ -249,22 +274,25 @@ class Audit:
         if None not in (top, dn) and top != dn: self.add('FINAL_RUNG_CONFLICT', dn, top)   # DONE's rung applies
         elif top is not None: self.final = hid(top)
         if not self.crit: self.miss('setup', 'setup.done.criteria', absent=not (self.done or {}).get('criteria'))
-        b = s.get('budget')                          # BUDGET: max rounds and minutes (tokens only if reported)
-        if not (isinstance(b, dict) and num(b.get('rounds')) and num(b.get('minutes'))):
-            self.miss('budget', 'setup.budget{rounds,minutes} (finite numbers)', b)
+        self.budg = self.bcheck(s.get('budget'), 'setup')   # "minutes and tokens only as the host reports them"
 
     def r_citation(self, c): self.cites.append(c)
-    def r_substrate(self, s):  # waived, or no longer required, needs a later amend; not closed or waived is open
-        g, st, n = s.get('gap'), canon(s.get('status')), len(self.amends)
-        req = s.get('required', True) is not False or (self.subs.get(g, (False,))[0] and n <= self.opened.get(g, 0))
+    def r_substrate(self, s):  # required from DONE by criterion; waived needs a later amend; not closed or waived: open
+        g, st, n, ev = s.get('gap'), canon(s.get('status')), len(self.amends), s.get('evidence')
         if st == 'open': self.opened[g] = n
-        if st == 'closed' and not s.get('evidence'):  # substrate{gap,owner,required,status}: no evidence field
-            self.na('substrate', 'substrate.evidence (closure unverified; SKILL logs no evidence or gap citation)')
-        ok = st == 'closed' or (st == 'waived' and n > self.opened.get(g, 0))
-        self.subs[g] = (req, 'resolved' if ok else 'open')
+        if st == 'closed' and not (ev and any(canon(x.get('status')) == 'verified' and x.get('locator') == ev
+                                              for x in self.cites)):   # "Verifier-checked evidence"
+            if self.v3: st = self.add('CLOSED_UNVERIFIED', 'evidence = a verified citation locator', ev)   # stays open
+            else: self.na('substrate', 'substrate.evidence (closure unverified)')
+        ok = st == 'closed' or (st == 'waived' and n > self.opened.get(g, 0))   # closed: required until written in
+        w = st == 'closed' and self.rs['rm'] > 0     # written in by the round just logged (markers in aggregate)
+        self.rs['rm'] -= w
+        self.subs[g] = (hid(s.get('criterion')), 'closed' if st == 'closed' and not w else 'resolved' if ok else 'open')
+        self.waive = self.waive + (st == 'waived' and ok) if self.waive is not None else None
 
     def r_amend(self, a):
         d, self.amends, self.paused = a.get('done'), self.amends + [a], True
+        if a.get('budget') is not None: self.budg = self.bcheck(a['budget'], 'amend')   # the live budget from here
         if not isinstance(d, dict): self.miss('required', 'amend.done (DONE after the amend)', a.get('what'), d is None)
         elif set(crits(d)) - set(self.crit): self.e3, self.obj = None, True   # a new criterion: an objective
         if isinstance(d, dict) and dkey(d) == dkey(self.done): return   # DONE unchanged: every result stands
@@ -302,12 +330,11 @@ class Audit:
 
     def r_resume(self, r):
         exp = self.rs['n'] + 1
-        if self.due and self.due[0] == 'version' and self.pick:   # HALT(OSCILLATION): the round is finished;
-            self.due = None                          # the pick follows as its version, or best stays unchanged
-        elif self.due and self.due[0] == 'version':  # unfinished round: rerun, never applied
+        if self.due and self.due[0] == 'version':  # unfinished round: rerun, never applied
             exp, self.rs, self.due, self.pend, self.osc = self.pend.get('n'), self.snap or self.rs, None, None, None
         if r.get('at_round') not in (None, exp): self.add('RESUME_MISMATCH', exp, r.get('at_round'))
-        self.exited, self.paused = False, True
+        self.waive, self.why = 0 if self.why == canon('OPEN') else None, None   # "OPEN with all gaps waived -> Stop"
+        self.exited, self.paused = self.ended, True   # after OVERFIT the archive stays ended
 
     def r_variant(self, v):                          # v2 format: keep rules are unauditable (v3: RECORD_MISSING)
         self.miss('keep', 'round record (a v2 variant record hides a round)')
@@ -315,9 +342,19 @@ class Audit:
             self.pend, self.due = dict(n=v.get('round'), best=self.best, var={'id': v.get('id')}), ('version', self.idx)
     def r_halt(self, h): self.miss('exit', 'exit.status (v2 halt record)')   # v2 format
 
+    def r_approve(self, a):  # the human approves a restructure (sections?: else any) or an OSCILLATION pick
+        w, vid, self.paused = canon(a.get('what')), hid(a.get('version')), True
+        if w == 'restructure': return self.rs['appr'].append(a.get('sections'))   # one approval: one kept restructure
+        if w != 'pick' or vid not in self.vers:
+            return self.miss('approve', 'approve{what:restructure|pick,version (a logged version)}', [w, vid],
+                             w is None or (w == 'pick' and vid is None))
+        if not self.pick: self.add('PICK_WITHOUT_HALT', 'a pick only after HALT(OSCILLATION)', vid)   # still applied
+        self.best, (self.best_words, lt), self.pick = vid, self.vers[vid], False
+        self.rs['latest'] = dict(lt)
+
     def r_version(self, v):
         words, vid = v.get('words'), hid(v.get('id'))
-        if (self.due and self.due[0] == 'version') or (self.pick and self.pend):   # a keep, or the human's pick
+        if self.due and self.due[0] == 'version':   # a keep: its version precedes any halt
             p, pw = self.pend, self.pend['var'].get('words')
             if v.get('parent') != p['best']: self.add('STALE_PARENT', p['best'], v.get('parent'))
             if 'diff' not in v or 'diff' not in p['var']: self.miss('kept_text', 'version.diff / variant.diff', vid)
@@ -325,11 +362,11 @@ class Audit:
             elif num(words) and num(pw) and words != pw: self.add('KEPT_TEXT_MISMATCH', 'words %s' % pw, words)
             self.cfe(dfiles(diffs(v)) - dfiles(diffs(p['var'])))   # the applied text names a check file
             words, self.due, self.pend = pw if words is None else words, None, None
-        elif v.get('parent') is not None or self.rs['any_round'] or self.vers:   # one root: v0
+        elif v.get('parent') is not None or self.rs['any_round'] or self.vers:   # one root: v0 (at setup)
             self.add('VERSION_WITHOUT_KEEP', 'a kept round before a version', v.get('id'))
         if vid in self.vers:                         # new text under an old id: nothing recorded before stands
             self.epoch = self.add('VERSION_ID_REUSED', 'a new version id', vid) or self.epoch + 1
-        self.best, self.best_words, self.pick, self.vers[vid] = vid, words, False, (words, dict(self.rs['latest']))
+        self.best, self.best_words, self.vers[vid] = vid, words, (words, dict(self.rs['latest']))
 
     # ---- rounds: gates, panel, eligibility, selection, stall
     def verdict(self, v, s):
@@ -358,12 +395,15 @@ class Audit:
         """-> 'ok' | 'dropped' | 'rejected' | 'regression' | None (unauditable; v3: RECORD_MISSING)."""
         g, vid = var.get('gates'), var.get('id')
         if not isinstance(g, dict): return self.miss('gates', 'round.variants[].gates', vid, g is None)
-        gr = g.get('retries') or {}
-        if any(num(x) and x > 1 for x in (gr.values() if isinstance(gr, dict) else [gr])):
-            return self.add('RETRY_EXCEEDED', '<= 1', gr) or 'dropped'
+        gr = g.get('retries')                        # gates{...,retries}: "Retry an ERROR once (retries)"
+        rts = [x for x in (gr.values() if isinstance(gr, dict) else [gr]) if num(x)]
+        if not rts: self.miss('gates', 'gates.retries', vid, gr is None)   # malformed ("0"): unauditable
+        if any(x > 1 for x in rts): return self.add('RETRY_EXCEEDED', '<= 1', gr) or 'dropped'
         (ap, scr, vf), cm = (cres(g.get(k)) for k in ('apply', 'screen', 'verifier')), g.get('commands')
         cmds = {c: cres(x) for c, x in cm.items()} if isinstance(cm, dict) else {}
-        if 'ERROR' in (ap, scr, vf) or 'ERROR' in cmds.values(): return 'dropped'
+        if 'ERROR' in (ap, scr, vf) or 'ERROR' in cmds.values():
+            if rts and sum(rts) < 1: self.add('RETRY_MISSING', 'one retry before an ERROR stands', gr)
+            return 'dropped'
         if ap != 'pass': return self.miss('gates', 'gates.apply', vid) if ap is None else 'dropped'  # not applied
         for c, x in cmds.items():                    # any result but pass is a failure (UNKNOWN is never a pass)
             if x != 'pass' and self.kind(c) in ('command', None):
@@ -371,8 +411,8 @@ class Audit:
                 if c not in self.rs['latest']: self.na('regression', 'check{trigger:setup}.' + c)
         if scr not in (None, 'pass'): return 'rejected'   # reject..., UNKNOWN or unreadable: never a pass
         need = ['gates.commands.%s' % c for c in self.crit if self.kind(c) == 'command' and c not in cmds]
-        need += ['gates.' + k for k in ('verifier', 'screen') if g.get(k) is None]
-        return self.miss('gates', ' / '.join(need), vid) if need else 'ok'   # every command, Verifier, Screen
+        need += ['gates.' + k for k in ('verifier', 'screen') if g.get(k) is None]   # every command, Verifier, Screen
+        return self.miss('gates', ' / '.join(need), vid) if need else None if gr is None else 'ok'
 
     def panel(self, var, strict, prot):
         """Recompute the judged outcome: exp = dropped | rejected | eligible | None (unauditable)."""
@@ -386,15 +426,16 @@ class Audit:
             if s in slots or s not in (1, 2, 3):     # the first stands; an extra never supports, but still objects
                 self.add('EXTRA_VERDICT', 'one verdict per slot 1-3', s)
                 cr = v.get('criteria') if isinstance(v.get('criteria'), dict) else {}
-                xobj = xobj or canon(v.get('overall')) == 'best' or any(worse(canon(cr.get(c))) for c in prot)
+                ov = canon(v.get('overall'))
+                xobj = xobj or ov == 'best' or self.veto(ov, {k: canon(x) for k, x in cr.items()}, prot)
             elif (r := self.verdict(v, s)) is None: return None
             else: slots[s] = r
         val = lambda s: slots[s][0] if s in slots else None  # noqa: E731
         comp = [s for s in slots if slots[s][0] in DONE_VALS]
-        pbest = xobj or any(worse(slots[s][1].get(c)) for s in slots for c in prot)   # an UNKNOWN overall vetoes too
-        objection = pbest or any(slots[s][0] == 'best' for s in comp)
+        pbest = xobj or any(self.veto(*slots[s][:2], prot) for s in slots)   # a veto, whatever the overall;
+        objection = pbest or any(slots[s][0] == 'best' for s in comp)   # judge 1's rejects early (below)
         early = not strict and val(1) not in (None, 'ERROR') and (
-            (val(1) == 'best' and slots[1][2] == 'high') or any(worse(slots[1][1].get(c)) for c in prot))
+            (val(1) == 'best' and slots[1][2] == 'high') or self.veto(*slots[1][:2], prot))
         same = not strict and val(1) in ('variant', 'best') and val(1) == val(2)
         req = [1] if early else [1, 2] + ([] if same else [3])
         w, bw, ds = var.get('words'), self.best_words, diffs(var)   # an edit whose new text is its old: no change
@@ -408,9 +449,10 @@ class Audit:
             improve = p['nvar'] >= (3 if strict else 2) and p['nbest'] == 0 and not pbest and not nochange
             shape = not pbest and all(val(s) in ('variant', 'tie') for s in (1, 2, 3)) and not any(
                 x not in ('variant', 'tie') for s in (1, 2, 3) for x in slots[s][1].values())
-            if shape and not improve and p['shorter'] is None:   # v0 may have no version record: unauditable
+            if shape and not improve and p['shorter'] is None:   # no length for best or the variant: v3, not kept
                 self.miss('prune', 'version.words / variant.words', vid, w is None)
-            elig = True if improve else None if shape and p['shorter'] is None else bool(shape and p['shorter'])
+            elig = True if improve else None if shape and p['shorter'] is None and not self.v3 else bool(
+                shape and p['shorter'])
             p['exp'] = {True: 'eligible', False: 'rejected', None: None}[elig]
         return p
 
@@ -419,13 +461,14 @@ class Audit:
         if not b: self.na('budget', 'setup.budget')
         if num(b.get('rounds')) and rs['cnt'] > b['rounds']:
             self.add('BUDGET_OVERRUN', '<= %g rounds' % b['rounds'], rs['cnt'])   # a non-number: listed at setup
-        t0, t1 = minutes(r.get('t0')), minutes(r.get('t1'))
-        if t0 is None or t1 is None: self.miss('budget_time', 'round.t0/t1', None, None in (r.get('t0'), r.get('t1')))
+        t0, t1, m = minutes(r.get('t0')), minutes(r.get('t1')), b.get('minutes')
+        if t0 is None or t1 is None:                 # minutes null (unreported): no round clock is needed
+            if num(m): self.miss('budget_time', 'round.t0/t1', None, None in (r.get('t0'), r.get('t1')))
         else:
             if self.now is not None and (self.paused or t0 < self.now):
                 self.start += t0 - self.now          # a human wait or a restarted clock is not loop time
             self.start, self.paused = t0 if self.start is None else self.start, False
-            m, md = b.get('minutes'), rs['maxdur']
+            md = rs['maxdur']
             if num(m) and md is not None and m - (t0 - self.start) < 2 * md:
                 self.add('BUDGET_START', '>= %g minutes left' % (2 * md), m - (t0 - self.start))
             rs['maxdur'], self.now = max(md or 0, t1 - t0), t1
@@ -463,10 +506,8 @@ class Audit:
             self.add('JUDGE_MISSING', 'slots %s' % p['missing'], 'absent', cls)
         return exp, p
     def judge(self, v, strict, prot):               # a malformed variant is unauditable; the round goes on
-        try:
-            return self.judge_variant(v, strict, prot)
-        except BAD as e:
-            return self.na('record', 'line %d: %r' % (self.idx, e)), None
+        try: return self.judge_variant(v, strict, prot)
+        except BAD as e: return self.na('record', 'line %d: %r' % (self.idx, e)), None
 
     def ledger(self, res):  # an idea rejected by >=2 judges or twice by the screen needs new evidence (advisory)
         for v, e, p in res:
@@ -476,22 +517,19 @@ class Audit:
             sc += isinstance(g, dict) and str(g.get('screen')).casefold().startswith('reject')
             self.ideas[k] = (sc, len(self.cites) if sc >= 2 or (p or {}).get('nbest', 0) >= 2 else ban)
 
-    def take_pick(self, vid):  # HALT(OSCILLATION): "the human picks *best*", named by the next round or Check
-        if self.pick and vid in self.vers:
-            self.best, (self.best_words, lt), self.due, self.pend, self.pick = vid, self.vers[vid], None, None, False
-            self.rs['latest'] = dict(lt)
-
     def r_round(self, r):
         self.e3_due()
-        self.take_pick(r.get('best'))
         self.pre('round', r)
-        n, rs, self.pick = r.get('n'), self.rs, False
+        n, rs = r.get('n'), self.rs
         if n != rs['n'] + 1: self.add('ROUND_SEQUENCE', rs['n'] + 1, n)
+        if not self.vers and not rs['any_round']: self.miss('version', 'version v0 (logged at setup)', r.get('best'))
         self.snap = copy.deepcopy(rs)
-        if self.rung not in self.probes:             # reported once; the mode stays normal (v3: strict, fail closed)
-            self.probes[self.rung] = self.add('PROBE_MISSING', 'probe{rung}', self.rung) or self.v3 and 'strict' or None
+        if self.rung not in self.probes:             # "or no judges criterion (no probe) -> strict mode"; else a
+            nj = self.crit and all(self.kind(c) in ('command', 'source') for c in self.crit)   # missing probe is
+            self.probes[self.rung] = 'strict' if nj else self.add(   # reported once (normal; v3: strict, fail closed)
+                'PROBE_MISSING', 'probe{rung}', self.rung) or self.v3 and 'strict' or None
         if r.get('best') != self.best: self.add('STALE_PARENT', self.best, r.get('best'))
-        rs['cnt'] += 1                               # the budget counts round records, never the logged n
+        rs['cnt'], rs['rm'] = rs['cnt'] + 1, 0       # the budget counts round records, never the logged n
         self.budget(r)
         strict, prot, seen = self.probes.get(self.rung) == 'strict', self.protected(), set()
         vs = [dict(v, outcome=canon(v.get('outcome'))) for v in r['variants'] if isinstance(v, dict)] \
@@ -543,19 +581,24 @@ class Audit:
 
     def cfe(self, fs):  # edits to check files: setup.check_files, or a command criterion's `files` in DONE
         cf = [(self.setup or {}).get('check_files')] + [v.get('files') for v in self.crit.values()]
-        cf = {nf(f) for x in cf if isinstance(x, list) for f in x if isinstance(f, str)}
-        if not cf and any(self.kind(c) == 'command' for c in self.crit):   # "Files a command runs belong to DONE"
-            self.na('check_files', 'setup.check_files / DONE command criteria files (none names a file)')
+        cf = {nf(f) for x in cf if isinstance(x, list) for f in x if isinstance(f, str)}   # none: set_done lists it
         for f in sorted(fs):
             if any(f == c or f.startswith(c + os.sep) for c in cf): self.add('CHECK_FILE_EDIT', 'no edit', f)
 
     def keep_checks(self, k):
         hist, ratio, exact, ds = self.rs['hist'], 0.0, False, [d for d in diffs(k) if isinstance(d, dict)]
         key = lambda x: ' '.join(str(x).split()).casefold()  # noqa: E731 (a section, whatever its case or spacing)
-        if len({key(d.get('section')) for d in ds}) > 1:   # advisory: an approved restructure is not recorded
-            self.add('MULTI_SECTION', 'one section', sorted(str(d.get('section')) for d in ds))
+        secs, ap = {key(d.get('section')) for d in ds}, self.rs['appr']   # "one change to one section ... of best,
+        if len(secs) > 1:                            # or one human-approved restructure": an approve covering them
+            i = next((i for i, a in enumerate(ap) if a is None or isinstance(a, list) and secs <= set(map(key, a))), -1)
+            if i < 0: self.add('MULTI_SECTION', 'one section, or a prior approve{what:restructure}', sorted(secs))
+            else: del ap[i]                          # spent by this keep
         self.cfe(dfiles(diffs(k)))
         self.rs['marks'] = max(0, self.rs['marks'] + sum(opens(d) for d in diffs(k)))   # [OPEN] now in best
+        rm = -sum(min(0, opens(d)) for d in diffs(k))   # "closes it (substrate.evidence) and a round writes it in"
+        cl = [g for g, (_, st) in self.subs.items() if st == 'closed']
+        for g in cl[:rm]: self.subs[g] = (self.subs[g][0], 'resolved')
+        self.rs['rm'] = max(0, rm - len(cl))           # left for a closure this round logs after it
         for d in ds:
             sec, new, cur = key(d.get('section')), *(' '.join(str(d.get(x) or '').split()) for x in ('new', 'old'))
             for old in hist.get(sec, []):            # a restore moves the text back toward an earlier best's
@@ -568,7 +611,6 @@ class Audit:
 
     # ---- Check, held-out, exit
     def r_check(self, c):
-        self.take_pick(c.get('version'))
         self.pre('check', c)
         if not isinstance(c.get('results'), dict) or 'version' not in c:
             return self.miss('check', 'check.version/results', None, c.get('results') is None or 'version' not in c)
@@ -581,43 +623,52 @@ class Audit:
             return self.add('CHECK_NOT_BEST', [self.best, self.rung], [ver, rung])
         if not setup and key in self.standing:
             return self.add('RECHECK_UNCHANGED', 'the first Check on %s/%s stands' % (ver, rung), 'another Check')
-        strict, vals = self.probes.get(rung, self.v3 and 'strict') == 'strict', {}   # v3: no probe here -> strict
-        cited, vc = any('criterion' in x for x in self.cites), [x for x in self.cites if x.get('status') == 'verified']
+        strict, vals, jr = self.probes.get(rung, self.v3 and 'strict') == 'strict', {}, False   # v3: no probe: strict
         for cid, r in c['results'].items():
             r = r if isinstance(r, dict) else {'value': r}
-            kind, val, vt = self.kind(cid, r), canon(r.get('value')), r.get('votes')
-            vt = list(vt.values()) if isinstance(vt, dict) else vt   # {judge: vote}: its votes
-            if kind == 'judges' and isinstance(vt, list) and vt:
-                vt = [canon(x) for x in vt]          # 3 judges; any extra vote counts against a pass
-                if len(vt) > 3: self.add('EXTRA_VERDICT', '3 votes', len(vt))
-                ok = sum(x == 'pass' for x in vt) >= (max(3, len(vt)) if strict else max(2, len(vt) // 2 + 1))
-                exp = 'unchecked' if 'ERROR' in vt else 'pass' if ok else 'fail'   # an ERROR vote: never a pass
-                if (val == 'pass') != (exp == 'pass'):
-                    self.add('CHECK_MISCOUNT', 'pass' if exp == 'pass' else 'not pass (%s)' % exp, val)
-                val = 'pass' if exp == 'pass' else val if val in ('fail', 'unchecked') else exp
-            elif kind == 'judges':                   # v3: a pass without readable votes is not credited
-                self.miss('check_judges', 'check.results[%s].votes' % cid, val, not vt and val == 'pass')
-                val = 'unchecked' if self.v3 and val == 'pass' else val
-            elif kind == 'source' and val == 'pass' and not any(x.get('criterion') == cid for x in vc):
-                if not cited or any('criterion' not in x for x in vc): self.na('check_source', 'citation.criterion')
-                else: val = self.add('CHECK_MISCOUNT', 'a verified citation for ' + cid, 'none') or 'fail'
+            kind, val = self.kind(cid, r), canon(r.get('value'))
+            jr = jr or kind == 'judges'
+            if kind == 'judges': val = self.tally('check', cid, r, strict, val == 'pass')
+            elif kind == 'source' and val == 'pass':   # "pass only if all its claims verify": that version's
+                cs = [x for x in self.cites if x.get('criterion', cid) == cid]   # citations (none: not a pass)
+                mine = [canon(x.get('status')) for x in cs if x.get('version') == ver]
+                if any('version' not in x or 'criterion' not in x for x in cs) or not (cs or self.v3):
+                    val = self.miss('check_source', 'citation.criterion/version', cid) or self.v3 and 'unchecked' or val
+                elif not mine or any(s != 'verified' for s in mine):
+                    val = self.add('CHECK_MISCOUNT', 'all %s citations on %s verified' % (cid, ver), mine) or 'fail'
             elif kind is None and self.v3 and val == 'pass': val = 'unchecked'   # unknown kind: nothing decided it
             vals[cid] = val
+        if self.v3 and not c.get('models') and ('models' not in c or jr):   # check{...,models,...}: "one source per
+            self.add('RECORD_MISSING', 'check.models', c.get('models'))       # named model family" (null: no judges)
         self.rs['latest'].update({k: v for k, v in vals.items() if v in ('pass', 'fail')})
         if not setup:                                # the setup Check is v0's baseline, not a Check
             self.standing[key] = vals
             self.post_check()
 
+    def tally(self, where, cid, r, strict, need):  # {value, votes} by the Check rule -> the value it credits
+        val, vt = canon(r.get('value')), r.get('votes')
+        vt = list(vt.values()) if isinstance(vt, dict) else vt   # {judge: vote}: its votes
+        if not (isinstance(vt, list) and vt):      # v3: a pass without readable votes is not credited
+            self.miss(where + '_votes', '%s.results[%s].votes' % (where, cid), val, not vt and need)
+            return 'unchecked' if self.v3 and val == 'pass' else val
+        vt = [canon(x) for x in vt]                # 3 judges; any extra vote counts against a pass
+        if len(vt) > 3: self.add('EXTRA_VERDICT', '3 votes', len(vt))
+        ok = sum(x == 'pass' for x in vt) >= (max(3, len(vt)) if strict else max(2, len(vt) // 2 + 1))
+        exp = 'unchecked' if 'ERROR' in vt else 'pass' if ok else 'fail'   # an ERROR vote: never a pass
+        if (val == 'pass') != (exp == 'pass'): self.add('CHECK_MISCOUNT', 'recounted ' + exp, val)
+        return 'pass' if exp == 'pass' else val if val in ('fail', 'unchecked') else exp
+
     def r_heldout(self, h):
         self.pre('heldout', h)
-        self.paused = True                           # the human runs the held-out judges
-        ps, att, st = h.get('pass'), h.get('attempt'), canon(h.get('set'))
-        if 'version' not in h or not isinstance(ps, (dict, bool)):   # pass: true/false, or {criterion: bool}
-            return self.miss('heldout', 'heldout.version/pass', None, 'version' not in h or ps is None)
-        if self.open_required(): self.add('OPEN_AT_HELDOUT', 'exit PARTIAL OPEN first', self.open_required())
-        n, ver, prev = len(self.heldout) + 1, h['version'], self.heldout
-        fails = set() if isinstance(ps, bool) else {c for c, ok in ps.items() if ok is not True}
-        passed = ps if isinstance(ps, bool) else all(ps.get(c, True) is True for c in (self.required() or list(ps)))
+        res, att, st, self.paused = h.get('results'), h.get('attempt'), canon(h.get('set')), True   # the human runs it
+        if 'version' not in h or not isinstance(res, dict):   # "the human reports only the marks"
+            return self.miss('heldout', 'heldout.version/results', h.get('pass'), 'version' not in h or res is None)
+        if (o := self.open_required()): self.add('OPEN_AT_HELDOUT', 'exit PARTIAL OPEN first', o, self.ocls())
+        n, ver, prev, req = len(self.heldout) + 1, h['version'], self.heldout, self.required()
+        strict = self.probes.get(self.rung, self.v3 and 'strict') == 'strict'   # "(heldout.results; Check rule)"
+        fails = {c for c in (list(res) if req is None else req) if c not in res or self.tally(   # "Each non-pass is
+            'heldout', c, res[c] if isinstance(res[c], dict) else {'value': res[c]}, strict, True) != 'pass'}
+        passed = not fails                           # non-pass in best's Check": fail, unchecked or unreported
         if not num(att): self.miss('heldout', 'heldout.attempt', att, att is None)   # a label: attempts are counted
         if st is None or (n == 2 and st != 'spare'): self.miss('heldout', 'heldout.set (2: spare)', st, st is None)
         reroll = n > 2 or (num(att) and att != n) or (n == 1 and st == 'spare') or (n == 2 and (
@@ -637,7 +688,7 @@ class Audit:
         st, why, rs, conds = canon(x.get('status')), canon(x.get('reason')), self.rs, self.complete_conds()
         if st == 'COMPLETE' and conds:
             if not conds[0]: self.add('FALSE_COMPLETE', 'PARTIAL', conds[2])
-            if not conds[1]: self.add('OPEN_AT_COMPLETE', 'exit PARTIAL OPEN', self.open_required())
+            if not conds[1]: self.add('OPEN_AT_COMPLETE', 'exit PARTIAL OPEN', self.open_required(), self.ocls())
         elif st == 'PARTIAL':
             if conds and conds[0] and conds[1]: self.add('MISLABEL', 'COMPLETE', 'PARTIAL')
             res, req = self.result(self.best, self.rung), self.required()
@@ -651,7 +702,8 @@ class Audit:
                 self.add('UNCHECKED_BUDGET_EXIT', 'a standing Check on %s/%s' % (self.best, self.rung), 'none')
             elif why == 'OSCILLATION' and rs['ratio'] < 0.5: self.add('OSCILLATION_UNSUPPORTED', 0.5, rs['ratio'])
         elif st != 'COMPLETE': self.miss('exit', 'exit.status', st, st is None)
-        self.exited, self.exit_status, self.pick, self.paused = True, st, why == 'OSCILLATION', True
+        self.exited, self.exit_status, self.why, self.pick, self.paused = True, st, why, why == 'OSCILLATION', True
+        self.ended = self.ended or why == 'OVERFIT'   # "OVERFIT ends the archive": nothing may follow, not even resume
 
     # ---- options and summary
     def check_done(self, path):
@@ -659,9 +711,8 @@ class Audit:
         for a in self.amends:
             if not isinstance(a.get('done'), dict): return self.na('done_drift', 'amend.done')
             cur = a['done']
-        with open(path, encoding='utf-8') as f:
-            if dkey(json.load(f)) != dkey(cur):
-                self.add('UNRECORDED_AMEND', 'DONE = setup.done + amends', path, idx=self.setup_idx)
+        with open(path, encoding='utf-8') as f: new = json.load(f)
+        if dkey(new) != dkey(cur): self.add('UNRECORDED_AMEND', 'DONE = setup.done + amends', path, idx=self.setup_idx)
     def check_target(self, d):
         files, hs = (self.setup or {}).get('check_files'), (self.setup or {}).get('check_hashes')
         if not isinstance(files, list) or not files or not isinstance(hs, dict):
@@ -676,9 +727,11 @@ class Audit:
     def next_due(self):
         k = self.due[0] if self.due else None
         if self.exited: return None
-        if k not in (None, 'version'):
-            return k if k != 'boundary' else 'boundary' if self.rung != self.final else \
-                'halt:OPEN' if self.open_required() else 'heldout'
+        if self.waive and not self.open_required():   # Stop: held-out needs best's all-pass Check at the final rung
+            return 'heldout' if self.rung == self.final and self.all_pass(self.best, self.final) else 'halt:OPEN'
+        if k not in (None, 'version'):   # Stop; after a failed attempt 1 on best: rounds until a changed best passes
+            return k if k != 'boundary' or self.rung != self.final else 'halt:OPEN' if self.open_required() else \
+                'heldout' if not self.spent() else 'halt:BUDGET' if self.budget_out() else 'round'
         c = None if self.osc or not self.setup else self.complete_conds()
         if self.osc or (c and c[0] and c[1]): return 'halt:OSCILLATION' if self.osc else 'exit'
         if self.budget_out(): return 'halt:BUDGET' if self.result(self.best, self.rung) is not None else 'check'
@@ -719,8 +772,7 @@ def audit(path, done=None, target=None, first=False, pending=None, text=None):
            'warnings': a.warnings, 'torn_tail': torn is not None, 'torn_line': torn, 'set_aside': aside,
            'integrity': integ}
     if not pending: return out, 2 if integ else 0 if ok else 1
-    with open(pending, encoding='utf-8') as f:
-        pr = json.load(f)
+    with open(pending, encoding='utf-8') as f: pr = json.load(f)
     if not isinstance(pr, dict): return {'ok': False, 'error': 'usage: --pending holds one round object'}, 2
     def replay(rnd):  # noqa: E306                                 # appended to a copy; its findings are discarded
         b = copy.deepcopy(a)
@@ -736,8 +788,7 @@ def audit(path, done=None, target=None, first=False, pending=None, text=None):
 
 def selftest(d):
     """Every fixture must match expected.json exactly (codes and classes, no extras)."""
-    with open(os.path.join(d, 'expected.json'), encoding='utf-8') as f:
-        cases = json.load(f)['cases']
+    with open(os.path.join(d, 'expected.json'), encoding='utf-8') as f: cases = json.load(f)['cases']
     fx, named = os.path.join(d, 'fixtures'), {c['fixture'] for c in cases}
     fails = [{'fixture': n, 'error': 'no expected case'} for n in sorted(os.listdir(fx))
              if n.endswith('.jsonl') and n not in named]
@@ -747,8 +798,7 @@ def selftest(d):
         path, text = os.path.join(fx, c['fixture']), None
         try:
             if c.get('strip_final_newline'):         # a torn-before-newline variant, derived in memory
-                with open(path, encoding='utf-8') as f:
-                    text = f.read().rstrip('\r\n')
+                with open(path, encoding='utf-8') as f: text = f.read().rstrip('\r\n')
             out, code = audit(path, opt('done'), opt('target'), bool(a.get('first')),
                               os.path.join(fx, c['pending']) if c.get('pending') else None, text)
         except Exception as e:                       # a crash is a failed case, never a pass

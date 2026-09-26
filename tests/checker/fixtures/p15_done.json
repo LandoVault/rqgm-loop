@@ -4,7 +4,10 @@
    "id": "c1",
    "required": true,
    "kind": "command",
-   "command": "pytest -q"
+   "command": "pytest -q",
+   "files": [
+    "tests/test_c1.py"
+   ]
   },
   {
    "id": "c2",
