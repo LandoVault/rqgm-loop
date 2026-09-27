@@ -1,0 +1,45 @@
+{
+  "policy_version": "4.1.0",
+  "harden": {
+    "variants_per_round": 2,
+    "keeps_per_round": 2,
+    "stall_rounds_before_check": 3,
+    "stalls_before_halt": 3,
+    "error_rounds_before_halt": 2,
+    "retries": 1,
+    "judges": {"first_both_orders": true, "max": 3, "early_exit": true, "strict_all": false},
+    "rethink": {"after_halts": ["STALL", "OSCILLATION"], "consecutive_rejected_rounds_same_family": 3}
+  },
+  "explore": {
+    "slots": ["a", "b"],
+    "roots_min": 3,
+    "frontier_share_max": 0.34,
+    "families_min": {"E1": 3, "E2": 4, "E3": 4},
+    "cold_stall_epochs_before_hot_draw": 3,
+    "lanes": {"hot": "hard_invariants", "cold": "all_gates"}
+  },
+  "derive": {"micro_loop_max_rounds": 3, "quiet_rounds_to_stop": 2},
+  "bank": {"active_cap": 12, "dormant_after_zero_firing_epochs": 2},
+  "budget": {"reserve_rounds": 2, "gate_calls_per_round_max": 4},
+  "routing": {
+    "gate":      {"model": "haiku",  "effort": "low",    "why": "relays loopkit output; never reasons"},
+    "screen":    {"model": "haiku",  "effort": "low",    "why": "pattern rejection on a diff + rubric"},
+    "generator": {"model": "opus",   "effort": "medium", "why": "one change to one section"},
+    "verifier":  {"model": "opus",   "effort": "high",   "why": "typed evidence against primary sources"},
+    "judge":     {"model": "opus",   "effort": "medium", "why": "blind pairwise; cross-family where available"},
+    "redteam":   {"model": "sonnet", "effort": "medium", "why": "writes probes, never scores"},
+    "refuter":   {"model": "opus",   "effort": "high",   "why": "fresh-context attack on one claim"},
+    "meta":      {"model": "opus",   "effort": "medium", "why": "playbook rewrite at boundaries only"},
+    "s_baseline":{"model": "opus",   "effort": "high",   "why": "the single strong pass the loop must beat"}
+  },
+  "router": {
+    "interrupt": ["defeater-valid", "wrong-anchor", "substrate-missing", "canary-passed",
+                  "unsupported-required-claim", "contract-or-assumption-mismatch",
+                  "stale-or-contaminated-evidence", "budget-or-provenance-violation", "measurement-inconclusive"],
+    "boundary": ["frame-exhausted", "instrument-defect", "cross-doc-contradiction", "defer"]
+  },
+  "evidence": {
+    "kinds": ["new_source", "new_data", "instrument_result", "external_review", "human_ruling"],
+    "invalidates_checks_on_affected_criteria": true
+  }
+}
