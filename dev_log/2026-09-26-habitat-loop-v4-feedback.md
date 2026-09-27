@@ -76,3 +76,34 @@ co-primary outcome so an always-halting controller does not look perfect.
   `runs/2026-09-25-peer/peer-inputs.sha256`.
 - Consults 5 and 6 (run report; derivation workspace and RSI-vs-GM loop use) were sent on 2026-09-26; their replies
   land in habitat's `loops/peer/` and should be copied here when received.
+
+## 6. Addendum (same day, later): peer reviews 5 and 6 received and applied as habitat v4.3
+
+Both replies are copied here verbatim (`runs/2026-09-26-habitat-v4/peer_review_loop_v42_run_report.md`,
+`peer_review_derivation_rsi_gm.md`); doc 33 (now v4.3) carries the dispositions in §12.2-§12.3. Items that bear on
+this repo's spec, beyond §4 above:
+
+- Enforce by **consequence and observability**, not by "broken last time": what corrupts acceptance, provenance,
+  permissions or budgets is code; allocation rules (slot fractions, stall thresholds, family down-weighting) are
+  versioned policy enforced only as a run pre-registered them.
+- **Generator-run commands are development feedback, not receipts**: the driver or a gate agent runs acceptance
+  commands on a scratch copy and binds exit codes to the candidate hash. The verifier runs whenever a diff touches
+  claim-bearing material, not only on declared claims. Judges see the affected section in two randomly labelled
+  versions with shared context, not a raw diff. Refuters get premises and the dependency slice.
+- **Rethink** after a resumed STALL/OSCILLATION halt is review-only until a typed record exists (rejected hypotheses
+  with status falsified | instrument-invalid | inconclusive | untested, changed action, expected discriminating result,
+  cost ceiling, stop condition); no automatic exhausted-family exclusion; stop is the default when the contract
+  cannot be resolved with the information available. New halt `UNINFORMATIVE_FOR_CONTRACT`; new route
+  `capability-gap`.
+- **Evidence intake** is six steps (intake, dependency closure, withdraw authority, resolve with evidence,
+  re-evaluate under a valid cohort, recommit or halt), not "re-check".
+- **Cost**: `C_run = C_setup + C_admission + Σ(C_round + C_retry + C_repair + C_rebaseline) + C_final + C_closure`;
+  count host events; caching is never a budget line; "S costs zero" means "no subsequent rounds".
+- **Derivation loop**: repair unit is a dependency slice; "nothing new twice" is a heuristic and the reserved Check
+  decides; an uncalibrated defeater panel produces proposals, never VALID labels; prediction sheets are optional
+  Brier-scored calibration work; oracle outcomes are three-way (out-of-tolerance | inapplicable → suspend | error);
+  replay forks are a transfer diagnostic (≤ 3 calls), not evidence of validity.
+- **Which loop for which task** (peer 6 B8) and **which RSI mechanism earns its overhead** (B9) are adopted as doc 33
+  §10a; self-application (B10) needs an evaluator outside the modified mechanism and never self-modifies the
+  standard, keys, approval root, audit, meter, budget or permissions.
+- Pre-registered **Stage 4**: spirit / kernel / full arms on four synthetic tasks, 24 runs, ≤ 432 calls.

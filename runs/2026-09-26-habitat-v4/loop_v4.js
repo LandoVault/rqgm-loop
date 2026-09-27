@@ -22,8 +22,10 @@ const NEXT = { type: 'object', properties: { id: { type: 'string' }, action: { t
   params: { type: 'object' }, why: { type: 'string' }, n_records: { type: 'number' } }, required: ['id', 'action', 'params', 'n_records'] }
 const APPEND = { type: 'object', properties: { ok: { type: 'boolean' }, error: { type: 'string' }, records: { type: 'number' } }, required: ['ok'] }
 const VARIANT = { type: 'object', properties: { id: { type: 'string' }, section: { type: 'string' }, criterion: { type: 'string' },
-  diff: { type: 'string' }, claims: { type: 'array', items: { type: 'object', properties: { claim: { type: 'string' }, kind: { type: 'string' }, locator: { type: 'string' } }, required: ['claim', 'kind'] } },
-  commands: { type: 'object' } }, required: ['id', 'section', 'criterion', 'diff', 'claims'] }
+  diff: { type: 'string' }, old_text: { type: 'string' }, new_text: { type: 'string' }, dependency_summary: { type: 'string' },
+  claims: { type: 'array', items: { type: 'object', properties: { claim: { type: 'string' }, kind: { type: 'string' }, locator: { type: 'string' } }, required: ['claim', 'kind'] } },
+  commands: { type: 'object', description: 'development feedback only; the acceptance receipt is produced by the gate agent' } },
+  required: ['id', 'section', 'criterion', 'diff', 'old_text', 'new_text', 'claims'] }
 const FINDINGS = { type: 'object', properties: { findings: { type: 'array', items: { type: 'object', properties: { claim: { type: 'string' },
   status: { type: 'string', enum: ['verified', 'contradicted', 'not-found', 'design-only'] }, locator: { type: 'string' } }, required: ['claim', 'status'] } } }, required: ['findings'] }
 const SCREEN = { type: 'object', properties: { verdict: { type: 'string', enum: ['pass', 'reject'] }, reason: { type: 'string' } }, required: ['verdict'] }
@@ -52,13 +54,19 @@ async function harden_round(act) {
   const variants = (await parallel(Array.from({ length: p.variants }, (_, i) => () => agent(
     `${brief('generator')}\nRound ${p.n}, rung ${p.rung}. Target criteria: ${p.target_criteria.join(', ')}. Protected (never regress): ${p.protected.join(', ') || 'none'}. Suspended (do not target): ${p.suspended.join(', ') || 'none'}.\nPropose ONE change to ONE section as a unified diff against the current best; name its criterion; list every new claim with kind empirical|mathematical|proposed. Variant id: r${p.n}v${i + 1}. Run the DONE commands on a scratch copy with your diff applied and report their exit codes in "commands".`,
     roleOpts(p, 'generator', `gen:r${p.n}v${i + 1}`, VARIANT))))).filter(Boolean)
-  // 2. gate each survivor: commands (already run by the generator, re-checked by the orchestrator later), verifier (only if claims), screen
+  // 2. gate each survivor. v4.3 (peer 5 §3.3): the acceptance commands are run by a gate agent on a scratch copy with the
+  //    diff applied, never taken from the generator's report (that is development feedback only); the verifier runs whenever
+  //    the diff touches claim-bearing material (declared claims OR a section the rubric marks claim-bearing), not only on
+  //    declared claims; the screen sees diff + rubric.
   const gated = await pipeline(variants,
     async v => {
-      const cmdFail = Object.values(v.commands || {}).some(x => Number(x) !== 0)
-      if (cmdFail) return { v, gates: { apply: 'pass', commands: 'fail', verifier: 'skipped', screen: 'skipped' } }
+      const receipt = await gate(`Apply this unified diff to a scratch copy of the current best (never the working tree), run every DONE command listed by: ${PY} brief ${ARCHIVE} --for judge  and return {"ok": true, "exit_codes": {"<criterion id>": <int>}, "sha": "<sha256 of the patched file>"} verbatim from the commands' results (no reasoning).\nDIFF:\n${v.diff}`, { type: 'object', properties: { ok: { type: 'boolean' }, exit_codes: { type: 'object' }, sha: { type: 'string' }, error: { type: 'string' } }, required: ['ok'] }, `commands:${v.id}`)
+      v.receipt = receipt
+      const cmdFail = !receipt || !receipt.ok || Object.values(receipt.exit_codes || {}).some(x => Number(x) !== 0)
+      if (cmdFail) return { v, gates: { apply: receipt && receipt.ok ? 'pass' : 'fail', commands: 'fail', verifier: 'skipped', screen: 'skipped' } }
       let verifier = 'pass'
-      if (v.claims && v.claims.length) {
+      const touchesClaims = (v.claims && v.claims.length) || /\b(claim|result|table|derivation|theorem|lemma|number|figure)\b/i.test(v.section || '')
+      if (touchesClaims) {
         const f = await agent(`${brief('verifier')}\nCheck each claim below by its kind (empirical: primary source or executed _derived record; mathematical: derivation file or Lean object; proposed: design-only label). Return findings only; never edit.\n${JSON.stringify(v.claims)}`,
           roleOpts(p, 'verifier', `verify:${v.id}`, FINDINGS))
         verifier = f && f.findings.some(x => x.status === 'contradicted') ? 'fail' : 'pass'
@@ -71,7 +79,9 @@ async function harden_round(act) {
   const survivors = gated.filter(Boolean).filter(g => Object.values(g.gates).every(x => x !== 'fail'))
   // 3. judge: judge 1 both orders; judge 2; judge 3 only on disagreement (policy early_exit)
   const judged = await pipeline(survivors, async g => {
-    const ask = (order, slot) => agent(`${brief('judge')}\nCompare A and B blind on every criterion and must_not_change item; cosmetic differences tie.\n${order === 'AB' ? 'A = current best; B = variant' : 'A = variant; B = current best'} (the variant is this diff applied to best):\n${g.v.diff}`,
+    // v4.3 (peer 5 §3.3): judges get the affected section in two randomly labelled versions with the shared context they need,
+    // not a raw diff (a diff discloses ancestry and frames the patch); the order is the only thing that changes between calls.
+    const ask = (order, slot) => agent(`${brief('judge')}\nCompare A and B blind on every criterion and must_not_change item; cosmetic differences tie. Both are the section "${g.v.section}" of the same document; the rest of the document is identical and available to you via the brief. Do not guess which is older.\nA:\n${order === 'AB' ? g.v.old_text || '(current best section: read it from TARGET)' : g.v.new_text || '(apply the change described in the brief context)'}\n\nB:\n${order === 'AB' ? g.v.new_text || '(the variant section)' : g.v.old_text || '(current best section: read it from TARGET)'}\n\nDependency summary (what else this section is cited by): ${g.v.dependency_summary || 'none declared'}`,
       roleOpts(p, 'judge', `judge${slot}:${order}:${g.v.id}`, VERDICT))
     const norm = (vd, order) => !vd ? 'ERROR' : vd.overall === 'tie' ? 'tie' : vd.overall === 'UNKNOWN' ? 'UNKNOWN' : ((vd.overall === 'B') === (order === 'AB')) ? 'variant' : 'best'
     const verdicts = []

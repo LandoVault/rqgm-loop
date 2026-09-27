@@ -1,6 +1,6 @@
 # Loop architecture v4: harden, explore, derive, and the router between them
 
-- **Version:** loop-v4.2 (design review; not yet run on a task; v4.1 = v4 plus the peer review's accepted edits, §12.1; v4.2 = enforcement wiring, cost model and rethink protocol, §8, §14-§16) · **Date:** 2026-09-26 · **Owner:** methodology
+- **Version:** loop-v4.3 (design review; not yet run on a task; v4.1 = v4 plus peer review 4, §12.1; v4.2 = enforcement wiring, cost model, rethink, §8, §14-§16; v4.3 = peer reviews 5 and 6 applied, §12.2-§12.3, §14-§16 amended) · **Date:** 2026-09-26 · **Owner:** methodology
 - **Formal status:** `verified_conditional` (unchanged). **Scientific status:** `not_claimable` (unchanged). Nothing
   here upgrades any claim about habitats, nulls, or the local samples.
 - **Supersedes, for the loop mechanism only:** `26_Territory_Hardening_Loop_Protocol.md` (thl-v1) and the v1-era
@@ -349,6 +349,26 @@ anything but an audit report.
 | rqgm-realsample-007 | HARDEN + DERIVE (five `rs_*` derivations) | claim-grain micro-loops for the `[S11]`/`[S4]` findings instead of whole-document epochs |
 | rqgm-relations-2026-09-25 | EXPLORE with a cold-lane HARDEN hand-off that never triggered | slots, lanes, roots × depth grid, bank lifecycle; the 7/11 front would have been reported as an EXPLORE frontier, not as a failed HARDEN |
 
+## 10a. Which loop for which task (v4.3, adopted from peer 6 B8)
+
+| task | default | admitted to a loop when | evaluators that dominate | stop | watch for |
+|---|---|---|---|---|---|
+| claim-bearing document with derivations (doc 28 shape) | one strong pass; HARDEN with bounded DERIVE dependency repairs | an independent Check finds a required unsupported claim, contradiction or invalid dependency | derivation/formal checks for logic; sources for empirical claims; commands for structure; judges for claim-to-evidence correspondence | required claims supported at the stated scope, companion sweep complete; else scoped unresolved/budget exit | polished prose outrunning the derivation's assumptions |
+| executable null layer with tests and Lean policy (nullkit shape) | one pass for a bounded edit; HARDEN for observed failures; DERIVE for validity lemmas | an independent invariant/null calibration or integration check fails | executable controls and formal policy checks, plus review that the implementation realizes the formal contract | frozen synthetic acceptance suite and linkage obligations pass; unresolved calibration blocks | tests certify behaviour while the null's validity stays unproved |
+| estimand/variant search (relations shape) | EXPLORE only after scorer calibration; HARDEN an eligible candidate | S fails a pre-registered portfolio objective and distinguishable feasible routes exist | synthetic scorer, nuisance controls, uncertainty and coverage rules; semantic review of the estimand | validated objective met or information limit reached; ranking alone never upgrades inference | adaptive search overfitting its evaluator |
+| single derivation file | one strong pass plus independent VERIFY; DERIVE if obligations fail | a named required logical, provenance or trace obligation stays unresolved | proof or finite exhaustive check; typed oracle for values; independent semantic review | requested state has all required evidence and a promotion event | an anchor repair breaking another dependency |
+| proposal or spec for a peer | one strong pass and focused review; HARDEN only for substantive contract defects | an important ambiguity, inconsistency or infeasible requirement survives review | schema and examples where possible; an independent reader | scope and assumptions explicit; unresolved choices labelled | process rewarding stylistic consensus |
+| the loop mechanism itself | one pass on a scoped defect; HARDEN spec/implementation; EXPLORE only over bounded alternative policies | an external frozen failure case exists and improvement is measurable without changing the test | controller tests, fault injection, held-out tasks scored outside the modified loop | pre-registered improvement without regression under equal accounting; else keep the baseline | the candidate changing its own judge, budget or success definition |
+| no viable contract | none beyond diagnosis or a separately scoped calibration | required support unavailable, instrument invalid, or target out of scope | evidence-availability and applicability checks | explicit blocked/unresolved result with a return condition | more iterations mistaken for missing evidence |
+
+RSI mechanisms are gated, not default *(peer 6 B9)*: archive parent-sampling only once distinct viable routes exist;
+niches only on premature convergence or an explicit alternatives task; the red-team bank keeps calibrated core
+controls and grows only after a new failure class; lessons are short, evidence-linked and expire on premise or
+instrument change; the playbook rewrite needs a documented plateau and a policy hypothesis, tested against a frozen
+baseline; one focused refutation per load-bearing unresolved step. Self-application (task vi) never modifies the
+external acceptance standard, sealed cases or keys, the approval root, the audit history, the resource meter, the
+budget ceiling or its own permissions.
+
 ## 11. Validation protocol (pre-registered, zero model calls in stages 0-1)
 
 - **Stage 0.** `loopkit selftest` passes; every §8 rule has a positive and a negative fixture.
@@ -369,6 +389,17 @@ anything but an audit report.
 - **Stage 3 (frontier).** On a synthetic-only EXPLORE target with a sealed scorer, spend one budget as 1 × 12 and
   the same budget as 4 × 3; report counted front moves per agent call for both. No "improved" claim unless 4 × 3 is
   at or above 1 × 12 on the frontier predicate.
+- **Stage 4 (spirit / kernel / full, v4.3, peer 5 §1.2).** Four synthetic tasks (a module with sealed tests; a
+  prose contract with a planted cross-section contradiction; a portfolio search with an attractive single-seed
+  shortcut; a workflow receiving a scorer correction after a keep) × three arms (concise "use RQGM/RSI" guidance
+  plus the acceptance contract; the same plus the enforced acceptance/provenance kernel; full v4.3) × two
+  repetitions = 24 runs, ≤ 18 model calls each including admission, relays, screens, retries and final assessment
+  (≤ 432 calls; a 12-run first stage ≤ 216), one pre-registered token ceiling per run, final assessment reserved
+  inside the cap. Outcomes: sealed correctness, false completion, successful completion, honest unresolved exits,
+  denied invalid transitions, human interventions, elapsed time, billed usage; quality against total cost.
+  Mechanical fault injections (stale approvals, omitted cases, forged exit codes, late evidence) cost no model
+  calls. Decision rule: if the kernel prevents invalid acceptance at comparable completion and lower cost than full
+  v4.3, the kernel stays and the method simplifies; if quotas only raise rejection counts, their benefit is unshown.
 - **Primary outcomes** for every stage *(v4.1, peer §10)*: false completion (COMPLETE while a sealed check finds a
   required failure) **and** failure to complete a valid artifact (PARTIAL or HALT on an artifact the sealed check
   passes), so an always-halting controller does not look perfect; secondary: unresolved required claims, coverage,
@@ -414,6 +445,40 @@ contract before treating v4 as enforceable.
 Disagreement kept visible: the peer prefers a controller that owns transitions; this repo keeps prose + write-time
 gates + a read-only auditor until a logged run shows a decision-changing violation the orchestrator acted through
 (the same rail as the reference repo's v3 decision and its severity-based promotion rule).
+
+### 12.2 Disposition of peer review 5 (run report, enforcement, cost, rethink; `loops/peer/peer_review_loop_v42_run_report.md`)
+
+| peer item | disposition | where |
+|---|---|---|
+| Split by consequence and observability, not by "broken last time": enforce what corrupts acceptance, provenance, permissions, budgets; make allocation rules configurable | **accepted**: slot fractions, slot-a novelty, stall thresholds and family exclusion are *policy* (versioned, per-run), enforced only as the run pre-registered them; ancestry truth stays invariant | SKILL §9; `policy_default.json` |
+| Narrow five "invariants" (writer may self-check; typed evidence not "truth"; `by: human` is a label until authenticated; identifier scan is defense in depth; assets freeze per cohort, replaceable with rebaseline) | **accepted** as wording; authentication of human approvals **deferred** (no trusted channel exists in this harness; logged as unauditable) | SKILL §9; §7 |
+| Promote: independent command-result capture; complete case coverage; dependency-closure invalidation; withdrawal of unsupported keeps; final-assessment reserve | **accepted**: the driver (or a gate agent, never the generator) runs acceptance commands and binds receipts to the candidate hash; `evidence` follows the six-step sequence; `budget.reserved` is required | §15; `loop_v4.js`; `schema` |
+| The 24-run spirit / kernel / full experiment (≤ 432 calls) | **accepted as the pre-registered Stage 4** replacing the §11 admission dry run as the primary comparison | §11 |
+| §16 mapping corrections (lineage, single seed, sign/robustness split, unit floor, fusion, M21, bank, power, physics, recurring request) | **accepted**; the recurring request becomes `capability-gap`, physics-sign is an identification obligation, power is not repairable by search | §16 |
+| Report language: "MDE" is an operational detection envelope; no exclusion bounds; separate pass-at-time from final-cohort pass; Dobrushin and nesting-null inference forms | **accepted**; applied to §16 here and queued for the sibling branch's report by strike-and-quote | §16 |
+| HALT(UNINFORMATIVE_FOR_CONTRACT) | **accepted** | §15; `schema.HALTS` |
+| Run-level cost formula; count host events; caching is not a budget line | **accepted** | §14 |
+| Generator-run commands are not receipts; verifier bypass via "no new claims"; A/B diff is not blind; LESSONS/PLAYBOOK leak; refuter needs premises | **accepted** | §15 role table; `loop_v4.js` |
+| Six-step evidence sequence; suspended criteria may receive authorized remediation; post-exit evidence links a supersession | **accepted** | §15 |
+| Resume enters review-only; rethink needs rejected assumption + evidence + changed action + discriminating result + cost ceiling + stop condition; no automatic family exclusion; typed `hypotheses_rejected`; stop is the default when information is missing | **accepted** | §15; `schema` (rethink required fields) |
+| Replace gate-agent relays with direct driver calls where supported | **adapted**: the Workflow runtime has no filesystem access, so the relay stays; the id cross-check bounds its damage; direct calls are used when the loop runs from a session | §8 |
+
+### 12.3 Disposition of peer review 6 (derivation workspace; RSI vs GM on tasks; `loops/peer/peer_review_derivation_rsi_gm.md`)
+
+| peer item | disposition | where |
+|---|---|---|
+| Repair unit = dependency slice (anchor + premises + downstream uses); whole-trace re-verification when statement, quantifiers, conditioning, exchangeability class, null transformation, convention or shared definition changes | **accepted** | addendum §A-1 |
+| Refuter sees premises and the dependency slice; blind only to self-assessment and verdict history | **accepted** | addendum §A-2 |
+| "Nothing new twice" is a heuristic, not a fixed point: the reserved independent Check decides; a third round without a valid Check stays unresolved | **accepted** | addendum §A-3 |
+| Trace-cell immutability vs A-1/A-5: versioned replacement trace or correction overlay; effective trace built from records | **accepted** (pin R-A1 already prescribes dated notes beside the table; the overlay is that rule made explicit) | addendum §A-1 |
+| Prediction sheets measure the verifier; make them optional calibration work, Brier-scored on frozen binary questions, with abstention coverage; never affect the derivation's grade | **accepted** | addendum §B-1; VERIFY template Check 0 optional |
+| Defeater panel: proposed vs substantiated vs adjudicated-valid vs rejected vs unresolved; uncalibrated panel outputs are proposals; empty accepted set allowed; appeal path; `boundary-UNDECIDABLE` renamed `scope-unresolved` / `evidence-unavailable` | **accepted**; resolves the §D-vs-K-defeaters conflict: K-defeaters is required only once the panel is calibrated on known-valid traces plus independently seeded defects | addendum §B-2, §D |
+| Replay forks test recoverability by a model, not validity; separate provenance axes; ≤ 3 calls per fork; only for moves that repeatedly fail to transfer | **accepted** | addendum §B-3 |
+| Canary suite of four pairs (vacuous hypothesis; values-for-logic; EXEC doing typed work; promotion without event); frozen payloads; instrument problem, not derivation defect | **accepted** | addendum §B-4 |
+| Oracle semantics: contradiction (out of tolerance) vs inapplicable (unit/domain/version mismatch → suspend) vs error; minimum oracle contract fields; K-oracle conditional | **accepted** | addendum §B-5; INITIATOR D |
+| F6 as a bounded attempt when route uncertainty matters, not a blocker; return counts only on substantive reactivation; C-3 corroboration corrected (which obligation each route supports) | **accepted** | addendum §C |
+| B8 loop-selection table; B9 RSI mechanisms keep/gate; B10 self-application needs an external evaluator and must never self-modify the standard, keys, approval root, audit, meter, budget or permissions | **accepted**; B8 is adopted as §10a below | §10a |
+| B11 template corrections: stable rubric per cohort ("fresh key" = fresh private items, not a new standard); mechanical K-items by command; ACCEPT-WITH-DEBT ≠ DONE unless the requested state allows it; promotion as a controller event; real budget units | **accepted** | INITIATOR D; addendum §A, §D |
 
 ## 14. Token-efficiency review (critical, v4.2)
 
@@ -463,6 +528,16 @@ Where the tokens actually go and what v4.2 does about each *[design-only unless 
 What this review cannot claim: any absolute saving. Every number above is a call count; tokens per call depend on
 the artifact. The validation protocol (§11) reports tokens per verified keep against the S baseline, per case.
 
+**Run-level accounting (v4.3, peer 5 §3.1-§3.2).** The round table is not a dispatch tree. A run is costed as
+`C_run = C_setup + C_admission + Σ(C_round + C_retry + C_repair + C_rebaseline) + C_final + C_closure`, and the
+archive records per model attempt: model/version, uncached input, cache-read input, cache-write input where
+billed, output as the host exposes it, and the charge; deterministic compute and human effort as separate
+quantities; critical-path time separately from summed worker time. "S costs zero" reads "no subsequent search
+rounds are needed": S, its Check, setup and closure still cost. Tokens per verified keep is a secondary measure
+only; a run with no keeps reports total cost and outcome. Caching is an optimization, never a budget line: the
+budget assumes the worst permitted cache behaviour and reports observed savings from host receipts. The
+gate-relay cap bounds a category; calls above it are still incurred and counted.
+
 ## 15. Team fidelity: exploration, validation, policy, state, and rethink (v4.2)
 
 **Who does what, sees what, returns what.**
@@ -471,12 +546,13 @@ the artifact. The validation protocol (§11) reports tokens per verified keep ag
 |---|---|---|---|---|
 | gate | haiku | a command | its stdout JSON verbatim | reasons, edits |
 | S baseline | opus / high | GROUNDING, DONE | the artifact | judges |
-| generator | opus / medium | brief: rubric, one section, slot; PLAYBOOK, LESSONS pointers | one variant: section, criterion, diff, typed claims, command exit codes | the archive, per-seed values, the favoured family, shared modules |
-| verifier | opus / high | the claims, sources | findings by typed evidence | edits, the generator's rationale |
+| generator | opus / medium | brief: rubric, one section, slot; sanitized LESSONS view (no per-case outcomes, no held-out feedback) | one variant: section, criterion, diff, typed claims, a claim/dependency manifest of what the diff touches; command exit codes as **development feedback only** | the archive, per-seed values, the favoured family, shared modules |
+| command runner (driver or gate agent, not the generator) *(v4.3)* | code (haiku relay where a shell is not reachable) | the diff, the immutable acceptance commands | exit codes and outputs bound to the candidate's hash: the **acceptance receipt** | the generator's rationale |
+| verifier | opus / high | the claims and the claim/dependency manifest, sources | findings by typed evidence; runs whenever the diff touches claim-bearing material (a manifest hit), not only when the writer declares a claim *(v4.3)* | edits, the generator's rationale |
 | screen | haiku | diff + rubric | pass / reject + reason | the rationale |
-| judge (1-3) | opus / medium, one cross-family where available | GROUNDING + rubric prefix, A/B diff | overall, per-criterion, confidence | rationale, other judges, the archive |
+| judge (1-3) | opus / medium, one cross-family where available | GROUNDING + rubric prefix; the affected section in two randomly labelled versions with the shared context they need and a dependency summary (a neutral diff may be supplemental) *(v4.3)* | overall, per-criterion, confidence | rationale, other judges, the archive; ancestry cues that a raw diff would disclose |
 | red team | sonnet | front summaries and code | probes (proposed) with declared tolerances | scorer values, scoring |
-| refuter | opus / high | one revised claim + the finding | nothing new / a finding | the writer's revision history |
+| refuter | opus / high | the revised claim **with its premises, definitions and dependency slice** + the finding *(v4.3)* | nothing new / a finding | the writer's self-assessment and verdict history |
 | meta (STOP) | opus | the archive (yields) | a **policy proposal** | a live policy change |
 | human | — | everything | `by: "human"` records | — |
 
@@ -499,13 +575,27 @@ of event: a boundary instrument change under a new cohort, never a mid-epoch cha
 | an interrupt-class route | `route{type ∈ interrupt}` | `resolve_route` until it carries `resolved` |
 | ERROR | variant `dropped` after one retry; two all-ERROR rounds → `halt ERROR` | |
 | stall | 3 empty rounds → `check`; still failing → `halt STALL` | |
-| halt resumed after STALL / OSCILLATION | `resume{by: human}` then **`rethink{trigger, decision, hypotheses_rejected}`** is required before any round | the frame is re-examined: `reopen_explore` (with the exhausted family excluded and the archive withheld), `amend_request` (the human changes DONE or the budget), `continue` (with the rejected hypotheses listed so they are not re-proposed), or `stop` |
-| frame exhausted (G6 ×3, or every variant of 3 rounds in one family) | `route{type: frame-exhausted}` | boundary-class; at the boundary it becomes a `rethink` |
+| halt resumed after STALL / OSCILLATION | `resume{by: human}` enters a **review-only state** (no generation authority); a **`rethink`** record is required before any round *(v4.3, peer 5 §3.5)*: `trigger`, `decision ∈ reopen_explore | amend_request | continue | stop`, `hypotheses_rejected[{id, status ∈ falsified | instrument-invalid | inconclusive | untested, evidence}]`, `changed_action`, `expected_discriminating_result`, `cost_ceiling`, `stop_condition` | the frame is re-examined: `reopen_explore` **down-weights** the exhausted family rather than excluding it (an unsuccessful allocation rejects neither a family nor its hypotheses) with the archive withheld; `amend_request` (a weaker DONE defines a new task and never certifies the failed one); `continue` only with a genuinely changed action whose result would distinguish explanations; `stop` (the recommended default when the contract cannot be resolved with the information available: a scoped, synthetic-only instrument or estimand study may be authorized separately) |
+| frame exhausted (G6 ×3, or every variant of 3 rounds in one family) | `route{type: frame-exhausted}` | boundary-class; at the boundary it becomes a `rethink`; it is a within-budget search failure, never evidence against the family |
+| an evaluator asks for a capability no operator offers, twice or more | `route{type: capability-gap}` *(v4.3)* | boundary-class: an unmet-capability or unresolved-hypothesis record naming the executable contract change and an independent feasibility test; repetition is scheduling evidence, not scientific justification; never auto-classified as instrument-defect |
+| the contract cannot be resolved with the available information (identification or sensitivity obligations unmet) | `halt{reason: UNINFORMATIVE_FOR_CONTRACT}` *(v4.3, peer 5 §2.3)* | completion is blocked; the report states the tested scope and uses no exclusion language without a validated bound; exhausted budget, inadequate instruments and unmet information needs are reported as three different things |
 | a canary passes | `canary{outcome: pass}` + `route{canary-passed}` | `halt CANARY`; human only |
 
 The rethink record is the loop's explicit answer to the "prior problem" (what deserves evaluation at all,
 2607.07663): a failed path changes the frame or the objective only through a logged decision, never by the
 generator quietly proposing something else.
+
+**Evidence intake is a six-step sequence, not a re-check (v4.3, peer 5 §3.4).** (1) Intake: stable id,
+provenance, affected claims and instruments, triage status; a credible applicability challenge suspends dependent
+acceptance before adjudication. (2) Dependency closure: affected claims, Checks, kept versions, frontier
+membership, descendants, admission protections; unresolved scope suspends conservatively. (3) Withdraw current
+authority: affected keeps and COMPLETE status become `superseded` while the historical records stay. (4) Resolve:
+rejected challenge | artifact repair | instrument recalibration | contract amendment | information gap, each with
+evidence, never a self-authored `resolved: true`. (5) Re-evaluate under a valid cohort; re-admit if S's protected
+criteria, scope, budget or contract changed. (6) Recommit or halt. A suspended criterion is excluded from
+acceptance and from score optimization, but explicitly authorized remediation work targeting the suspension is
+allowed, else the controller forbids the repair that would lift it. Evidence arriving after `exit` creates a linked
+supersession event; an exit never implies permanent validity.
 
 ## 16. The relations loop's search limits, and the v4 response
 
@@ -523,7 +613,22 @@ still open.
 | the red-team bank froze at its cap; 16 of 26 probes never scored anything | probe lifecycle with dormancy and core coverage; the cap bounds active probes only | built |
 | power: planted twins at 0.15-1.10 MDE; n_eff/n 0.003-0.017 | the power pre-screen (playbook check 6) becomes a `command`-kind admission criterion for a candidate: a variant that cannot detect its own planted twin at ≥ 2 MDE on one independent row per subject is not scored on real data; the honest deliverable is the exclusion report | template; no loop can fix the data; synthetic-only frontier work and explicit bounds are the route |
 | physics mimics the target (vasogenic fade, slab partial volume) | fade and partial-volume nulls are pre-registered `core` probes; a sign that the null reproduces is not a carrier | policy `bank`; probes exist on the sibling branch |
-| the lenses asked five epochs in a row for a change no operator offered (water-conditioned mark) | an evaluator request that recurs in ≥ 2 epochs is an `instrument-defect` or `frame-exhausted` route, which reaches `rethink` at the next boundary instead of waiting for the STOP rewrite | router + rethink |
+| the lenses asked five epochs in a row for a change no operator offered (water-conditioned mark) | a recurring evaluator request is a `capability-gap` route (v4.3): it names the executable contract change and an independent feasibility test and reaches `rethink` at the boundary; it is not auto-classified as an instrument defect and it does not by itself justify the operator | router + rethink |
+
+**Corrections to the run report's own language (v4.3, peer 5 §2.2; to be applied on the sibling branch when it is
+next edited, by strike-and-quote per pin R-A1).** The quantity the report calls "MDE" is an *operational detection
+envelope* (a maximum over a scaled jackknife error, sampled-null extremes and selected perturbation responses),
+not a calibrated minimum detectable effect; adding null draws raises its maximum without any scientific change.
+`|observed| + envelope` is not an exclusion bound or an upper confidence limit; "ruled out" and "underpowered null
+with bounds" overstate the result. Replacement wording: "No candidate met the specified acceptance criteria. The
+reported sensitivity envelopes summarize the tested controls and perturbations; they do not exclude an underlying
+effect or establish a confidence bound." Pass counts scored under different bank versions are not one
+leaderboard: report "passed at evaluation time" and "passes the final frozen cohort" separately, and per-criterion
+vectors rather than counts. "The data are the main ceiling" is a working diagnosis, not identified by the run: scorer
+defects, incomplete operator coverage, changing banks and lineage concentration are co-causes. Two inference-form
+corrections: failing a sufficient condition (a Dobrushin contraction certificate) does not establish the opposite
+property ("supercritical"); failed constructions of a nesting-preserving powered null do not show that none exists.
+Both become "the certificate was not obtained" and "the attempted constructions failed".
 
 ## 17. Sources
 

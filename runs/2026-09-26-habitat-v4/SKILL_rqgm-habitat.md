@@ -158,12 +158,18 @@ hypotheses_rejected}` before any round.
 The mechanism is written for a capable model to use with judgment, not as a script to be followed blindly. Two
 classes of rule:
 
-- **Invariants, enforced by code and never bent**: the archive is written only through `append`; a decision-bound
-  record needs the `next` id; the writer never judges; nothing unverified counts as fact; `DONE`, assets and the
-  rubric never change to pass; a lower kind never rewrites a higher kind's result and suspended evidence never
-  supports a keep; a void slot never reaches an evaluator; instruments change only at boundaries; identifiers never
-  enter tracked files; human-only decisions carry `by: "human"`. These were each broken in a logged run when they
-  were prose, or are the ones an optimizer would break first.
+- **Invariants, enforced by code and never bent** (chosen by consequence and observability: a violation corrupts
+  acceptance, provenance, permissions or budgets): the archive is written only through `append`; a decision-bound
+  record needs the `next` id; the writer's own checks never substitute for independent acceptance; evidence is
+  typed with explicit uncertainty (code cannot establish truth); `DONE`, the rubric and the cohort's assets never
+  change to pass (assets are replaced only with invalidation and re-baseline at a boundary); a lower kind never
+  rewrites a higher kind's result and suspended evidence never supports a keep; a void slot never reaches an
+  evaluator; acceptance commands are run by the driver, never reported by the generator; a final-assessment reserve
+  is held; identifier scans run on every export (defense in depth, not a proof); human-only decisions carry
+  `by: "human"` (a label until an authenticated channel exists; logged as such).
+- **Allocation policy, versioned per run, enforced only as pre-registered**: slot fractions, slot-a novelty, stall
+  thresholds, family down-weighting, probe rotation. A run that pre-registers them is held to them; a boundary
+  amendment can change them. Ancestry truth stays an invariant even when quotas change.
 - **Method, held in spirit**: what to propose, how to critique, which persona a judge takes, when a family looks
   exhausted, what a good rethink is, how to write a probe, how to read the physics. Doc 33 gives the *why* for each
   mechanism so a stronger model can choose a better method; a deviation in method is fine, a deviation in an
